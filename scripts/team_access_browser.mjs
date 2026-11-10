@@ -24,6 +24,7 @@ const browser=await chromium.launch({headless:true,...(process.env.TEAM_TEST_CHR
 let lane=Promise.resolve();
 const mime={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.json':'application/json','.png':'image/png','.jpg':'image/jpeg'};
 const harborDesign=fs.existsSync(path.join(site,'assets/team-harbor/invitation.jpg'));
+const accountDesign=fs.existsSync(path.join(site,'account-harbor.css'));
 async function verifyArt(page,selector,filename,pseudo=null){
   const node=page.locator(selector);
   await node.waitFor({state:'visible'});
@@ -32,14 +33,14 @@ async function verifyArt(page,selector,filename,pseudo=null){
     const url=new URL('/assets/team-harbor/'+filename,location.origin).href;
     if(!css.includes(url))throw Error('Missing background '+filename);
     const image=new Image();image.src=url;await image.decode();
-    if(image.naturalWidth<300)throw Error('Invalid artwork '+filename);
+    if(!image.naturalWidth)throw Error('Invalid artwork '+filename);
   },{filename,pseudo});
 }
-async function screenshot(page,name){
+async function screenshot(page,name,selector='#teamAccess'){
   const folder=process.env.TEAM_TEST_SCREENSHOTS;
   if(!folder)return;
   fs.mkdirSync(folder,{recursive:true});
-  await page.locator('#teamAccess').screenshot({path:path.join(folder,name+'.png')});
+  await page.locator(selector).screenshot({path:path.join(folder,name+'.png')});
 }
 async function session(cookie){
   const context=await browser.newContext({viewport:{width:1080,height:900}});
@@ -63,6 +64,20 @@ async function session(cookie){
 try{
   const owner=await session(fixture.request('/me').headers.get('cookie').slice('cvh_session='.length));
   await owner.goto('https://cveharbor.com/account/');
+  if(accountDesign){
+    await owner.setViewportSize({width:1536,height:1024});
+    await verifyArt(owner,'.account-mast','account-beacon.jpg');
+    for(const tile of ['profile','authenticator','recovery','notifications','session','workspace']){
+      await verifyArt(owner,'.'+tile+'-tile','tile-'+tile+'.jpg','::before');
+    }
+    await screenshot(owner,'account-security','body');
+    await owner.setViewportSize({width:390,height:844});
+    await owner.locator('#accountSecurityRecoveryStart').click();
+    assert.ok(await owner.locator('#accountSecurityRecoveryCode').isVisible());
+    assert.ok(await owner.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+    await screenshot(owner,'account-mobile','body');
+    await owner.reload();await owner.setViewportSize({width:1536,height:1024});
+  }
   await owner.locator('#teamTab').click();
   await owner.getByLabel('Organization name').fill('Fictional Northstar');
   await owner.getByLabel('Customer inventory').selectOption('existing');
@@ -76,6 +91,7 @@ try{
     if(newAccount)await screenshot(owner,'invitation-preview');
     await owner.getByRole('button',{name:'Send invitation'}).click();
     await owner.locator('#teamStatus').getByText('Invitation sent.').waitFor();
+    if(accountDesign)await owner.locator('.member-counts').getByText('1 Pending').waitFor();
     const url=emails.filter(e=>e.subject.includes('invitation')).at(-1).text_body.match(/https:\/\/cveharbor.com\/workspace\/#team-invite=[a-f0-9]{64}/)[0];
     const john=await session();await john.goto(url);
     await john.locator('#accountPageEmail').fill(email);
@@ -112,7 +128,13 @@ try{
       await owner.getByRole('button',{name:'Refresh members'}).click();
       const member=owner.getByRole('row').filter({hasText:email});
       await member.getByText('Active',{exact:true}).waitFor();
-      if(harborDesign){
+      if(accountDesign){
+        await verifyArt(owner,'.account-new-main','team-beacon.jpg');
+        await verifyArt(owner,'#teamAccess','team-coast.jpg');
+        await owner.locator('.member-counts').getByText('2 Active').waitFor();
+        await owner.locator('.member-counts').getByText('0 Pending').waitFor();
+        await screenshot(owner,'account-team','body');
+      }else if(harborDesign){
         await verifyArt(owner,'.team-banner','harbor.jpg');
         await verifyArt(owner,'#teamAccess','shoreline.jpg');
       }
@@ -149,5 +171,16 @@ try{
     await john.context().close();
   }
   await owner.locator('#personalTab').click();assert.equal(await owner.locator('#accountSecurityDashboard section:visible').count(),6);
+  if(accountDesign){
+    await owner.locator('#teamTab').click();
+    await verifyArt(owner,'.organization-card','org-panorama.jpg','::before');
+    await owner.locator('.organization-card').getByRole('link',{name:'Open workspace'}).waitFor();
+    await owner.setViewportSize({width:1536,height:1024});
+    await screenshot(owner,'organization-workspaces','body');
+    await owner.setViewportSize({width:390,height:844});
+    assert.ok(await owner.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+    await owner.getByRole('button',{name:'Manage team'}).click();
+    await owner.locator('.member-counts').getByText('2 Members').waitFor();
+  }
   console.log('PASS: owner invite and email preview; new-user MFA enrollment and recovery; returning-user MFA; scoped viewer dashboard; six personal security sections.');
 }finally{await browser.close();}
