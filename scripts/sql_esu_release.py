@@ -1,10 +1,10 @@
 """Release the SQL ESU empty-state message on the verified production website."""
 import os
 import shutil
+from pathlib import Path
 
 import catalogue_package as pkg
 import catalogue_promotion as prod
-import installed_release
 import team_release
 import version_picker_release as picker
 
@@ -20,14 +20,17 @@ def run(action, out):
         return
     sha = os.environ['GITHUB_SHA']
     matches = [p['number'] for p in prod.github('/commits/'+sha+'/pulls') if p['merged_at']
-               and p['base']['ref'] == 'main' and p['head']['ref'] == 'fix/sql-esu-coverage']
+               and p['base']['ref'] == 'main' and p['head']['ref'] == 'fix/sql-esu-release-baseline']
     pkg.require(len(matches) == 1, 'Expected the reviewed SQL coverage change')
     prod.evidence(matches[0])
+    def ready():
+        prod.ready(Path('release/team-backend-disabled.txt').read_text().strip())
+
     if action == 'preflight':
         prod.policy(picker.ENV)
-        installed_release.healthy_backend()
+        ready()
     elif action == 'publish':
-        picker.publish(out, changed={picker.MODULE}, reviewed_pr=matches[0], ready=installed_release.healthy_backend,
+        picker.publish(out, changed={picker.MODULE}, reviewed_pr=matches[0], ready=ready,
                        previous_version='559aed2e-95b5-4b4c-834a-244fd4c3dcc0',
                        previous_deployment='a9c36b6f-1ada-4584-a70b-5de33098457d')
     else:
