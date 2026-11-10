@@ -45,7 +45,7 @@ test('OSV receives only the selected public package/version and respects disclos
     return Response.json({vulns:[{id:'GHSA-example',published:old.toISOString()},{id:'GHSA-withdrawn',published:day,withdrawn:day}]});
   });
   for(const [months,expected] of [[3,0],[12,1]]){
-    const r=await versionResponse(new Request('https://example.test/v1/version-picker/scan?'+new URLSearchParams({product:'react',version:'19.0.0',day,months})),{});
+    const r=await versionResponse(new Request('https://example.test/v1/version-picker/scan?'+new URLSearchParams({cursor:'source:',product:'react',version:'19.0.0',day,months})),{});
     assert.equal(r.status,200);assert.equal((await r.json()).rows.length,expected);
   }
 });
@@ -63,7 +63,7 @@ test('SQL branches validate their own build, and distributions query their publi
   });
   const day=new Date().toISOString().slice(0,10);
   for(const [product,version] of [['ubuntu','22.04.5'],['debian','13.7'],['sles','15.7']]){
-    const res=await versionResponse(new Request('https://example.test/v1/version-picker/scan?'+new URLSearchParams({product,version,day,months:3})),{});
+    const res=await versionResponse(new Request('https://example.test/v1/version-picker/scan?'+new URLSearchParams({cursor:'source:',product,version,day,months:3})),{});
     assert.equal(res.status,200);
   }
   assert.deepEqual(fetched,['o:canonical:ubuntu_linux:22.04:*','o:debian:debian_linux:13:*','o:suse:sles:15:sp7'].map(v=>'cpe:2.3:'+v+':*:*:*:*:*:*'));
@@ -89,4 +89,26 @@ test('vendor scans distinguish SQL servicing branches and Noble package notices 
   assert.match(row.affected,/CVE-2026-108985/);assert.match(row.remediation,/libnfs14/);assert.match(row.evidence,/verify installed packages/);
   const res=await versionResponse(new Request('https://example.test/v1/version-picker/scan?product=sql2019&version=15.0.4500.2&months=3&day='+day),{});
   assert.equal(res.status,503);
+});
+
+test('published history and installed-version evidence are separate and both remain accessible',async t=>{
+  const {scopes,label}=await import('../catalogue-history.mjs');
+  assert.deepEqual(scopes('alpine-linux','3.24.4'),['alpine-linux@3.24']);
+  assert.deepEqual(scopes('debian','13.7'),['debian@13']);
+  assert.deepEqual(scopes('rhel','10.2'),['rhel@10','rhel@10.2']);
+  const row={id:'CVE-2099-12345',ranges:[['10.0.26100.0','10.0.26100.8000',false]],evidence:'Product advisory'};
+  assert.match(label(row,'server','26100.6000').evidence,/affected range/);
+  assert.equal(label(row,'server','20348.1000').evidence,row.evidence);
+  assert.equal(label(row,'server','26100.8000').evidence,row.evidence);
+  const today=new Date().toISOString(),day=today.slice(0,10),hash='a'.repeat(64);
+  const bucket={get:async path=>({json:async()=>path.endsWith('/current.json')?
+    {audited:['react'],products:{react:[[day,day,hash]]},checked:today,from:'2020-01-01',snapshot:hash}:
+    [{id:'CVE-2099-12345',published:today,evidence:'Package advisory'}]})};
+  t.mock.method(globalThis,'fetch',async()=>Response.json({vulns:[]}));
+  const url='https://example.test/v1/version-picker/scan?product=react&version=19.0.0&months=3&day='+day;
+  const first=await (await versionResponse(new Request(url),{INTELLIGENCE_BUCKET:bucket})).json();
+  assert.equal(first.rows[0].id,'CVE-2099-12345');assert.equal(first.next,'source:');
+  const second=await (await versionResponse(new Request(url+'&cursor=source:'),{INTELLIGENCE_BUCKET:bucket})).json();
+  assert.deepEqual(second.rows,[]);assert.equal(second.next,null);
+  assert.equal((await versionResponse(new Request(url),{})).status,503);
 });

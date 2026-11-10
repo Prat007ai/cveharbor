@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       vendor_only:
-        description: Refresh only Microsoft SQL Server and Canonical package advisories
+        description: Refresh only installed-product vendor advisories
         type: boolean
         default: false
       initialize:
@@ -51,7 +51,9 @@ jobs:
           FEED_R2_BUCKET: ${{ vars.FEED_R2_BUCKET }}
           FEED_R2_ACCESS_KEY_ID: ${{ secrets.FEED_R2_ACCESS_KEY_ID }}
           FEED_R2_SECRET_ACCESS_KEY: ${{ secrets.FEED_R2_SECRET_ACCESS_KEY }}
-        run: python scripts/vendor_scan_data.py
+        run: |
+          python scripts/vendor_scan_data.py
+          python scripts/catalogue_advisory_data.py
       - name: Restore durable state, collect all sources, verify objects and promote once
         if: ${{ !inputs.vendor_only && !cancelled() }}
         id: collect

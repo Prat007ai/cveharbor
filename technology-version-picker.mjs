@@ -113,6 +113,7 @@ export async function openPicker(card,context) {
         const params=new URLSearchParams({product:s.id,version:s.version,months:s.months,day:s.day,quarter:s.q,cursor:s.cursor});
         const page=await api('scan?'+params,scanController.signal);
         if(ticket!==generation||!panel.open)return;
+        if(page.coverage)s.coverage=page.coverage;
         for(const row of page.rows){
           if(s.seen.has(row.id))continue;s.seen.add(row.id);
           s.records.push(row);
@@ -125,7 +126,7 @@ export async function openPicker(card,context) {
         if(s.visited.has(s.q+':'+s.cursor))throw Error('The source repeated a page.');
       }
       if(ticket!==generation||!panel.open)return;
-      resultStatus.textContent=s.seen.size+' published advisories returned for '+s.version+' in the last '+s.months+' months. Verify vendor coverage and your configuration.';
+      resultStatus.textContent=s.seen.size+' published advisories returned for '+s.version+' in the last '+s.months+' months. '+(s.coverage||'Verify vendor coverage and your configuration.');
       more.hidden=s.months===12;
     }catch{if(ticket===generation&&panel.open){resultStatus.textContent='The source check is incomplete. Results already shown are retained.';retry.hidden=false;}}
   }
