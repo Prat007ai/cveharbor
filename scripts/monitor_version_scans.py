@@ -64,6 +64,7 @@ def probe(target, day, read=live_get):
     cursor,quarter = '',0
     seen = set()
     present = set()
+    coverage_incomplete = False
     try:
         while True:
             if (cursor,quarter) in seen:
@@ -76,6 +77,7 @@ def probe(target, day, read=live_get):
             for row in [*page['rows'], *page.get('componentRows',[])]:
                 if not isinstance(row,dict) or not isinstance(row.get('id'),str) or not row['id'].strip():
                     raise ValueError('missing advisory identity')
+            coverage_incomplete |= page.get('coverageGaps') != []
             if page['rows']:
                 present.add('direct')
             for row in page.get('componentRows',[]):
@@ -94,6 +96,7 @@ def probe(target, day, read=live_get):
                 cursor=''
             else:
                 break
+        result['coverage_incomplete']=coverage_incomplete
         result['present']=sorted(present)
         result['empty']=sorted(required-present)
     except (OSError, KeyError, TypeError, ValueError) as exc:
@@ -121,7 +124,7 @@ def compare(results, day, expected, errors):
                 failures.append(label+' — incomplete '+category+' check: '+', '.join(sorted(set(errors[ref]))))
             if not matches and not errors.get(ref):
                 report.append(label+' — no matching public '+category+' advisory found'+
-                              ('; private ESU coverage unverified' if key in ('sql2014','sql2016') else ''))
+                              (' · Coverage incomplete (private or unverified sources)' if scan.get('coverage_incomplete', key in ('sql2014','sql2016')) else ''))
     return failures, report
 
 

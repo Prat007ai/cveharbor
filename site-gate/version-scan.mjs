@@ -14,6 +14,20 @@ const patterns = {
   sdk: /^\d+\.\d+\.[1-9]\d{2}$/, win: /^(?:10\.0\.)?\d{5}\.\d+$/, build: /^\d{6,9}$/,
   android: /^\d+(?:\.\d+){0,2}$/, sfos: /^\d+\.\d+ (?:GA|MR\d+) Build \d+$/
 };
+// These customer-specific channels are outside the public sources queried by this picker.
+const privateChannels = {
+  sitefinity: 'Check your licensed Sitefinity Download Center for patches available to your installation.',
+  kendo: 'Check any private Progress support tickets for workarounds issued for your installed release.',
+  esxi: 'Check the Broadcom Support Portal for patches offered under your ESXi entitlement.',
+  veeam: 'Private fixes issued by Veeam Support are outside the public scan.',
+  forti: 'Check FortiCare for firmware offered for your registered device.',
+  rhel: 'Check your enabled Red Hat subscription repositories for additional errata.',
+  sles: 'Check your registered SUSE update channels, including LTSS if applicable.',
+  'oracle-linux': 'Check your subscribed Oracle ULN and Ksplice channels if applicable.',
+  ubuntu: 'Check any Ubuntu Pro update channels enabled on this installation.',
+  sql2014: 'CVEHarbor cannot verify which ESU patches Microsoft offers your enrolled instance.',
+  sql2016: 'CVEHarbor cannot verify which ESU patches Microsoft offers your enrolled instance.'
+};
 export function validVersion(product, value) {
   return typeof value==='string' && value.length<=48 && patterns[product.format].test(value);
 }
@@ -75,7 +89,7 @@ async function nvdPage(id,product,version,range,offset) {
   const size=family?12:100;
   for(const [key,val] of Object.entries({pubStartDate:range.start,pubEndDate:range.end,resultsPerPage:size,startIndex:offset,noRejected:''}))url.searchParams.set(key,String(val));
   const data=await upstream(url);
-  if(!Array.isArray(data.vulnerabilities)||data.startIndex!==offset||!Number.isSafeInteger(data.totalResults))throw Error('Incomplete NVD page');
+  if(!Array.isArray(data.vulnerabilities)||data.startIndex!==offset||!Number.isSafeInteger(data.totalResults)||data.totalResults<offset+data.vulnerabilities.length)throw Error('Incomplete NVD page');
   const rows=await Promise.all(data.vulnerabilities.map(async ({cve})=>{
     if(!/^CVE-\d{4}-\d{4,}$/.test(cve.id))throw Error('Invalid advisory');
     let evidence=product.format==='maria'&&version.includes('-')?'Upstream version match · verify distributor backports':'NVD vulnerable product/version match';
@@ -119,7 +133,13 @@ async function osvPage(product,version,range,cursor) {
   const [,ecosystem,name]=product.match.split(':');
   const data=await upstream('https://api.osv.dev/v1/query',{method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({package:{ecosystem,name},version,...(cursor?{page_token:cursor}:{})})});
-  if(data.vulns!==undefined&&!Array.isArray(data.vulns))throw Error('Incomplete OSV page');
+  // OSV represents a completed empty query as {}. An error envelope or
+  // unreadable publication date cannot establish an empty disclosure window.
+  if(!data||typeof data!=='object'||Array.isArray(data)||'error' in data||
+     (!('vulns' in data)&&Object.keys(data).some(key=>key!=='next_page_token'))||
+     ('next_page_token' in data&&typeof data.next_page_token!=='string')||
+     ('vulns' in data&&(!Array.isArray(data.vulns)||data.vulns.some(v=>!v?.id||(!v.withdrawn&&!Number.isFinite(Date.parse(v.published)))))))
+    throw Error('Incomplete OSV page');
   const start=Date.parse(range.start),end=Date.parse(range.end);
   const rows=(data.vulns||[]).filter(v=>!v.withdrawn&&Date.parse(v.published)>=start&&Date.parse(v.published)<=end)
     .map(v=>{
@@ -165,7 +185,7 @@ export async function versionResponse(request,env) {
   if(token && (vendor||history ? !/^[a-f0-9]{64}\.\d{1,7}$/.test(token) : !osv&&!/^\d{1,7}$/.test(token)))return json({error:'Invalid page.'},400);
   const range=osv?{start:monthsBefore(anchor,months).toISOString(),end:anchor.toISOString()}:windowFor(anchor,q);
   // Cache only public product queries; do not include gate credentials or account identifiers.
-  const key=new Request(url.origin+'/__version_scan_cache/v5/'+[id,version,date,months,q,cursor].map(encodeURIComponent).join('/'));
+  const key=new Request(url.origin+'/__version_scan_cache/v6/'+[id,version,date,months,q,cursor].map(encodeURIComponent).join('/'));
   const cache=globalThis.caches?.default;
   try{
     const hit=await cache?.match(key);
@@ -174,7 +194,11 @@ export async function versionResponse(request,env) {
       :history?await cataloguePage(env.INTELLIGENCE_BUCKET,id,version,range,token)
       :osv?await osvPage(product,version,range,token):await nvdPage(id,product,version,range,Number(token));
     if(!vendor&&!history&&page.next)page.next='source:'+page.next;
-    const body={...page,nextQuarter:!osv&&q+1<months/3?q+1:null,range};
+    const coverageGaps=[...(page.coverageGaps||[])];
+    if(privateChannels[id])coverageGaps.push(privateChannels[id]);
+    if(id==='debian' && Number(version.split('.')[0])<=11)
+      coverageGaps.push('If you use Debian Extended LTS, check the package scope and updates covered by your subscription.');
+    const body={...page,coverageGaps,nextQuarter:!osv&&q+1<months/3?q+1:null,range};
     if(cache)await cache.put(key,Response.json(body,{headers:{'Cache-Control':'public, max-age=1800'}})).catch(()=>{});
     return json(body);
   }catch{return json({error:'The advisory source could not finish this check. Retry to continue.'},503);}

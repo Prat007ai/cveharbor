@@ -43,6 +43,13 @@ class DailyScanTests(unittest.TestCase):
             self.assertIn('error',result)
             self.assertNotIn('empty',result)
 
+    def test_private_source_warning_survives_a_completed_public_page(self):
+        pages = iter([dict(rows=[], next='more', nextQuarter=None, coverageGaps=['Private vendor channel']),
+                      dict(rows=[], next=None, nextQuarter=None, coverageGaps=[])])
+        result = probe(('esxi','12345678',3),str(self.day),lambda _:next(pages))
+        self.assertTrue(result['coverage_incomplete'])
+        self.assertIn('Coverage incomplete',compare([result],self.day,{},{})[1][0])
+
     def test_period_boundaries(self):
         self.assertEqual(period_start(self.day,3),'2026-08-10')
         self.assertEqual(period_start(date(2024,5,31),3),'2024-03-01')
@@ -58,7 +65,7 @@ class DailyScanTests(unittest.TestCase):
         self.assertEqual(len(failures),1)
         self.assertIn('12 months',failures[0])
         self.assertIn('KB123',failures[0])
-        self.assertIn('ESU',checked[0])
+        self.assertIn('Coverage incomplete',checked[0])
         incomplete, checked = compare(results,self.day,{},{ref:['Microsoft']})
         self.assertEqual(len(incomplete),2)
         self.assertIn('incomplete',incomplete[0])
