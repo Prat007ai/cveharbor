@@ -138,9 +138,14 @@ test('scan coverage distinguishes a completed public query, a restricted source 
   const clean=await (await scan('ts')).json();
   assert.deepEqual(clean.rows,[]);assert.deepEqual(clean.coverageGaps,[]);
   payload={vulnerabilities:[],totalResults:0,startIndex:0};
-  for(const id of ['esxi','forti','rhel','sles','veeam','sql2014','sql2016']){
+  for(const id of ['sql2014','sql2016']){
     const page=await (await scan(id)).json();
     assert.deepEqual(page.rows,[],id);assert.ok(page.coverageGaps[0],id);
+  }
+  for(const id of ['esxi','forti','rhel','sles','veeam','sitefinity','kendo','oracle-linux','sophos']){
+    payload=config.products[id].match.startsWith('osv:')?{}:{vulnerabilities:[],totalResults:0,startIndex:0};
+    const page=await (await scan(id)).json();
+    assert.deepEqual(page.coverageGaps,[],id);
   }
   for(const invalid of [{error:'Authentication required'},{vulns:[{id:'GHSA-example'}]},{vulns:'missing'},[]]){
     payload=invalid;assert.equal((await scan('ts')).status,503);
@@ -161,4 +166,23 @@ test('missing distribution and component evidence is scoped to the selected rele
   assert.deepEqual(await gaps('npm','11.0.0'),[]);
   assert.match((await gaps('npm','1.0.0'))[0],/dependencies/);
   assert.match((await gaps('react','19.0.0'))[0],/component/);
+});
+
+test('public Veeam evidence separates component applicability, preserves dates and requires verification',async t=>{
+  const {veeamBulletins,securityIds}=await import('../veeam-bulletins.mjs');
+  const html='<h3><b>13.1.2.57</b></h3><h4><b>Security</b></h4>CVE-2026-105477 CVE-2026-105477<h4>Other</h4>CVE-2026-99999';
+  assert.deepEqual(securityIds(html),['CVE-2026-105477']);
+  assert.throws(()=>securityIds('<h1>Sign in</h1>'));
+  t.mock.method(globalThis,'fetch',async url=>{
+    if(url.endsWith('4738'))return new Response(html);
+    if(url.endsWith('4966'))return new Response('CVE-2026-98432 2026-11-06 Linux-based helper appliances');
+    return Response.json({cveMetadata:{cveId:'CVE-2026-105477',state:'PUBLISHED',datePublished:'2026-10-27'},
+      containers:{cna:{affected:[{vendor:'Veeam',product:'Agent for Linux'}],descriptions:[]}}});
+  });
+  const range={start:'2026-08-10T23:59:59Z',end:'2026-11-10T23:59:59Z'};
+  const verified=await veeamBulletins('13.1.2.57',range);
+  assert.deepEqual(verified.rows,[]);
+  assert.deepEqual(verified.componentRows.map(r=>r.id),['CVE-2026-105477','CVE-2026-98432']);
+  assert.deepEqual((await veeamBulletins('12.3.2.1',range)).componentRows.map(r=>r.id),['CVE-2026-98432']);
+  assert.deepEqual((await veeamBulletins('13.1.2.57',range,'CVE-2026-105477')).componentRows,[]);
 });

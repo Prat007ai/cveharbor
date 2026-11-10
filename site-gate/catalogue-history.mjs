@@ -72,6 +72,5 @@ export async function cataloguePage(bucket,id,version,range,cursor) {
   const coverageGaps=[];
   if(distributionIds.has(id)&&!hasReleaseHistory)coverageGaps.push(coverage);
   if(['npm','sitefinity','react'].includes(id)&&!hasComponents)coverageGaps.push(coverage);
-  if(id==='sophos')coverageGaps.push('Check the Sophos Firewall console for hotfixes offered to this device.');
   return {rows:rows.filter(r=>!r.scope),componentRows,coverage,coverageGaps,next:pos+1<pages.length?index.snapshot+'.'+(pos+1):'source:'};
 }
