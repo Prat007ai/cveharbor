@@ -128,11 +128,22 @@ def main():
         store = S3Store()
     for product in ['sql2019', 'ubuntu-noble']:
         prefix = 'picker/vendor-v1/'+product+'/'
+        revision = None
         if not args.output:
             previous, _ = store.get(prefix+'current.json')
-            if previous and now - datetime.fromisoformat(json.loads(previous)['checked']) < timedelta(hours=12):
-                print(product, 'already refreshed')
-                continue
+            cached = json.loads(previous) if previous else {}
+            if product == 'ubuntu-noble':
+                # Canonical can issue several USNs between full database imports.
+                # Check its public revision each run; only download again on change.
+                request = Request(USNS, method='HEAD', headers={'User-Agent':'CVEHarbor vendor advisories'})
+                with urlopen(request, timeout=30) as response:
+                    revision = response.headers.get('ETag') or response.headers.get('Last-Modified')
+            if cached:
+                age = now - datetime.fromisoformat(cached['checked'])
+                if age < timedelta(hours=12) and (product == 'sql2019' or
+                        (revision and revision == cached.get('sourceRevision'))):
+                    print(product, 'already refreshed')
+                    continue
         rows = microsoft(start, stamp) if product == 'sql2019' else ubuntu(start)
         if not rows:
             raise ValueError('No vendor evidence for '+product)
@@ -158,6 +169,8 @@ def main():
             save(prefix+digest+'.json', body, True)
             directory[month] = digest
         manifest = {'product': product, 'from': start, 'checked': stamp, 'months': directory}
+        if revision:
+            manifest['sourceRevision'] = revision
         digest = sha256(json.dumps(manifest, sort_keys=True).encode()).hexdigest()
         manifest['snapshot'] = digest
         save(prefix+digest+'.json', json.dumps(manifest).encode(), True)
