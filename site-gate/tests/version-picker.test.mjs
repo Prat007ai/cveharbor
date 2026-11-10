@@ -126,3 +126,39 @@ test('bundled advisories use the exact installed archive and stay separate from 
   const unknown=await cataloguePage(bucket,'npm','12.2.3',range,'');
   assert.deepEqual(unknown.componentRows,[]);assert.match(unknown.coverage,/not been verified/);
 });
+
+test('scan coverage distinguishes a completed public query, a restricted source and an unreadable source',async t=>{
+  const day=new Date().toISOString().slice(0,10);
+  let payload={},status=200;
+  t.mock.method(globalThis,'fetch',async()=>Response.json(payload,{status}));
+  function scan(id){
+    const params=new URLSearchParams({product:id,version:config.products[id].example,day,months:'3',cursor:'source:'});
+    return versionResponse(new Request('https://example.test/v1/version-picker/scan?'+params),{});
+  }
+  const clean=await (await scan('ts')).json();
+  assert.deepEqual(clean.rows,[]);assert.deepEqual(clean.coverageGaps,[]);
+  payload={vulnerabilities:[],totalResults:0,startIndex:0};
+  for(const id of ['esxi','forti','rhel','sles','veeam','sql2014','sql2016']){
+    const page=await (await scan(id)).json();
+    assert.deepEqual(page.rows,[],id);assert.ok(page.coverageGaps[0],id);
+  }
+  for(const invalid of [{error:'Authentication required'},{vulns:[{id:'GHSA-example'}]},{vulns:'missing'},[]]){
+    payload=invalid;assert.equal((await scan('ts')).status,503);
+  }
+  status=403;
+  for(const id of ['ts','linux'])assert.equal((await scan(id)).status,503);
+});
+
+test('missing distribution and component evidence is scoped to the selected release',async()=>{
+  const {cataloguePage}=await import('../catalogue-history.mjs');
+  const now=new Date().toISOString(),range={start:now,end:now};
+  const index={checked:now,from:'2020-01-01',snapshot:'a'.repeat(64),audited:['debian','npm','react'],
+    products:{'debian@13':[],'npm@11.0.0~components':[]}};
+  const bucket={get:async()=>({json:async()=>index})};
+  async function gaps(id,v){return (await cataloguePage(bucket,id,v,range,'')).coverageGaps;}
+  assert.deepEqual(await gaps('debian','13'),[]);
+  assert.match((await gaps('debian','77'))[0],/unverified/);
+  assert.deepEqual(await gaps('npm','11.0.0'),[]);
+  assert.match((await gaps('npm','1.0.0'))[0],/dependencies/);
+  assert.match((await gaps('react','19.0.0'))[0],/component/);
+});

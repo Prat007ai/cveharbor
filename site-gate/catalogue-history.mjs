@@ -41,11 +41,12 @@ export async function cataloguePage(bucket,id,version,range,cursor) {
   }
   const [snapshot,offset]=cursor?cursor.split('.'):[null,'0'];
   const index=await read(snapshot||'current');
-  if(!index.audited?.includes(id)||!/^[a-f0-9]{64}$/.test(index.snapshot)||index.from>range.start.slice(0,10)||
+  if(!index.audited?.includes(id)||!/^[a-f0-9]{64}$/.test(index.snapshot)||!/^\d{4}-\d{2}-\d{2}$/.test(index.from)||index.from>range.start.slice(0,10)||
     !(Math.abs(Date.now()-Date.parse(index.checked))<72*3600000))throw Error('Vendor history is incomplete');
   const keys=scopes(id,version);
   const componentKey=id==='npm' ? 'npm@'+version+'~components' : id+'~components';
   const hasComponents=Object.hasOwn(index.products,componentKey);
+  const hasReleaseHistory=keys.some(k=>Object.hasOwn(index.products,k));
   if(hasComponents)keys.push(componentKey);
   const pages=keys.flatMap(k=>index.products[k]||[]).filter(([first,last])=>
     first<=range.end.slice(0,10)&&last>=range.start.slice(0,10)).sort((a,b)=>b[1].localeCompare(a[1]));
@@ -55,10 +56,12 @@ export async function cataloguePage(bucket,id,version,range,cursor) {
     const hash=pages[pos]?.[2];
     if(!/^[a-f0-9]{64}$/.test(hash||''))throw Error('Invalid history page');
     const start=Date.parse(range.start),end=Date.parse(range.end);
-    rows=(await read(hash)).filter(r=>Date.parse(r.published)>=start&&Date.parse(r.published)<=end).map(r=>label(r,id,version));
+    const records=await read(hash);
+    if(!Array.isArray(records)||records.some(r=>!r?.id||!Number.isFinite(Date.parse(r.published))))throw Error('Unverified history rows');
+    rows=records.filter(r=>Date.parse(r.published)>=start&&Date.parse(r.published)<=end).map(r=>label(r,id,version));
   }
   let coverage='Includes published product advisories. Check the evidence for applicability to your installed version.';
-  if(distributionIds.has(id))coverage=keys.some(k=>Object.hasOwn(index.products,k))
+  if(distributionIds.has(id))coverage=hasReleaseHistory
     ? 'Distribution notices cover packages for this release. Verify the installed package and patch level.'
     : 'Package-notice coverage is unverified for this release. Check the distribution’s security records.';
   if(id==='sophos')coverage='Includes reviewed Sophos Firewall bulletins and indexed CVEs. Check the vendor for additional hotfix notices.';
@@ -66,5 +69,9 @@ export async function cataloguePage(bucket,id,version,range,cursor) {
   if(id==='npm')coverage=hasComponents?'Includes a separate check of the dependencies shipped in this exact npm release.':'Bundled dependencies have not been verified for this npm build.';
   if(id==='react'||id==='sitefinity')coverage=hasComponents?'Review optional component notices against the separately installed component version.':'Optional component coverage is unavailable.';
   const componentRows=rows.filter(r=>r.scope==='bundled'||r.scope==='optional');
-  return {rows:rows.filter(r=>!r.scope),componentRows,coverage,next:pos+1<pages.length?index.snapshot+'.'+(pos+1):'source:'};
+  const coverageGaps=[];
+  if(distributionIds.has(id)&&!hasReleaseHistory)coverageGaps.push(coverage);
+  if(['npm','sitefinity','react'].includes(id)&&!hasComponents)coverageGaps.push(coverage);
+  if(id==='sophos')coverageGaps.push('Check the Sophos Firewall console for hotfixes offered to this device.');
+  return {rows:rows.filter(r=>!r.scope),componentRows,coverage,coverageGaps,next:pos+1<pages.length?index.snapshot+'.'+(pos+1):'source:'};
 }

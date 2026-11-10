@@ -122,6 +122,11 @@ export async function openPicker(card,context) {
         const params=new URLSearchParams({product:s.id,version:s.version,months:s.months,day:s.day,quarter:s.q,cursor:s.cursor});
         const page=await api('scan?'+params,scanController.signal);
         if(ticket!==generation||!panel.open)return;
+        if(!Array.isArray(page.rows)||(page.next!==null&&(typeof page.next!=='string'||!page.next))||
+           (page.nextQuarter!==null&&(page.nextQuarter!==s.q+1||page.nextQuarter>=s.months/3))||
+           (page.componentRows!==undefined&&!Array.isArray(page.componentRows)))throw Error('Incomplete scan response');
+        if(!Array.isArray(page.coverageGaps)||page.coverageGaps.some(reason=>typeof reason!=='string'||!reason.trim()))s.gaps.add('Source coverage could not be verified for this scan.');
+        else for(const reason of page.coverageGaps)s.gaps.add(reason);
         if(page.coverage)s.coverage=page.coverage;
         for(const row of page.componentRows||[])s.components.set(row.id,row);
         for(const row of page.rows){
@@ -137,16 +142,23 @@ export async function openPicker(card,context) {
       }
       if(ticket!==generation||!panel.open)return;
       resultStatus.textContent=s.seen.size+' direct product advisories and '+s.components.size+' component advisories returned for '+s.version+' in the last '+s.months+' months. '+(s.coverage||'Verify vendor coverage and your configuration.');
-      if(!s.seen.size && ['sql2014','sql2016'].includes(s.id)){
-        const warning=element('strong','Coverage incomplete · Microsoft Extended Security Updates');
-        const explanation=element('span','No public advisory matched '+directory.products[s.id].name+' build '+s.version+' in the last '+s.months+' months. CVEHarbor cannot verify which ESU patches Microsoft offers your enrolled instance.');
-        const link=element('a','Check Microsoft’s ESU guidance for your instance');
-        link.href='https://learn.microsoft.com/en-us/sql/sql-server/end-of-support/sql-server-extended-security-updates';
-        link.target='_blank';link.rel='noopener noreferrer';
-        resultStatus.replaceChildren(warning,element('br'),explanation,element('br'),link);
+      if(s.gaps.size){
+        const esu=['sql2014','sql2016'].includes(s.id);
+        const title=element('strong',esu?'Coverage incomplete · Microsoft Extended Security Updates':'Coverage incomplete');
+        const count=s.seen.size?s.seen.size+(s.seen.size===1?' public product advisory found for ':' public product advisories found for '):'No public advisory matched ';
+        const scope=directory.products[s.id].name+' '+s.version+' in the last '+s.months+' months.';
+        resultStatus.replaceChildren(title,element('br'),element('span',count+scope));
+        for(const reason of s.gaps)resultStatus.append(element('br'),element('span',reason));
+        if(esu){
+          const link=element('a','Check Microsoft’s ESU guidance for your instance');
+          link.href='https://learn.microsoft.com/en-us/sql/sql-server/end-of-support/sql-server-extended-security-updates';
+          link.target='_blank';link.rel='noopener noreferrer';resultStatus.append(element('br'),link);
+        }
+      }else if(!s.seen.size && !s.components.size){
+        resultStatus.textContent='No matching public advisories found for '+directory.products[s.id].name+' '+s.version+' in the last '+s.months+' months. The configured public sources completed this check.';
       }
       more.hidden=s.months===12;
-    }catch{if(ticket===generation&&panel.open){resultStatus.textContent='The source check is incomplete. Results already shown are retained.';retry.hidden=false;}}
+    }catch{if(ticket===generation&&panel.open){resultStatus.textContent='Coverage incomplete · A source could not be verified. Retry the unfinished check. Any results already shown are retained.';retry.hidden=false;}}
   }
   action.onclick=async()=>{
     if(locked)return;
@@ -160,7 +172,7 @@ export async function openPicker(card,context) {
     try{
       await context.save(p,version);
       if(!panel.open)return;
-      state={id,version,months:3,q:0,cursor:'',day:new Date().toISOString().slice(0,10),components:new Map(),seen:new Set(),visited:new Set(),records:[]};
+      state={id,version,months:3,q:0,cursor:'',day:new Date().toISOString().slice(0,10),gaps:new Set(),components:new Map(),seen:new Set(),visited:new Set(),records:[]};
       await run();
     }catch(e){if(panel.open)resultStatus.textContent=e.message;}
     finally{locked=false;action.disabled=select.disabled=line.disabled=releases.disabled=input.disabled=false;}

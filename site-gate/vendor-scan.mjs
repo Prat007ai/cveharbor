@@ -44,7 +44,7 @@ export async function vendorPage(bucket, product, version, range, cursor) {
   const [snapshot,position] = cursor ? cursor.split('.') : [null,'0'];
   const directory = await read(snapshot || 'current');
   if (directory.product !== product || !/^[a-f0-9]{64}$/.test(directory.snapshot)
-      || directory.from > range.start.slice(0,10) || !(Math.abs(Date.now()-Date.parse(directory.checked)) < 48*3600000))
+      || !/^\d{4}-\d{2}-\d{2}$/.test(directory.from) || directory.from > range.start.slice(0,10) || !(Math.abs(Date.now()-Date.parse(directory.checked)) < 48*3600000))
     throw Error('Vendor evidence is incomplete or out of date');
   const months = Object.keys(directory.months).filter(m=>m >= range.start.slice(0,7) && m <= range.end.slice(0,7)).sort().reverse();
   const offset = Number(position), index = Math.floor(offset/100000);
@@ -53,7 +53,10 @@ export async function vendorPage(bucket, product, version, range, cursor) {
   if (index >= months.length) throw Error('Invalid vendor page');
   const hash = directory.months[months[index]];
   if (!/^[a-f0-9]{64}$/.test(hash)) throw Error('Invalid vendor month');
-  const records = (await read(hash)).filter(r=>Date.parse(r.published)>=Date.parse(range.start) && Date.parse(r.published)<=Date.parse(range.end));
+  const source = await read(hash);
+  if (!Array.isArray(source) || source.some(r=>!r?.id || !Number.isFinite(Date.parse(r.published))))
+    throw Error('Unverified vendor records');
+  const records = source.filter(r=>Date.parse(r.published)>=Date.parse(range.start) && Date.parse(r.published)<=Date.parse(range.end));
   const page = records.slice(start,start+35);
   const next = start+page.length < records.length ? offset+page.length : index+1 < months.length ? (index+1)*100000 : null;
   return {rows:page.map(r=>product==='sql2019'?sqlAdvisory(r,version):ubuntuNotice(r)),
