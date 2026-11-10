@@ -137,3 +137,10 @@
   .account-harbor #teamPanel {gap: .65rem}
   .organization-title, .organization-actions {padding-block: .55rem}
 }
+@media (max-width: 25rem) {
+  .organization-actions {display: grid; grid-template-columns: repeat(auto-fit,minmax(6.5rem,1fr)); gap: .5rem}
+  .organization-actions > .team-actions {display: flex; flex-direction: column; align-items: stretch; gap: .35rem}
+  .organization-actions .team-actions::before {display: none}
+  .account-harbor #teamPanel .organization-actions :is(a,button) {width: 100%; box-sizing: border-box; padding: .55rem .3rem; text-align: center}
+  .organization-actions .team-actions > span {flex: auto; line-height: 1.35}
+}
