@@ -32,6 +32,12 @@ RULES = {
     'sharepoint': ('microsoft',r'(?:microsoft )?sharepoint server subscription edition.*'),
     'runtime': ('microsoft',r'\.net(?: \d+(?:\.\d+)?(?: runtime| installed on .+)?)?'),
     'aspnet': ('microsoft',r'asp\.net core(?: .+)?'), 'sdk': ('microsoft',r'\.net(?: core)? sdk(?: .+)?'),
+    'kendo': ('progress(?: software)?',r'kendo ui for jquery'),
+    'telerik': ('progress(?: software)?',r'kendoreact grid|@progress/kendo-react-grid'),
+    'azure': ('microsoft',r'(?:microsoft )?azure cli'),
+    'ts': ('microsoft',r'typescript'), 'npm': ('npm|github',r'npm cli|npm'),
+    'aws': ('amazon web services|amazon',r'aws cli(?: v1)?'),
+    'jquery': ('jquery|openjs foundation',r'jquery'), 'bootstrap': ('bootstrap|twbs',r'bootstrap'),
     'wordpress': ('wordpress(?: foundation)?|automattic',r'wordpress(?: core)?'),
     'linux': ('linux',r'linux(?: kernel)?'), 'php': ('php(?: group)?',r'php'),
     'python': ('python software foundation|python',r'cpython|python'), 'mysql': ('oracle(?: corporation)?',r'mysql server'),
@@ -107,6 +113,8 @@ def cve_history(tmp,start,out):
     delta=next((a for a in assets if '_delta_CVEs_' in a['name']),None)
     node={c:a for a in load_json('https://raw.githubusercontent.com/nodejs/security-wg/main/vuln/core/index.json').values()
           for c in (a.get('cve') or [])}
+    package_names={(p['match'].split(':')[1],p['match'].split(':')[2].lower()):key for key,p in CONFIG.items()
+                   if p['match'].startswith('osv:')}
     changes={}
     if delta:
         for v in records(archive(tmp,'delta-'+str(delta['id']),delta['browser_download_url'])):
@@ -118,6 +126,11 @@ def cve_history(tmp,start,out):
         cna=v['containers']['cna']
         matches=defaultdict(list)
         for a in cna.get('affected',[]):
+            registry=(a.get('collectionURL') or '').rstrip('/').lower()
+            eco={'https://registry.npmjs.org':'npm','https://www.npmjs.com':'npm','https://pypi.org':'PyPI',
+                 'https://api.nuget.org/v3/index.json':'NuGet'}.get(registry)
+            package_key=package_names.get((eco,(a.get('packageName') or '').lower()))
+            if package_key:matches[package_key].append(a)
             for key in identify(a.get('vendor','').strip(),a.get('product','').strip()):
                 matches[key].append(a)
         refs=[r['url'] for r in cna.get('references',[]) if r.get('url','').startswith('https://')]
@@ -131,7 +144,7 @@ def cve_history(tmp,start,out):
         for key,entries in matches.items():
             numeric=set();conditions=[]
             for a in entries:
-                product=a['product']
+                product=a.get('product') or a.get('packageName') or CONFIG[key]['name']
                 for rule in a.get('versions',[]):
                     if rule.get('status')!='affected' or rule.get('versionType')=='git':continue
                     lo=rule.get('version','');upper=rule.get('lessThan') or rule.get('lessThanOrEqual','')

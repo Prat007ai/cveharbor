@@ -2,6 +2,7 @@
 from concurrent.futures import ThreadPoolExecutor
 import re
 
+from urllib.error import HTTPError
 from vendor_scan_data import MSRC, document, read
 
 
@@ -18,21 +19,28 @@ def sql_bulletins(start,out):
             m=re.fullmatch(r'Microsoft SQL Server (2025|2022|2017|2016|2014)(?: for x64-based Systems)?(?: Service Pack \d+)?(?: \((GDR|CU\s*\d+)\))?',p['Value'],re.I)
             if m:products[p['ProductID']]=(SQL_KEYS[m[1]],m[2] or 'Microsoft update')
         articles={}
+        listed={}
         for v in data['Vulnerability']:
             for f in v.get('Remediations',[]):
                 kb=(f.get('Description') or {}).get('Value','')
                 if f.get('Type')!=2 or not re.fullmatch(r'\d{7}',kb) or not f.get('FixedBuild'):continue
                 for pid in products.keys() & set(f.get('ProductID',[])):
                     key,branch=products[pid];articles[kb]=(key,branch,f['FixedBuild'])
+                    listed.setdefault(kb,set()).add(v['CVE'])
         by_id={v['CVE']:v for v in data['Vulnerability']}
         findings=[]
         for kb,(key,branch,build) in articles.items():
-            with read('https://support.microsoft.com/help/'+kb) as response:
-                article=response.read().decode()
+            linked=listed[kb].copy()
+            try:
+                with read('https://support.microsoft.com/help/'+kb) as response:
+                    article=response.read().decode()
+            except HTTPError as exc:
+                if exc.code not in (403,404,410):raise
+                print('SQL KB',kb,'article unavailable; using MSRC product-specific remediation',flush=True)
+                article=''
             title=re.search(r'<title[^>]*>(.*?)</title>',article,re.I|re.S)
-            if not title or not any(('sql server '+year) in title[1].lower() for year,ident in SQL_KEYS.items() if ident==key):
-                continue
-            linked=set(re.findall(r'https://msrc\.microsoft\.com/update-guide/(?:[a-z-]+/)?vulnerability/(CVE-\d{4}-\d+)',article,re.I))
+            if title and any(('sql server '+year) in title[1].lower() for year,ident in SQL_KEYS.items() if ident==key):
+                linked.update(re.findall(r'https://msrc\.microsoft\.com/update-guide/(?:[a-z-]+/)?vulnerability/(CVE-\d{4}-\d+)',article,re.I))
             for ident in sorted(linked):
                 v=by_id.get(ident)
                 if not v:continue
