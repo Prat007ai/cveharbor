@@ -67,7 +67,11 @@ def backend(out, enabled):
     pkg.require(before.count(b'[vars]\n')==1 and b'TEAM_ACCESS_ENABLED' not in before,'Unexpected Worker settings')
     flag=b'true' if enabled else b'false'
     config.write_bytes(before.replace(b'[vars]\n',b'[vars]\nTEAM_ACCESS_ENABLED = "'+flag+b'"\n'))
-    print(identity(out),flush=True)
+    state = 'enabled' if enabled else 'disabled'
+    expected = Path('release/team-backend-'+state+'.txt').read_text().strip()
+    actual = identity(out)
+    pkg.require(actual == expected, 'Team & Access '+state+' package differs from the reviewed build')
+    print(actual,flush=True)
 
 
 def prepare(out):
