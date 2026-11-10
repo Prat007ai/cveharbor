@@ -17,12 +17,14 @@ on:
       - 'scripts/firewall_release.py'
       - 'scripts/installed_release.py'
       - 'scripts/team_release.py'
+      - 'scripts/sql_esu_release.py'
+      - 'technology-version-picker.mjs'
   workflow_dispatch:
     inputs:
       site_release:
         description: Reviewed production package
         type: choice
-        options: [followed-topics, assignment-291, customer-investigation, manual-customer, intelligence, version-picker, firewall-digest, installed-releases, team-access]
+        options: [followed-topics, assignment-291, customer-investigation, manual-customer, intelligence, version-picker, firewall-digest, installed-releases, team-access, sql-esu-coverage]
         default: followed-topics
       feed_run_id:
         description: Data run containing the verified intelligence receipt (intelligence release only)
@@ -39,9 +41,9 @@ jobs:
     env:
       FEED_RUN_ID: ${{ inputs.feed_run_id }}
       FEED_RECEIPT: ${{ github.workspace }}/.feed-receipt/feed-receipt.json
-      CVEHARBOR_SITE_RELEASE: ${{ inputs.site_release || (github.head_ref == 'release/organization-team-access' && 'team-access') || (github.head_ref == 'fix/vendor-zero-scan-audit' && 'installed-releases') || (github.head_ref == 'feat/daily-firewall-digest' && 'firewall-digest') || (github.head_ref == 'fix/version-picker-cloudflare' && 'version-picker') || (github.head_ref == 'feature/assignment-manual-customer' && 'manual-customer') || (github.head_ref == 'feature/customer-advisory-review' && 'customer-investigation') || 'followed-topics' }}
+      CVEHARBOR_SITE_RELEASE: ${{ inputs.site_release || (github.head_ref == 'fix/sql-esu-coverage' && 'sql-esu-coverage') || (github.head_ref == 'release/organization-team-access' && 'team-access') || (github.head_ref == 'fix/vendor-zero-scan-audit' && 'installed-releases') || (github.head_ref == 'feat/daily-firewall-digest' && 'firewall-digest') || (github.head_ref == 'fix/version-picker-cloudflare' && 'version-picker') || (github.head_ref == 'feature/assignment-manual-customer' && 'manual-customer') || (github.head_ref == 'feature/customer-advisory-review' && 'customer-investigation') || 'followed-topics' }}
     name: Test followed topics in the production package
-    if: (github.event_name == 'pull_request' && (github.head_ref == 'release/organization-team-access' || github.head_ref == 'fix/vendor-zero-scan-audit' || github.head_ref == 'feat/daily-firewall-digest' || github.head_ref == 'fix/version-picker-cloudflare' || github.head_ref == 'feature/cvie-topic-delivery' || github.head_ref == 'feature/customer-advisory-review' || github.head_ref == 'feature/assignment-manual-customer') && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'workflow_dispatch' && inputs.reviewed_commit != '')
+    if: (github.event_name == 'pull_request' && (github.head_ref == 'fix/sql-esu-coverage' || github.head_ref == 'release/organization-team-access' || github.head_ref == 'fix/vendor-zero-scan-audit' || github.head_ref == 'feat/daily-firewall-digest' || github.head_ref == 'fix/version-picker-cloudflare' || github.head_ref == 'feature/cvie-topic-delivery' || github.head_ref == 'feature/customer-advisory-review' || github.head_ref == 'feature/assignment-manual-customer') && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'workflow_dispatch' && inputs.reviewed_commit != '')
     runs-on: ubuntu-latest
     permissions:
       contents: read

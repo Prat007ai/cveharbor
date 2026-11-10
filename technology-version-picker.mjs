@@ -137,6 +137,14 @@ export async function openPicker(card,context) {
       }
       if(ticket!==generation||!panel.open)return;
       resultStatus.textContent=s.seen.size+' direct product advisories and '+s.components.size+' component advisories returned for '+s.version+' in the last '+s.months+' months. '+(s.coverage||'Verify vendor coverage and your configuration.');
+      if(!s.seen.size && ['sql2014','sql2016'].includes(s.id)){
+        const warning=element('strong','Coverage incomplete · Microsoft Extended Security Updates');
+        const explanation=element('span','No public advisory matched '+directory.products[s.id].name+' build '+s.version+' in the last '+s.months+' months. CVEHarbor cannot verify which ESU patches Microsoft offers your enrolled instance.');
+        const link=element('a','Check Microsoft’s ESU guidance for your instance');
+        link.href='https://learn.microsoft.com/en-us/sql/sql-server/end-of-support/sql-server-extended-security-updates';
+        link.target='_blank';link.rel='noopener noreferrer';
+        resultStatus.replaceChildren(warning,element('br'),explanation,element('br'),link);
+      }
       more.hidden=s.months===12;
     }catch{if(ticket===generation&&panel.open){resultStatus.textContent='The source check is incomplete. Results already shown are retained.';retry.hidden=false;}}
   }
