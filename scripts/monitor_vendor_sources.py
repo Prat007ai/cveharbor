@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from urllib.parse import urlencode
+from urllib.error import HTTPError
 import re
 import json
 import os
@@ -18,7 +19,7 @@ OWNERS = {
     'office':'microsoftgraph/msgraph-sdk-javascript', 'crm':'microsoft/PowerPlatform-DataverseServiceClient',
     'bi':'microsoft/PowerBI-JavaScript', 'ai':'Azure/azure-sdk-for-python', 'azure':'Azure/azure-cli',
     'aws':'aws/aws-cli', 'requests':'psf/requests', 'angular':'angular/angular', 'next':'vercel/next.js',
-    'react':'facebook/react', 'ts':'microsoft/TypeScript', 'jquery':'jquery/jquery', 'bootstrap':'twbs/bootstrap',
+    'react':'react/react', 'ts':'microsoft/TypeScript', 'jquery':'jquery/jquery', 'bootstrap':'twbs/bootstrap',
     'telerik':'telerik/kendo-react', 'lodash':'lodash/lodash', 'npm':'npm/cli'
 }
 MS_PRODUCTS = {'win11':r'Windows 11 Version .+', 'server':r'Windows Server (?:2008|2012|2016|2019|2022|2025).*',
@@ -35,8 +36,16 @@ def github_json(url):
     headers = {'Accept':'application/vnd.github+json'}
     if os.environ.get('GITHUB_TOKEN'):
         headers['Authorization']='Bearer '+os.environ['GITHUB_TOKEN']
-    with request(url,headers) as response:
-        return json.load(response)
+    for _ in range(3):
+        try:
+            with request(url,headers) as response:
+                return json.load(response)
+        except HTTPError as exc:
+            target = exc.headers.get('Location','')
+            if exc.code not in (301,302,307,308) or not target.startswith('https://api.github.com/'):
+                raise
+            url=target
+    raise ValueError('Too many advisory redirects')
 
 
 def package_notices(key, package, start):
