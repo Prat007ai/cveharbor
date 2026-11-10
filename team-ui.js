@@ -1,0 +1,57 @@
+const root=document.querySelector('#teamAccess');
+const status=document.querySelector('#teamStatus');
+export const panel=document.querySelector('#teamPanel');
+export const notice=text=>{status.textContent=text;};
+export function element(tag,text='',className=''){
+  const node=document.createElement(tag);node.textContent=text;
+  if(className)node.className=className;
+  return node;
+}
+export function button(text,handler,primary=false){
+  const node=element('button',text,primary?'account-primary-button':'account-secondary-button');
+  node.type='button';
+  node.onclick=async()=>{
+    node.disabled=true;notice('');
+    try{await handler();}catch(error){notice(error.message);}finally{node.disabled=false;}
+  };
+  return node;
+}
+export function actions(...controls){
+  const group=element('div','','team-actions');group.append(...controls);return group;
+}
+export function field(label,control){
+  const wrapper=element('label',label,'team-field');wrapper.append(control);return wrapper;
+}
+export function select(options,value){
+  const node=element('select');
+  for(const [id,label] of options){const opt=element('option',label);opt.value=id;node.append(opt);}
+  node.value=value;return node;
+}
+export function link(label,url){
+  const a=element('a',label,'account-settings-link');a.href=url;return a;
+}
+export function table(headers,rows){
+  const wrapper=element('div','','team-table-wrap'),t=element('table');
+  const head=t.createTHead().insertRow();
+  headers.forEach(h=>{const th=element('th',h);th.scope='col';head.append(th);});
+  const body=t.createTBody();
+  for(const row of rows){
+    const tr=body.insertRow();
+    for(const value of row){const td=tr.insertCell();if(value instanceof Node)td.append(value);else td.textContent=value??'—';}
+  }
+  wrapper.append(t);return wrapper;
+}
+export function display(...nodes){root.hidden=false;panel.replaceChildren(...nodes);}
+let requests=new AbortController();
+export function resetTeamSession(){requests.abort();requests=new AbortController();}
+export async function api(path,method='GET',payload){
+  const {signal}=requests;
+  const result=await fetch('https://api.cveharbor.com/v1/team/'+path,{signal,method,credentials:'include',cache:'no-store',
+    headers:payload?{'Content-Type':'application/json'}:{},body:payload?JSON.stringify(payload):undefined});
+  const data=await result.json().catch(()=>({}));
+  signal.throwIfAborted();
+  if(!result.ok){const error=new Error(data.error||'Team access is temporarily unavailable.');error.status=result.status;throw error;}
+  return data;
+}
+export const orgPath=id=>'organizations/'+encodeURIComponent(id);
+export const workspaceLink=id=>'/workspace/?team='+encodeURIComponent(id);

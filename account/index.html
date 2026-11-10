@@ -10,6 +10,10 @@
 <p class="account-kicker">ACCOUNT</p><h1 class="account-security-heading">Account <span>&amp; Security</span></h1>
 <p class="account-security-intro">Manage your account, security settings and preferences.</p>
 <p id="accountSecurityStatus" role="status" aria-live="polite">Checking your secure session...</p>
+<link rel="stylesheet" href="/team-access.css">
+<nav id="teamTabs" aria-label="Account settings" hidden><button type="button" class="account-secondary-button" id="personalTab" aria-pressed="true">My Account &amp; Security</button><button type="button" class="account-secondary-button" id="teamTab" aria-pressed="false">Team &amp; Access</button></nav>
+<section id="teamAccess" aria-label="Team and access" hidden><p id="teamStatus" role="status"></p><div id="teamPanel"></div></section>
+<script type="module" src="/team-entry.js"></script>
 <div id="accountSecurityDashboard" class="account-security-grid" hidden>
 <section class="account-security-card"><div class="account-security-card-head"><h2>Profile Information</h2><span aria-hidden="true">♙</span></div>
 <dl><dt>Email</dt><dd id="accountSecurityEmail"></dd><dt>Account</dt><dd>Private CVEHarbor workspace</dd></dl>
