@@ -22,7 +22,19 @@ DB.sql.prepare('UPDATE user_totp SET encrypted_secret=? WHERE user_id=?').run(aw
 globalThis.fetch=fixture.fetcher;
 const browser=await chromium.launch({headless:true,...(process.env.TEAM_TEST_CHROME?{executablePath:process.env.TEAM_TEST_CHROME}:{})});
 let lane=Promise.resolve();
-const mime={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.json':'application/json','.png':'image/png'};
+const mime={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.json':'application/json','.png':'image/png','.jpg':'image/jpeg'};
+const harborDesign=fs.existsSync(path.join(site,'assets/team-harbor/invitation.jpg'));
+async function verifyArt(page,selector,filename,pseudo=null){
+  const node=page.locator(selector);
+  await node.waitFor({state:'visible'});
+  await node.evaluate(async(el,{filename,pseudo})=>{
+    const css=getComputedStyle(el,pseudo).backgroundImage;
+    const url=new URL('/assets/team-harbor/'+filename,location.origin).href;
+    if(!css.includes(url))throw Error('Missing background '+filename);
+    const image=new Image();image.src=url;await image.decode();
+    if(image.naturalWidth<300)throw Error('Invalid artwork '+filename);
+  },{filename,pseudo});
+}
 async function screenshot(page,name){
   const folder=process.env.TEAM_TEST_SCREENSHOTS;
   if(!folder)return;
@@ -78,16 +90,32 @@ try{
     }else{
       await john.locator('#accountPageTotpCode').fill(await totp(existingSecret));await john.locator('#accountPageTotpVerify button[type=submit]').click();
     }
+    if(harborDesign){
+      await verifyArt(john,'.harbor-invitation','invitation.jpg','::before');
+      await john.getByRole('button',{name:'Use another account'}).waitFor();
+      if(newAccount){
+        await screenshot(john,'invitation-review');
+        await john.setViewportSize({width:390,height:844});
+        assert.ok(await john.locator('.harbor-invitation').evaluate(el=>el.getBoundingClientRect().right<=innerWidth+1));
+        await screenshot(john,'invitation-mobile');
+        await john.setViewportSize({width:1080,height:900});
+      }
+    }
     await john.getByRole('button',{name:'Join workspace'}).click();
     await john.locator('#teamPanel').getByText('Web Server 01',{exact:true}).first().waitFor();
     assert.equal(await john.locator('#teamPanel').getByText('Customer South',{exact:true}).count(),0);
     assert.equal(await john.locator('#teamPanel').getByRole('button',{name:'Edit asset'}).count(),0);
     await john.locator('#teamPanel').getByRole('heading',{name:'Potential findings'}).waitFor();
     if(newAccount){
+      if(harborDesign)await verifyArt(john,'.harbor-metrics','network.jpg');
       await screenshot(john,'assigned-workspace');
       await owner.getByRole('button',{name:'Refresh members'}).click();
       const member=owner.getByRole('row').filter({hasText:email});
       await member.getByText('Active',{exact:true}).waitFor();
+      if(harborDesign){
+        await verifyArt(owner,'.team-banner','harbor.jpg');
+        await verifyArt(owner,'#teamAccess','shoreline.jpg');
+      }
       await screenshot(owner,'team-members');
       await member.getByRole('button',{name:'Edit'}).click();
       await owner.getByLabel('Organization role').selectOption('Owner');
@@ -102,6 +130,15 @@ try{
       await john.locator('#teamPanel').getByText('Web Server 02',{exact:true}).first().waitFor();
       assert.equal(await john.locator('#teamPanel').getByText('Web Server 01',{exact:true}).count(),0);
       await john.locator('#teamPanel').getByRole('button',{name:'Edit asset'}).waitFor();
+      if(harborDesign){
+        await john.getByRole('button',{name:'Add asset',exact:true}).waitFor();
+        await screenshot(john,'editor-workspace');
+        await owner.setViewportSize({width:390,height:844});
+        assert.ok(await owner.locator('#teamPanel .team-table-wrap').evaluate(el=>
+          el.getBoundingClientRect().right<=innerWidth+1 && el.scrollWidth>=el.clientWidth));
+        await owner.setViewportSize({width:1080,height:900});
+      }
+      if(harborDesign)await member.locator('summary').click();
       owner.once('dialog',dialog=>dialog.accept());
       await member.getByRole('button',{name:'Remove'}).click();
       await member.waitFor({state:'detached'});

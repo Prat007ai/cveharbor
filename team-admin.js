@@ -1,9 +1,8 @@
-import {api,orgPath,workspaceLink,display,element,field,button,select,link,table,notice,actions} from './team-ui.js';
+import {api,orgPath,workspaceLink,display,element,field,button,select,link,table,notice,actions,accountIdentity} from './team-ui.js';
 import {harborLight} from './team-invitation-art.js';
 
 function banner(title){
   const header=element('div','','team-banner');
-  header.style.backgroundImage='linear-gradient(90deg,#0b2639 10%,transparent 92%),url(data:image/png;base64,'+harborLight+')';
   header.append(element('h2',title));return header;
 }
 export async function teamSettings(organizations,canCreate){
@@ -34,16 +33,23 @@ async function members(org){
   const rows=list.map(m=>{
     const actions=element('div','','team-actions');
     actions.append(button('Edit',()=>edit(org,customers,m)));
-    if(m.status!=='Active')actions.append(button('Reissue',async()=>{await api(base+'/'+m.id,'POST',{revision:m.revision});await members(org);notice('New invitation sent.');}));
-    if(!m.founder)actions.append(button('Remove',async()=>{
+    const more=element('details','','harbor-menu'),summary=element('summary','•••');
+    summary.setAttribute('aria-label','More actions for '+m.email);more.append(summary);
+    if(m.status!=='Active')more.append(button('Reissue',async()=>{await api(base+'/'+m.id,'POST',{revision:m.revision});await members(org);notice('New invitation sent.');}));
+    if(!m.founder)more.append(button('Remove',async()=>{
       if(!window.confirm('Remove '+m.email+' from '+org.name+'?'))return;
       await api(base+'/'+m.id,'DELETE',{revision:m.revision});await members(org);
     }));
     const date=m.signed_at?new Intl.DateTimeFormat(undefined,{dateStyle:'medium',timeStyle:'long'}).format(m.signed_at*1000):m.active?'No recorded sign-in':'Available after acceptance';
-    return [m.email,m.role,m.scope==='all'?'All current and future customers':m.customers.map(id=>labels.get(id)||'Removed customer').join(', '),element('span',m.status,'team-member-status'),date,actions];
+    if(more.childElementCount>1)actions.append(more);
+    const status=element('span',m.status,'team-member-status');status.dataset.status=m.status;
+    return [accountIdentity(m.email),m.role,m.scope==='all'?'All current and future customers':m.customers.map(id=>labels.get(id)||'Removed customer').join(', '),status,date,actions];
   });
-  display(banner(org.name),element('h3','Team members'),element('p','Active members have accepted their invitation. Last sign-in shows their most recent successful CVEHarbor sign-in.'),actions(button('Invite member',()=>edit(org,customers),true),button('Refresh members',()=>members(org))),
-    table(['Member','Role','Customer access','Status','Last sign-in','Actions'],rows),link('Open workspace',workspaceLink(org.id)));
+  const header=banner(org.name),toolbar=element('div','','harbor-toolbar');
+  header.append(link('Open workspace',workspaceLink(org.id)));
+  toolbar.append(element('h3','Team members'),actions(button('Invite member',()=>edit(org,customers),true),button('Refresh members',()=>members(org))));
+  display(header,toolbar,table(['Member','Role','Customer access','Status','Last sign-in','Actions'],rows),
+    element('p','Active members have accepted their invitation. Last sign-in shows their most recent successful CVEHarbor sign-in.','harbor-label'));
 }
 function edit(org,customers,member){
   const base=orgPath(org.id)+'/members';

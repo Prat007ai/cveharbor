@@ -1,4 +1,4 @@
-import {api,resetTeamSession,display,panel,element,button,link,notice} from './team-ui.js';
+import {api,resetTeamSession,display,panel,element,button,link,notice,switchAccount} from './team-ui.js';
 import {organizationDashboard,reviewInvite,workspacePicker} from './team-workspace.js';
 
 const root=document.querySelector('#teamAccess');
@@ -49,11 +49,7 @@ async function start(){
         display(element('h2',token?'Accept your workspace invitation':'Sign in to your organization'),element('p','Continue below with your invited email and authenticator.'));
       }else{
         display(element('h2','Workspace access unavailable'),element('p',error.message),
-          button('Try again',start),button('Use another account',async()=>{
-            const result=await fetch('https://api.cveharbor.com/v1/auth/logout',{method:'POST',credentials:'include'});
-            if(!result.ok)throw Error('Sign out failed. Try again.');
-            location.reload();
-          }),button('Return to my workspace',()=>{sessionStorage.removeItem('teamInvitation');location.replace('/workspace/');}),link('Account & Security','/account/'));
+          button('Try again',start),button('Use another account',switchAccount),button('Return to my workspace',()=>{sessionStorage.removeItem('teamInvitation');location.replace('/workspace/');}),link('Account & Security','/account/'));
       }
     }
   }
