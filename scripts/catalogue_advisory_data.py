@@ -317,6 +317,47 @@ def other_ubuntu(start,out):
                 put(out,'ubuntu@'+series[code],row)
 
 
+def centos_changes(start, out):
+    import gzip
+    import zstandard
+    for stream in ('9', '10'):
+        for repo in ('BaseOS', 'AppStream'):
+            base = f'https://mirror.stream.centos.org/{stream}-stream/{repo}/x86_64/os/'
+            with fetch(base + 'repodata/repomd.xml') as response:
+                manifest = ET.parse(response)
+            record = manifest.find(".//{*}data[@type='other']")
+            path = record.find('{*}location').get('href')
+            if not re.fullmatch(r'repodata/[a-f0-9]+-other\.xml\.(gz|zst)', path):
+                raise ValueError('Unrecognized CentOS changelog metadata')
+            with fetch(base + path) as response:
+                compressed = response.read()
+            if hashlib.sha256(compressed).hexdigest() != record.findtext('{*}checksum'):
+                raise ValueError('CentOS repository checksum mismatch')
+            stream_data = (gzip.decompress(compressed) if path.endswith('.gz') else
+                           zstandard.ZstdDecompressor().decompress(compressed, max_output_size=160*1024*1024))
+            scope = out['centos-stream@' + stream]
+            for package in ET.fromstring(stream_data).findall('{*}package'):
+                name = package.get('name')
+                for change in package.findall('{*}changelog'):
+                    date = datetime.fromtimestamp(int(change.get('date')), timezone.utc).date().isoformat()
+                    if date < start:
+                        continue
+                    for ident in set(re.findall(r'\bCVE-\d{4}-\d{4,}\b', change.text or '', re.I)):
+                        ident = ident.upper()
+                        link = 'https://www.cve.org/CVERecord?id=' + ident
+                        row = scope.setdefault(ident, dict(id=ident, title=ident + ' · CentOS Stream package changelog',
+                            published=date+'T00:00:00Z', url=link, status='CentOS Stream x86_64 repository changelog',
+                            evidence='Vendor changelog mentions this CVE · check the installed package',
+                            summary='The date is the first matching package changelog entry in the audited window. Coverage is limited to the changelogs retained in BaseOS and AppStream for x86_64.',
+                            sources=[{'url':link,'label':'CVE Program record'}], packages=set()))
+                        row['published'] = min(row['published'], date+'T00:00:00Z')
+                        row['packages'].add(name)
+                        if not any(item['url'] == base for item in row['sources']):
+                            row['sources'].append({'url':base,'label':'CentOS Stream '+stream+' '+repo+' repository'})
+        for row in out['centos-stream@'+stream].values():
+            row['affected'] = ', '.join(sorted(row.pop('packages')))
+
+
 def mariadb_bulletins(start, out):
     url = 'https://mariadb.com/docs/server/security/cve/community-server'
     with fetch(url + '.md') as response:
@@ -365,7 +406,7 @@ def main():
         for name, collect, args_ in [('CVE Program',cve_history,(cache,start,out)),('Reviewed packages',packages,(cache,start,out)),
                                       ('.NET releases',dotnet,(start,out)),('Distribution exports',distro_history,(cache,start,out)),
                                       ('Vendor errata',other_distributions,(start,out)),('Ubuntu',other_ubuntu,(start,out)),
-                                      ('MariaDB bulletins',mariadb_bulletins,(start,out)),('SQL bulletins',sql_bulletins,(start,out)),('SFOS bulletins',sophos_bulletins,(start,out))]:
+                                      ('CentOS changelogs',centos_changes,(start,out)),('MariaDB bulletins',mariadb_bulletins,(start,out)),('SQL bulletins',sql_bulletins,(start,out)),('SFOS bulletins',sophos_bulletins,(start,out))]:
             print('Reading',name,flush=True)
             collect(*args_)
             print(name,'complete;',sum(map(len,out.values())),'records',flush=True)
