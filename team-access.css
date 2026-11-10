@@ -24,3 +24,89 @@ body.team-workspace-open #workspaceMain > :not(#teamAccess),body.team-requested.
 #teamPanel .team-table-wrap td .team-actions{flex-wrap:nowrap;gap:.4rem}
 #teamPanel .team-table-wrap td button{min-height:2.25rem;padding:.3rem .65rem}
 .team-member-status{display:inline-block;border:1px solid #47707b;border-radius:1rem;padding:.15rem .55rem;color:#c3efea;white-space:nowrap}
+
+/* The artwork is decorative. All identities, grants and counts are live text. */
+#teamAccess {
+  --harbor-line: #355363;
+  --harbor-muted: #b4cbd3;
+  --harbor-mint: #76e8d6;
+  background: #081c28; border-color: var(--harbor-line);
+  font-family: system-ui, sans-serif; line-height: 1.5;
+}
+#teamAccess:has(.team-banner), #teamAccess:has(.harbor-workspace-header) {
+  padding-bottom: clamp(5rem, 8vw, 8rem);
+  background: #081c28 url("/assets/team-harbor/shoreline.jpg") bottom center / 100% auto no-repeat;
+}
+#teamTabs {gap: .25rem; margin-block: 1.25rem; border-bottom: 1px solid #365666}
+#teamTabs button {width: auto; padding: .65rem 1.1rem; margin: 0; border-radius: .5rem .5rem 0 0}
+#teamTabs button[aria-pressed=true], #teamAccess .account-primary-button {
+  background: #75e7d5; color: #062322; border: 1px solid #85f2df; font-weight: 700;
+}
+#teamPanel :is(button,summary,a,select):focus-visible, #teamTabs button:focus-visible {outline: 3px solid #fbcb83; outline-offset: 3px}
+#teamPanel :is(h1,h2,h3) {color: #f0f7f8; letter-spacing: -.025em; line-height: 1.15}
+#teamPanel h1, #teamPanel h2 {font-size: clamp(1.5rem, 2.8vw, 2.6rem)}
+#teamPanel h3 {font-size: clamp(1.1rem, 1.6vw, 1.5rem)}
+.harbor-label, .harbor-eyebrow {color: var(--harbor-muted)}
+.harbor-eyebrow {font-size: .88rem; font-weight: 650; letter-spacing: .035em}
+.harbor-eyebrow,.harbor-metrics dd {display: flex; align-items: center; gap: .6rem}
+.harbor-icon {width: 1.4rem; height: 1.4rem; flex: none; fill: none; stroke: var(--harbor-mint); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round}
+#teamStatus:empty {display: none}
+.harbor-stack {display: grid; gap: .35rem; min-width: 0}
+.harbor-grants, .harbor-identity {display: flex; align-items: center; gap: .65rem}
+.harbor-grants {flex-wrap: wrap}
+.harbor-identity {overflow-wrap: anywhere}
+.team-table-wrap .harbor-identity {min-width: 12rem}
+.harbor-avatar {display: inline-grid; place-items: center; flex: 0 0 2.35rem; height: 2.35rem; background: #a1d5d2; color: #0c2530; border-radius: 50%; font-weight: 750}
+.harbor-chip {border: 1px solid #446576; border-radius: .45rem; background: #183746; padding: .15rem .65rem; overflow-wrap: anywhere}
+.team-banner {display: grid; align-content: center; gap: .45rem; min-height: 8.5rem; border: 1px solid var(--harbor-line);
+  padding: clamp(1rem,3vw,2.25rem); background: linear-gradient(90deg,#0b2131 4%,#0b2131e8 25%,transparent 71%), #102934 url("/assets/team-harbor/harbor.jpg") right center / auto 100% no-repeat}
+#teamPanel .team-banner a, #teamPanel .harbor-text-button {color: var(--harbor-mint); text-decoration: underline; text-underline-offset: .2em}
+.harbor-toolbar, .harbor-workspace-header, .harbor-access-row {display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .85rem 1.2rem}
+.harbor-toolbar {padding-block: .4rem}
+.harbor-workspace-header {border-bottom: 1px solid var(--harbor-line); padding-bottom: 1.1rem}
+.harbor-workspace-header > .harbor-stack {margin-inline-end: auto}
+.harbor-workspace-header .team-field {min-width: min(15rem,100%)}
+.harbor-customer {min-width: 0}
+.harbor-records, .harbor-metrics, .harbor-access-row, .team-table-wrap {
+  background-color: #102633; border: 1px solid var(--harbor-line); border-radius: .65rem;
+}
+.harbor-records {padding: clamp(.8rem,1.7vw,1.4rem); min-width: 0}
+.harbor-records > .team-table-wrap {border: 0; border-radius: .25rem}
+.team-table-wrap th {background: #17313e; color: #c9dce2; font-size: .85rem}
+#teamPanel .team-table-wrap td {vertical-align: middle}
+.team-table-wrap tbody tr:last-child td {border-bottom: 0}
+.team-member-status {border: 0; padding: 0; font-weight: 650; color: #b9c8ce}
+.team-member-status::before {content: ''; display: inline-block; width: .55rem; height: .55rem; margin-inline-end: .4rem; border-radius: 50%; background: currentColor}
+.team-member-status[data-status=Active] {color: #78e4ce}
+.team-member-status[data-status=Pending] {color: #ffd386}
+.harbor-menu summary {cursor: pointer; list-style: none; border: 1px solid #507080; border-radius: .4rem; padding: .15rem .55rem; text-align: center}
+.harbor-menu summary::-webkit-details-marker {display: none}
+#teamPanel .harbor-menu[open] > button {display: block; margin-top: .35rem}
+.harbor-metrics {display: flex; gap: 1rem; flex-wrap: wrap; padding: clamp(1rem,2.25vw,2rem); margin: 0;
+  background: linear-gradient(90deg,#102633 31%,#102633e8 51%,transparent 78%), #102633 url("/assets/team-harbor/network.jpg") right center / auto 100% no-repeat}
+.harbor-metrics > div {display: flex; flex-direction: column-reverse; padding-inline-end: 1.25rem; border-inline-end: 1px solid #507080}
+.harbor-metrics > div:last-child {border: 0}
+.harbor-metrics dt {font-size: .88rem; color: #e4f1f4; text-transform: capitalize}
+.harbor-metrics dd {font-size: clamp(1.5rem,2.5vw,2.4rem); font-weight: 700; margin: 0; line-height: 1.15}
+#teamAccess:has(.harbor-invitation) {padding: 0; overflow: hidden}
+#teamAccess:has(.harbor-invitation) #teamStatus:not(:empty) {padding: .75rem 1.5rem}
+.harbor-invitation {display: grid; grid-template-columns: minmax(12rem,.8fr) minmax(0,1.65fr)}
+.harbor-invitation::before {content: ''; background: #102633 url("/assets/team-harbor/invitation.jpg") center 40% / cover}
+.harbor-invitation-content {display: grid; align-content: center; gap: 1rem; padding: clamp(1.25rem,4vw,4.5rem); min-height: min(40rem,74vh)}
+.harbor-invitation-content > h2 {margin-bottom: .6rem!important; overflow-wrap: anywhere}
+.harbor-access-row {padding: 1rem; align-items: center}
+#teamPanel .harbor-text-button {background: transparent; border: 0; padding: .25rem}
+.harbor-invitation-content > .team-actions {margin-top: .75rem}
+@media (max-width: 720px) {
+  .harbor-invitation {grid-template-columns: minmax(0,1fr)}
+  .harbor-invitation::before {min-height: 8.5rem; background-position: center 18%}
+  .harbor-invitation-content {min-height: 0}
+  .harbor-workspace-header > .harbor-stack {width: 100%}
+  .harbor-metrics {gap: .7rem; background-image: linear-gradient(#102633e8,#102633e8),url("/assets/team-harbor/network.jpg")}
+  .harbor-metrics > div {padding-inline-end: .6rem}
+  .team-banner {background-image: linear-gradient(90deg,#0b2131f5,#0b2131b8 66%,#0b213144),url("/assets/team-harbor/harbor.jpg")}
+}
+@media print {
+  #teamAccess, #teamAccess *, #teamAccess::before {background: white!important; color: black!important; box-shadow: none!important}
+  #teamPanel .harbor-menu, .harbor-invitation::before {display: none}
+}

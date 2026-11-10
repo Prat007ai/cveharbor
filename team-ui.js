@@ -55,3 +55,19 @@ export async function api(path,method='GET',payload){
 }
 export const orgPath=id=>'organizations/'+encodeURIComponent(id);
 export const workspaceLink=id=>'/workspace/?team='+encodeURIComponent(id);
+
+export async function switchAccount(){
+  const result=await fetch('https://api.cveharbor.com/v1/auth/logout',{method:'POST',credentials:'include'});
+  if(!result.ok)throw Error('Sign out failed. Try again.');
+  location.reload();
+}
+
+export function accountIdentity(email){
+  const identity=element('span','','harbor-identity');
+  const parts=email.split('@')[0].split(/[._+-]+/).filter(Boolean);
+  const initials=parts.length>1?parts[0][0]+parts[1][0]:email.slice(0,2);
+  const avatar=element('span',initials.toUpperCase(),'harbor-avatar');
+  avatar.setAttribute('aria-hidden','true');
+  identity.append(avatar,element('span',email));
+  return identity;
+}
