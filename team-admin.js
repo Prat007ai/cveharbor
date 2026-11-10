@@ -8,10 +8,18 @@ function banner(title){
 export async function teamSettings(organizations,canCreate){
   const nodes=[element('h2','Organization workspaces')];
   for(const org of organizations){
-    const row=element('div','','team-actions');
-    row.append(element('strong',org.name),element('span',org.role),link('Open workspace',workspaceLink(org.id)));
-    if(org.role==='Owner')row.append(button('Manage team',()=>members(org)));
-    nodes.push(row);
+    const card=element('article','','organization-card');
+    const title=element('div','','organization-title');
+    const mark=element('span',Array.from(org.name)[0]?.toUpperCase() || '','organization-mark');
+    mark.setAttribute('aria-hidden','true');
+    title.append(mark,element('h3',org.name),element('span',org.role,'organization-role'));
+    const choices=element('div','','organization-actions');
+    const open=actions(link('Open workspace',workspaceLink(org.id)),element('span','View customer assets and findings.'));
+    choices.append(open);
+    if(org.role==='Owner'){
+      choices.append(actions(button('Manage team',()=>members(org)),element('span','Invite members and manage customer access.')));
+    }
+    card.append(title,choices);nodes.push(card);
   }
   if(canCreate){
     const name=element('input');name.maxLength=100;name.required=true;
@@ -46,7 +54,13 @@ async function members(org){
     return [accountIdentity(m.email),m.role,m.scope==='all'?'All current and future customers':m.customers.map(id=>labels.get(id)||'Removed customer').join(', '),status,date,actions];
   });
   const header=banner(org.name),toolbar=element('div','','harbor-toolbar');
-  header.append(link('Open workspace',workspaceLink(org.id)));
+  header.classList.add('roster-header');
+  const counts=element('ul','','member-counts');
+  for(const [label,count] of [['Members',list.length],['Active',list.filter(m=>m.status==='Active').length],['Pending',list.filter(m=>m.status==='Pending').length]]){
+    const item=element('li',count+' '+label);
+    item.dataset.count=label;counts.append(item);
+  }
+  header.append(link('Open workspace',workspaceLink(org.id)),counts);
   toolbar.append(element('h3','Team members'),actions(button('Invite member',()=>edit(org,customers),true),button('Refresh members',()=>members(org))));
   display(header,toolbar,table(['Member','Role','Customer access','Status','Last sign-in','Actions'],rows),
     element('p','Active members have accepted their invitation. Last sign-in shows their most recent successful CVEHarbor sign-in.','harbor-label'));

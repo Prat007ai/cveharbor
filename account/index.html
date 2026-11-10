@@ -2,27 +2,27 @@
 <html lang="en"><head><meta charset="utf-8"><script src="/header-auth.js?v=session-reads-1"></script><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#061523"><title>Account &amp; Security | CVEHarbor</title>
 <meta name="description" content="Manage your CVEHarbor account and authenticator security.">
-<link rel="stylesheet" href="/styles.css?v=dropdown-contrast-1"></head>
-<body class="account-page account-redesign account-security-dashboard">
+<link rel="stylesheet" href="/styles.css?v=dropdown-contrast-1">
+<link rel="stylesheet" href="/team-access.css">
+<link rel="stylesheet" href="/account-harbor.css"></head>
+<body class="account-page account-redesign account-security-dashboard account-harbor">
 <a class="skip-link" href="#accountMain">Skip to account</a>
 <header class="account-hero-header"><a class="account-hero-brand" href="/"><span class="account-logo-icon" aria-hidden="true">⬡</span><span class="account-brand-name">CVE<span>Harbor</span><small>VULNERABILITY INTELLIGENCE</small></span></a><a class="account-back-link" href="/workspace/">My Workspace</a></header>
 <main id="accountMain" class="account-new-main">
-<p class="account-kicker">ACCOUNT</p><h1 class="account-security-heading">Account <span>&amp; Security</span></h1>
-<p class="account-security-intro">Manage your account, security settings and preferences.</p>
-<p id="accountSecurityStatus" role="status" aria-live="polite">Checking your secure session...</p>
-<link rel="stylesheet" href="/team-access.css">
+<div class="account-mast"><h1 class="account-security-heading">Account &amp; Security</h1>
 <nav id="teamTabs" aria-label="Account settings" hidden><button type="button" class="account-secondary-button" id="personalTab" aria-pressed="true">My Account &amp; Security</button><button type="button" class="account-secondary-button" id="teamTab" aria-pressed="false">Team &amp; Access</button></nav>
+</div>
+<p id="accountSecurityStatus" role="status" aria-live="polite">Checking your secure session...</p>
 <section id="teamAccess" aria-label="Team and access" hidden><p id="teamStatus" role="status"></p><div id="teamPanel"></div></section>
 <script type="module" src="/team-entry.js"></script>
 <div id="accountSecurityDashboard" class="account-security-grid" hidden>
-<section class="account-security-card"><div class="account-security-card-head"><h2>Profile Information</h2><span aria-hidden="true">♙</span></div>
+<section class="account-security-card profile-tile"><h2>Profile information</h2>
 <dl><dt>Email</dt><dd id="accountSecurityEmail"></dd><dt>Account</dt><dd>Private CVEHarbor workspace</dd></dl>
-<p class="account-security-note">Your verified email identifies your account.</p></section>
-<section class="account-security-card"><div class="account-security-card-head"><h2>Authenticator App</h2><span id="accountSecurityMfaBadge">Checking</span></div>
-<p>Authenticator verification protects access to your private customer data.</p>
+</section>
+<section class="account-security-card authenticator-tile"><h2>Authenticator app</h2><span id="accountSecurityMfaBadge" hidden>Checking</span>
 <dl><dt>Method</dt><dd>Authenticator app (TOTP)</dd><dt>Status</dt><dd id="accountSecurityMfaStatus">Checking...</dd></dl></section>
-<section class="account-security-card"><div class="account-security-card-head"><h2>Recovery Codes</h2><span aria-hidden="true">♢</span></div>
-<p>Replace recovery codes if they were lost or shared. Previous codes will immediately become invalid.</p>
+<section class="account-security-card recovery-tile"><h2>Recovery codes</h2>
+<p>Generating new codes invalidates your previous codes.</p>
 <button type="button" id="accountSecurityRecoveryStart" class="account-secondary-button">Generate new recovery codes</button>
 <form id="accountSecurityRecoveryForm" class="account-entry-form" hidden>
 <label for="accountSecurityRecoveryCode">Fresh six digit authenticator code</label>
@@ -31,12 +31,12 @@
 <div id="accountSecurityRecoveryResult" hidden><p>Save these codes securely. Each works only once and will not be shown again.</p>
 <ol id="accountSecurityRecoveryList" class="account-recovery-list"></ol><button type="button" id="accountSecurityRecoveryDone" class="account-secondary-button">I have saved my codes</button></div>
 </section>
-<section class="account-security-card"><div class="account-security-card-head"><h2>Notification Preferences</h2><span aria-hidden="true">♧</span></div>
-<p>Manage vulnerability and lifecycle notifications in your workspace.</p><a class="account-settings-link" href="/alerts/#securityWorkspace">Manage security alerts</a><a class="account-settings-link" href="/lifecycle/#lifecycleMonitor">Lifecycle notifications</a></section>
-<section class="account-security-card"><div class="account-security-card-head"><h2>Session Security</h2><span aria-hidden="true">▣</span></div>
-<p>Your current browser session is authenticated. Sign out when you finish using a shared device.</p><button type="button" id="accountSecuritySignOut" class="account-secondary-button">Sign out of this device</button></section>
-<section class="account-security-card"><div class="account-security-card-head"><h2>Workspace Settings</h2><span aria-hidden="true">⚙</span></div>
-<p>Access customer inventory, reporting and monitoring through My Workspace.</p><a class="account-settings-link" href="/workspace/">Open My Workspace</a></section>
+<section class="account-security-card notifications-tile"><h2>Notification preferences</h2>
+<a class="account-settings-link" href="/alerts/#securityWorkspace">Manage security alerts</a><a class="account-settings-link" href="/lifecycle/#lifecycleMonitor">Lifecycle notifications</a></section>
+<section class="account-security-card session-tile"><h2>Session security</h2>
+<p>This browser is signed in.</p><button type="button" id="accountSecuritySignOut" class="account-secondary-button">Sign out of this device</button></section>
+<section class="account-security-card workspace-tile"><h2>Workspace settings</h2>
+<a class="account-settings-link" href="/workspace/">Open My Workspace</a></section>
 </div></main>
 <script src="/account-security.js?v=account-security-156"></script>
 <script src="/command-center.js?v=brochure-216"></script></body></html>

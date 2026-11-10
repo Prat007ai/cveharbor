@@ -1,0 +1,114 @@
+/* Account surfaces share the app's navigation rail and the approved harbour artwork. */
+.account-harbor {
+  --ink: #031521;
+  --panel: #081e2a;
+  --edge: #39515e;
+  --mint: #86eddc;
+  --gutter: clamp(.9rem, 1.55vw, 2rem);
+  background: var(--ink); color: #f1f6f8; font-family: system-ui, sans-serif;
+}
+.account-harbor .account-hero-header, .account-harbor .account-new-main {
+  width: 100%; max-width: none; margin: 0; box-sizing: border-box;
+}
+.account-harbor .account-hero-header {
+  align-items: center; min-height: 4rem; padding: .85rem var(--gutter);
+  background: #082432; border-bottom: 1px solid #123441;
+}
+.account-harbor .account-brand-name {font-size: clamp(1.5rem,2.2vw,2rem)}
+.account-harbor .account-brand-name small {display: none}
+.account-harbor .account-brand-name span {color: inherit}
+.account-harbor .account-back-link {color: #edf7f7; text-decoration: underline; text-underline-offset: .25em}
+.account-harbor .account-new-main {padding: 0 0 2rem}
+.account-mast {
+  display: grid; align-content: space-between; gap: 1rem; box-sizing: border-box;
+  min-height: clamp(13rem,18vw,20rem); padding: clamp(2rem,5.2vw,6rem) var(--gutter) 0;
+  background: var(--ink) url('/assets/team-harbor/account-beacon.jpg') center / 100% 100% no-repeat;
+}
+.account-harbor .account-security-heading {font-size: clamp(2rem,3.45vw,4rem); line-height: 1.13; margin: 0; letter-spacing: -.035em}
+.account-harbor #teamTabs {margin: 0; border-color: var(--edge); align-self: end}
+.account-harbor #teamTabs button {background: #031521cc; color: #eaf5f4; border: 0; padding: .8rem 1.1rem}
+.account-harbor #teamTabs button[aria-pressed=true] {background: var(--mint); color: var(--ink)}
+.account-harbor #accountSecurityStatus:not(:empty) {margin: 1rem var(--gutter)}
+.account-harbor #accountSecurityStatus:empty {display: none}
+.account-harbor .account-security-grid {gap: clamp(.65rem,1.1vw,1.15rem); margin: var(--gutter)}
+.account-harbor .account-security-card {
+  --tile-width: clamp(4.25rem,10.4vw,12rem);
+  display: grid; grid-template-columns: var(--tile-width) minmax(0,1fr); align-content: center;
+  position: relative; column-gap: clamp(.8rem,1.7vw,2rem); row-gap: .45rem;
+  min-height: clamp(9rem,12.65vw,14rem); padding: clamp(.8rem,1.5vw,1.8rem); box-sizing: border-box;
+  border: 1px solid var(--edge); border-radius: .55rem; background: #051c28;
+}
+.account-security-card::before {
+  content: ''; position: absolute; inset: 12% auto 12% clamp(.8rem,1.5vw,1.8rem);
+  width: var(--tile-width); border-right: 1px solid #46616b;
+  background: var(--tile) left center / 88% auto no-repeat;
+}
+.account-harbor .account-security-card > * {grid-column: 2; min-width: 0}
+.profile-tile {--tile: url('/assets/team-harbor/tile-profile.jpg')}
+.authenticator-tile {--tile: url('/assets/team-harbor/tile-authenticator.jpg')}
+.recovery-tile {--tile: url('/assets/team-harbor/tile-recovery.jpg')}
+.notifications-tile {--tile: url('/assets/team-harbor/tile-notifications.jpg')}
+.session-tile {--tile: url('/assets/team-harbor/tile-session.jpg')}
+.workspace-tile {--tile: url('/assets/team-harbor/tile-workspace.jpg')}
+.account-harbor .account-security-card h2 {font-size: clamp(1.1rem,1.9vw,2rem); line-height: 1.18; letter-spacing: -.025em}
+.account-harbor .account-security-card :is(p,dl,dd,dt) {font-size: clamp(.875rem,1.16vw,1.15rem); color: #d9e8ec; line-height: 1.45; margin: 0}
+.account-harbor .account-security-card dl {grid-template-columns: auto minmax(0,1fr); gap: .35rem .85rem}
+.account-harbor .account-security-card button {width: fit-content; max-width: 100%; margin: .15rem 0}
+.account-harbor .account-security-card .account-secondary-button, .account-harbor .organization-actions button {
+  border: 1px solid #b5d6da; border-radius: .4rem; background: #061b26; color: #f0f7f7; padding: .48rem 1.15rem;
+}
+.account-harbor :is(#teamTabs, #teamPanel, .account-security-card) button,
+.account-harbor #teamPanel :is(td,th), .account-harbor .account-settings-link,
+.account-harbor .organization-actions {font-size: clamp(.9rem,1.28vw,1.3rem)}
+.account-harbor .organization-actions button {border-color: var(--mint)}
+.account-harbor .account-settings-link {color: var(--mint); padding: 0; width: fit-content; text-decoration: underline; text-underline-offset: .17em}
+.account-harbor :is(a,button,input,select,summary):focus-visible {outline: 3px solid #ffd184; outline-offset: 3px}
+.account-harbor.team-admin-open .account-mast {background: transparent; min-height: 0; padding-top: 1.6rem; gap: .65rem}
+.account-harbor.team-admin-open .account-security-heading {font-size: clamp(1.6rem,2.9vw,3.2rem)}
+.account-harbor.team-admin-open #teamTabs button {border-radius: 0; background: transparent}
+.account-harbor.team-admin-open #teamTabs button[aria-pressed=true] {color: var(--mint); box-shadow: inset 0 -3px var(--mint)}
+.account-harbor #teamAccess {margin: 0; border: 0; border-radius: 0; padding: var(--gutter); background: transparent}
+.account-harbor #teamPanel {gap: clamp(.8rem,1.5vw,1.5rem)}
+.organization-card {background: var(--panel); border: 1px solid var(--edge); border-radius: .65rem; overflow: hidden}
+.organization-card::before {content: ''; display: block; aspect-ratio: 707 / 217; background: url('/assets/team-harbor/org-panorama.jpg') center / cover}
+.organization-title, .organization-actions {display: flex; align-items: center; flex-wrap: wrap; gap: .75rem 1rem; margin-inline: var(--gutter); padding-block: 1rem}
+.organization-title {border-bottom: 1px solid var(--edge)}
+#teamPanel .organization-title h3 {font-size: clamp(1.45rem,3vw,3rem); overflow-wrap: anywhere}
+.organization-mark {background: #0b4352; padding: .15em .5em; border-radius: .25em; font-size: 1.75rem; font-weight: 800}
+.organization-role {border: 1px solid #85673e; border-radius: 2rem; padding: .25em .85em; color: #ffd389; background: #3e301e}
+.organization-actions > .team-actions {flex: 1 1 22rem; gap: 1rem}
+.organization-actions .team-actions + .team-actions {border-left: 1px solid var(--edge); padding-left: 1.25rem}
+.organization-actions .team-actions > span {flex: 1 1 8rem; color: #cbdee2; max-width: 19ch}
+.organization-actions .team-actions::before, .member-counts li::before {content: ''; width: 1.65rem; height: 1.65rem; flex: none; background: center / contain no-repeat}
+.organization-actions .team-actions::before {background-image: url('/assets/team-harbor/symbol-inventory.jpg')}
+.organization-actions .team-actions + .team-actions::before {background-image: url('/assets/team-harbor/symbol-team.jpg')}
+.account-harbor .organization-actions a {padding: .65rem 1.2rem; border-radius: .4rem; color: var(--ink); background: var(--mint); font-weight: 700; text-decoration: none}
+.account-harbor.team-admin-open:has(.roster-header) .account-new-main {
+  --scene-height: clamp(23rem,28vw,32rem);
+  background: var(--ink) url('/assets/team-harbor/team-beacon.jpg') top center / 100% var(--scene-height) no-repeat;
+}
+.account-harbor.team-admin-open:has(.roster-header) .account-security-heading {font-size: .95rem; letter-spacing: 0}
+.account-harbor.team-admin-open:has(.roster-header) .account-security-heading::after {content: '  /  Team & Access'; color: #c7d9de}
+.account-harbor #teamAccess:has(.roster-header) {background: url('/assets/team-harbor/team-coast.jpg') bottom center / 100% auto no-repeat; padding-bottom: clamp(5rem,9vw,12rem)}
+#teamPanel .roster-header {border: 0; border-radius: 0; background: transparent; min-height: clamp(12rem,16vw,18rem); align-content: end; padding: 0}
+#teamPanel .roster-header h2 {font-size: clamp(1.7rem,3.4vw,3.65rem); overflow-wrap: anywhere}
+.member-counts {display: flex; flex-wrap: wrap; gap: .6rem; margin: clamp(1rem,2vw,2rem) 0 0; padding: 0; list-style: none}
+.member-counts li {display: flex; align-items: center; gap: .62rem; padding: .65rem 1rem; border: 1px solid var(--edge); border-radius: .45rem; background: #071f2bea; font-weight: 650; font-size: clamp(.95rem,1.6vw,1.6rem)}
+.member-counts [data-count=Members]::before {background-image: url('/assets/team-harbor/symbol-members.jpg')}
+.member-counts [data-count=Active]::before {background-image: url('/assets/team-harbor/symbol-active.jpg')}
+.member-counts [data-count=Pending]::before {background-image: url('/assets/team-harbor/symbol-pending.jpg')}
+.roster-header ~ .harbor-label {background: #112c3b; border: 1px solid var(--edge); padding: .75rem 1rem; border-radius: .4rem}
+@media (max-width: 760px) {
+  .account-harbor .account-security-grid {grid-template-columns: minmax(0,1fr)}
+  .account-harbor .account-security-card {--tile-width: clamp(3.25rem,15vw,5.5rem)}
+  .account-mast {min-height: 11rem; background-size: auto 100%; background-position: 75% center}
+  .account-mast h1 {text-shadow: 0 2px 8px #00101d}
+  .organization-actions {flex-direction: column; align-items: stretch}
+  .organization-actions > .team-actions {flex: auto}
+  .organization-actions .team-actions + .team-actions {border-left: 0; padding-left: 0}
+  .organization-card::before {aspect-ratio: 2.5}
+  .account-harbor.team-admin-open:has(.roster-header) .account-new-main {background-size: auto 18rem; background-position: 65% top}
+  #teamPanel .roster-header {min-height: 9rem; text-shadow: 0 1px 4px #00111c}
+  .member-counts {gap: .3rem}
+  .member-counts li {padding: .45rem .55rem; gap: .3rem; font-size: .85rem}
+}

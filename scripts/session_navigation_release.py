@@ -154,7 +154,7 @@ def readiness():
 
 
 if __name__ == "__main__":
-    if os.environ.get('CVEHARBOR_SITE_RELEASE')=='team-harbor-design':
+    if os.environ.get('CVEHARBOR_SITE_RELEASE') in ('team-harbor-design','account-harbor-views'):
         import team_design_release
         team_design_release.run(sys.argv[1],Path(sys.argv[2]).resolve() if len(sys.argv)>2 else None)
         sys.exit(0)
