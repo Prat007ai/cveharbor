@@ -111,7 +111,11 @@ export async function organizationDashboard(id,preferredCustomer=''){
   }
   chooser.onchange=load;
   const actions=element('div','','team-actions');
-  actions.append(button('Refresh',async()=>{detail.replaceChildren();await organizationDashboard(id,chooser.value);}));
+  actions.append(button('Refresh',async()=>{
+    const preferred=chooser.value;
+    display(element('p','Checking workspace access...'),link('My personal workspace','/workspace/'));
+    try{await organizationDashboard(id,preferred);}catch(error){display(element('p',error.message),link('My personal workspace','/workspace/'));}
+  }));
   if(info.scope==='all'&&info.role!=='Viewer')actions.append(button('Add customer',()=>{
     ++serial;const name=textInput();
     detail.replaceChildren(element('h2','Add customer'),field('Customer name',name),button('Cancel',load),

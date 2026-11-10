@@ -42,7 +42,7 @@ async function members(org){
     const date=m.signed_at?new Intl.DateTimeFormat(undefined,{dateStyle:'medium',timeStyle:'long'}).format(m.signed_at*1000):m.active?'No recorded sign-in':'Available after acceptance';
     return [m.email,m.role,m.scope==='all'?'All current and future customers':m.customers.map(id=>labels.get(id)||'Removed customer').join(', '),m.status,date,actions];
   });
-  display(banner(org.name),element('h3','Team members'),element('p','Active members have accepted their invitation. Last sign-in shows their most recent successful CVEHarbor sign-in.'),button('Invite member',()=>edit(org,customers),true),
+  display(banner(org.name),element('h3','Team members'),element('p','Active members have accepted their invitation. Last sign-in shows their most recent successful CVEHarbor sign-in.'),button('Invite member',()=>edit(org,customers),true),button('Refresh members',()=>members(org)),
     table(['Member','Role','Customer access','Status','Last sign-in','Actions'],rows),link('Open workspace',workspaceLink(org.id)));
 }
 function edit(org,customers,member){
@@ -75,7 +75,11 @@ function edit(org,customers,member){
     const selected=scope.value==='all'?[]:checks.filter(c=>c.checked).map(c=>c.value);
     if(scope.value==='selected'&&!selected.length)throw Error('Select at least one customer.');
     const payload={email:email.value.trim(),role:role.value,scope:scope.value,customers:selected};
-    if(member){await api(path,'PUT',{...payload,revision:member.revision});await members(org);notice('Access updated.');return;}
+    if(member){
+      try{await api(path,'PUT',{...payload,revision:member.revision});}
+      catch(error){if(error.status===409)await members(org);throw error;}
+      await members(org);notice('Access updated.');return;
+    }
     const send=button('Send invitation',async()=>{
       try{await api(path,'POST',payload);}catch(error){await members(org);throw error;}
       await members(org);notice('Invitation sent.');

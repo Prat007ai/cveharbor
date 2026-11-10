@@ -73,6 +73,30 @@ try{
     await john.locator('#teamPanel').getByText('Web Server 01',{exact:true}).first().waitFor();
     assert.equal(await john.locator('#teamPanel').getByText('Customer South',{exact:true}).count(),0);
     assert.equal(await john.locator('#teamPanel').getByRole('button',{name:'Edit asset'}).count(),0);
+    await john.locator('#teamPanel').getByRole('heading',{name:'Potential findings'}).waitFor();
+    if(newAccount){
+      await owner.getByRole('button',{name:'Refresh members'}).click();
+      const member=owner.getByRole('row').filter({hasText:email});
+      await member.getByText('Active',{exact:true}).waitFor();
+      await member.getByRole('button',{name:'Edit'}).click();
+      await owner.getByLabel('Organization role').selectOption('Owner');
+      await owner.getByLabel('Organization role').selectOption('Editor');
+      assert.equal(await owner.getByLabel('Customer access').inputValue(),'selected');
+      await owner.getByLabel('Customer North',{exact:true}).uncheck();
+      await owner.getByLabel('Customer South',{exact:true}).check();
+      await owner.getByRole('button',{name:'Save changes'}).click();
+      await owner.locator('#teamStatus').getByText('Access updated.').waitFor();
+      await john.locator('#teamPanel').getByRole('button',{name:'Refresh',exact:true}).click();
+      await john.locator('#teamPanel').getByText('Web Server 02',{exact:true}).first().waitFor();
+      assert.equal(await john.locator('#teamPanel').getByText('Web Server 01',{exact:true}).count(),0);
+      await john.locator('#teamPanel').getByRole('button',{name:'Edit asset'}).waitFor();
+      owner.once('dialog',dialog=>dialog.accept());
+      await member.getByRole('button',{name:'Remove'}).click();
+      await member.waitFor({state:'detached'});
+      await john.locator('#teamPanel').getByRole('button',{name:'Refresh',exact:true}).click();
+      await john.locator('#teamPanel').getByText('Workspace or record unavailable.').waitFor();
+      assert.equal(await john.locator('#teamPanel').getByText('Web Server 02',{exact:true}).count(),0);
+    }
     await john.context().close();
   }
   await owner.locator('#personalTab').click();assert.equal(await owner.locator('#accountSecurityDashboard section:visible').count(),6);
