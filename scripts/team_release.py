@@ -83,7 +83,10 @@ def prepare(out):
         relative='account-backend/src/'+name if name=='team-invitation-art.js' else name
         dest=out/'after'/name
         pkg.require(not dest.exists(),'Unexpected existing team asset')
-        dest.write_bytes(pkg.git('show',FEATURE+':'+relative))
+        reviewed_asset = pkg.git('show', FEATURE+':'+relative)
+        pkg.require(pkg.git('show', 'HEAD:'+relative) == reviewed_asset,
+                    'Team website asset changed since PR 318: '+relative)
+        dest.write_bytes(reviewed_asset)
 
 
 def reviewed():
