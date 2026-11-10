@@ -317,6 +317,38 @@ def other_ubuntu(start,out):
                 put(out,'ubuntu@'+series[code],row)
 
 
+def mariadb_bulletins(start, out):
+    url = 'https://mariadb.com/docs/server/security/cve/community-server'
+    with fetch(url + '.md') as response:
+        table = response.read().decode('utf-8')
+    parsed = 0
+    for line in table.splitlines():
+        cells = [cell.strip() for cell in line.strip().strip('|').split('|')]
+        if len(cells) < 4:
+            continue
+        ident = re.match(r'\[(CVE-\d{4}-\d+)\]', cells[0])
+        if not ident or not re.fullmatch(r'\d{4}-\d{2}-\d{2}', cells[1]):
+            continue
+        parsed += 1
+        if cells[1] < start:
+            continue
+        fixes = re.findall(r'\[(\d+\.\d+\.\d+)\]\([^)]*/community-server/[^)]*\)', cells[3])
+        if not fixes:
+            continue
+        cve = ident[1]
+        reference = 'https://www.cve.org/CVERecord?id=' + cve
+        row = out['maria'].setdefault(cve, dict(id=cve, title=cve + ' · MariaDB Community Server security fix',
+            published=cells[1] + 'T00:00:00Z', url=reference, sources=[{'url':reference,'label':'CVE record'}]))
+        row.update(status='MariaDB Community Server security bulletin',
+                   evidence='Vendor fix history · check the installed release series',
+                   remediation='MariaDB lists fixes in ' + ', '.join(dict.fromkeys(fixes)) + '.')
+        if re.fullmatch(r'\d+(?:\.\d+)?', cells[2]):
+            row['cvss'] = float(cells[2])
+        row['sources'].append({'url':url, 'label':'MariaDB Community Server fixes'})
+    if not parsed:
+        raise ValueError('Could not read the MariaDB Community Server fix table')
+
+
 def main():
     ap=argparse.ArgumentParser()
     ap.add_argument('--cache',type=Path)
@@ -326,13 +358,14 @@ def main():
     if not args.output:
         from feed_snapshot import S3Store
         store=S3Store();old,etag=store.get(PREFIX+'current.json')
-        if old and now-datetime.fromisoformat(json.loads(old)['checked'])<timedelta(hours=22):return
+        previous = json.loads(old) if old else {}
+        if previous.get('publisherRevision') == 2 and now-datetime.fromisoformat(previous['checked'])<timedelta(hours=22):return
     with tempfile.TemporaryDirectory() as tmp:
         cache=args.cache or Path(tmp);out=defaultdict(dict)
         for name, collect, args_ in [('CVE Program',cve_history,(cache,start,out)),('Reviewed packages',packages,(cache,start,out)),
                                       ('.NET releases',dotnet,(start,out)),('Distribution exports',distro_history,(cache,start,out)),
                                       ('Vendor errata',other_distributions,(start,out)),('Ubuntu',other_ubuntu,(start,out)),
-                                      ('SQL bulletins',sql_bulletins,(start,out)),('SFOS bulletins',sophos_bulletins,(start,out))]:
+                                      ('MariaDB bulletins',mariadb_bulletins,(start,out)),('SQL bulletins',sql_bulletins,(start,out)),('SFOS bulletins',sophos_bulletins,(start,out))]:
             print('Reading',name,flush=True)
             collect(*args_)
             print(name,'complete;',sum(map(len,out.values())),'records',flush=True)
@@ -351,7 +384,7 @@ def main():
                 h=hashlib.sha256(body).hexdigest()
                 write(h+'.json',body);pages.append([page[-1]['published'][:10],page[0]['published'][:10],h])
             directory[key]=pages
-        data={'from':start,'checked':stamp,'products':directory,'audited':sorted(CONFIG)}
+        data={'publisherRevision':2,'from':start,'checked':stamp,'products':directory,'audited':sorted(CONFIG)}
         digest=hashlib.sha256(json.dumps(data,sort_keys=True).encode()).hexdigest()
         data['snapshot']=digest;body=json.dumps(data,separators=(',',':')).encode()
         write(digest+'.json',body)
