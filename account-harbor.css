@@ -17,7 +17,7 @@
 .account-harbor .account-brand-name {font-size: clamp(1.5rem,2.2vw,2rem)}
 .account-harbor .account-brand-name small {display: none}
 .account-harbor .account-brand-name span {color: inherit}
-.account-harbor .account-back-link {color: #edf7f7; text-decoration: underline; text-underline-offset: .25em}
+.account-harbor .account-back-link {color: #edf7f7; font-size: clamp(.95rem,1.45vw,1.4rem)!important; text-decoration: underline; text-underline-offset: .25em}
 .account-harbor .account-new-main {padding: 0 0 2rem}
 .account-mast {
   display: grid; align-content: space-between; gap: 1rem; box-sizing: border-box;
@@ -51,15 +51,15 @@
 .session-tile {--tile: url('/assets/team-harbor/tile-session.jpg')}
 .workspace-tile {--tile: url('/assets/team-harbor/tile-workspace.jpg')}
 .account-harbor .account-security-card h2 {font-size: clamp(1.1rem,1.9vw,2rem); line-height: 1.18; letter-spacing: -.025em}
-.account-harbor .account-security-card :is(p,dl,dd,dt) {font-size: clamp(.875rem,1.16vw,1.15rem); color: #d9e8ec; line-height: 1.45; margin: 0}
-.account-harbor .account-security-card dl {grid-template-columns: auto minmax(0,1fr); gap: .35rem .85rem}
+.account-harbor .account-security-card :is(p,dl,dd,dt) {font-size: clamp(.9rem,1.42vw,1.45rem); color: #d9e8ec; line-height: 1.45; margin: 0}
+.account-harbor .account-security-card dl {grid-template-columns: minmax(4.5em,auto) minmax(0,1fr); gap: .35rem .85rem}
 .account-harbor .account-security-card button {width: fit-content; max-width: 100%; margin: .15rem 0}
 .account-harbor .account-security-card .account-secondary-button, .account-harbor .organization-actions button {
   border: 1px solid #b5d6da; border-radius: .4rem; background: #061b26; color: #f0f7f7; padding: .48rem 1.15rem;
 }
 .account-harbor :is(#teamTabs, #teamPanel, .account-security-card) button,
 .account-harbor #teamPanel :is(td,th), .account-harbor .account-settings-link,
-.account-harbor .organization-actions {font-size: clamp(.9rem,1.28vw,1.3rem)}
+.account-harbor .organization-actions {font-size: clamp(.9rem,1.48vw,1.5rem)}
 .account-harbor .organization-actions button {border-color: var(--mint)}
 .account-harbor .account-settings-link {color: var(--mint); padding: 0; width: fit-content; text-decoration: underline; text-underline-offset: .17em}
 .account-harbor :is(a,button,input,select,summary):focus-visible {outline: 3px solid #ffd184; outline-offset: 3px}
@@ -74,14 +74,15 @@
 .organization-title, .organization-actions {display: flex; align-items: center; flex-wrap: wrap; gap: .75rem 1rem; margin-inline: var(--gutter); padding-block: 1rem}
 .organization-title {border-bottom: 1px solid var(--edge)}
 #teamPanel .organization-title h3 {font-size: clamp(1.45rem,3vw,3rem); overflow-wrap: anywhere}
-.organization-mark {background: #0b4352; padding: .15em .5em; border-radius: .25em; font-size: 1.75rem; font-weight: 800}
-.organization-role {border: 1px solid #85673e; border-radius: 2rem; padding: .25em .85em; color: #ffd389; background: #3e301e}
+.organization-mark {display: grid; place-items: center; background: #0b4352; width: 2.4em; height: 1.8em; margin-inline: .55em .3em; border-radius: .25em; font-size: clamp(1.65rem,2.7vw,2.75rem); font-weight: 850}
+.organization-role {border: 1px solid #85673e; border-radius: 2rem; padding: .25em .85em; color: #ffd389; background: #3e301e; font-size: clamp(.85rem,1.3vw,1.3rem)}
 .organization-actions > .team-actions {flex: 1 1 22rem; gap: 1rem}
 .organization-actions .team-actions + .team-actions {border-left: 1px solid var(--edge); padding-left: 1.25rem}
 .organization-actions .team-actions > span {flex: 1 1 8rem; color: #cbdee2; max-width: 19ch}
 .organization-actions .team-actions::before, .member-counts li::before {content: ''; width: 1.65rem; height: 1.65rem; flex: none; background: center / contain no-repeat}
 .organization-actions .team-actions::before {background-image: url('/assets/team-harbor/symbol-inventory.jpg')}
 .organization-actions .team-actions + .team-actions::before {background-image: url('/assets/team-harbor/symbol-team.jpg')}
+.organization-actions .team-actions::before, .member-counts li::before {width: 1.8em; height: 1.8em}
 .account-harbor .organization-actions a {padding: .65rem 1.2rem; border-radius: .4rem; color: var(--ink); background: var(--mint); font-weight: 700; text-decoration: none}
 .account-harbor.team-admin-open:has(.roster-header) .account-new-main {
   --scene-height: clamp(23rem,28vw,32rem);
@@ -93,11 +94,14 @@
 #teamPanel .roster-header {border: 0; border-radius: 0; background: transparent; min-height: clamp(12rem,16vw,18rem); align-content: end; padding: 0}
 #teamPanel .roster-header h2 {font-size: clamp(1.7rem,3.4vw,3.65rem); overflow-wrap: anywhere}
 .member-counts {display: flex; flex-wrap: wrap; gap: .6rem; margin: clamp(1rem,2vw,2rem) 0 0; padding: 0; list-style: none}
+.account-harbor #teamPanel .harbor-toolbar h3 {font-size: clamp(1.45rem,2.8vw,2.85rem)}
+.account-harbor #teamPanel .harbor-toolbar {padding-block: .75rem}
+.account-harbor .roster-header ~ .team-table-wrap td {padding-block: .85rem}
 .member-counts li {display: flex; align-items: center; gap: .62rem; padding: .65rem 1rem; border: 1px solid var(--edge); border-radius: .45rem; background: #071f2bea; font-weight: 650; font-size: clamp(.95rem,1.6vw,1.6rem)}
 .member-counts [data-count=Members]::before {background-image: url('/assets/team-harbor/symbol-members.jpg')}
 .member-counts [data-count=Active]::before {background-image: url('/assets/team-harbor/symbol-active.jpg')}
 .member-counts [data-count=Pending]::before {background-image: url('/assets/team-harbor/symbol-pending.jpg')}
-.roster-header ~ .harbor-label {background: #112c3b; border: 1px solid var(--edge); padding: .75rem 1rem; border-radius: .4rem}
+.roster-header ~ .harbor-label {background: #112c3b; border: 1px solid var(--edge); padding: .75rem 1rem; border-radius: .4rem; font-size: clamp(.9rem,1.3vw,1.3rem)}
 @media (max-width: 760px) {
   .account-harbor .account-security-grid {grid-template-columns: minmax(0,1fr)}
   .account-harbor .account-security-card {--tile-width: clamp(3.25rem,15vw,5.5rem)}
