@@ -165,7 +165,7 @@ export async function versionResponse(request,env) {
   if(token && (vendor||history ? !/^[a-f0-9]{64}\.\d{1,7}$/.test(token) : !osv&&!/^\d{1,7}$/.test(token)))return json({error:'Invalid page.'},400);
   const range=osv?{start:monthsBefore(anchor,months).toISOString(),end:anchor.toISOString()}:windowFor(anchor,q);
   // Cache only public product queries; do not include gate credentials or account identifiers.
-  const key=new Request(url.origin+'/__version_scan_cache/v4/'+[id,version,date,months,q,cursor].map(encodeURIComponent).join('/'));
+  const key=new Request(url.origin+'/__version_scan_cache/v5/'+[id,version,date,months,q,cursor].map(encodeURIComponent).join('/'));
   const cache=globalThis.caches?.default;
   try{
     const hit=await cache?.match(key);
