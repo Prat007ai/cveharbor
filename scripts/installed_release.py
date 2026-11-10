@@ -11,10 +11,10 @@ import catalogue_promotion as prod
 import firewall_release as firewall
 import version_picker_release as picker
 
-LIVE_SITE = 'ab12091a1348c4a61ae8fb3adcbd579c237629e4'
+LIVE_SITE = '32546d8ff07e8f7f27a45a4d672f38a449f69c1a'
 BASE = LIVE_SITE
-CHANGED = {'app.js'}
-MODULES = {'version-scan.mjs', 'vendor-scan.mjs'}
+CHANGED = {'app.js', picker.MODULE}
+MODULES = {'version-scan.mjs', 'catalogue-history.mjs'}
 
 def prepare(out):
     with tempfile.TemporaryDirectory() as tmp:
@@ -39,7 +39,7 @@ def prepare(out):
 def reviewed():
     sha = os.environ['GITHUB_SHA']
     candidates = [p['number'] for p in prod.github('/commits/'+sha+'/pulls') if p['merged_at']
-                  and p['base']['ref']=='main' and p['head']['ref']=='fix/vendor-version-scans']
+                  and p['base']['ref']=='main' and p['head']['ref']=='fix/catalogue-vendor-coverage']
     pkg.require(len(candidates)==1,'Expected the reviewed installed-release explorer')
     prod.evidence(candidates[0])
     return candidates[0]
@@ -57,7 +57,7 @@ def run(action,out):
         healthy_backend()
     elif action=='publish':
         picker.publish(out,changed=CHANGED,reviewed_pr=pr,ready=healthy_backend,
-                       previous_version='b4f7494a-777d-4d9a-b8bb-2fb79801f9f8',
-                       previous_deployment='b544c85d-6f51-4c5a-b4d4-0072ec68f2e4')
+                       previous_version='d33bd438-2064-4336-bf22-62e8a2d1799d',
+                       previous_deployment='5e8daeb1-58ac-4632-ad9a-21099aacd70a')
     else:
         raise ValueError(action)
