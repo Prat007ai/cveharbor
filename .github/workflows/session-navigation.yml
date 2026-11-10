@@ -170,7 +170,7 @@ jobs:
       - name: View the three live account screens with fictional identities
         if: inputs.site_release == 'account-harbor-views'
         env:
-          SITE_GATE_PASSWORD: ${{ secrets.CVEHARBOR_SITE_GATE_PASSWORD }}
+          VERIFIED_SITE: ${{ runner.temp }}/catalogue/verified-origin
           TEAM_TEST_CHROME: /usr/bin/google-chrome
           TEAM_TEST_SCREENSHOTS: ${{ runner.temp }}/account-screens
         run: node scripts/account_harbor_live.mjs

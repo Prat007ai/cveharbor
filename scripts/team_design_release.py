@@ -58,6 +58,7 @@ def run(action, out):
         ready()
     elif action == 'publish':
         picker.publish(out, changed=CHANGED, added=ADDED, reviewed_pr=matches[0], ready=ready,
-                       previous_version=VERSION, previous_deployment=DEPLOYMENT)
+                       previous_version=VERSION, previous_deployment=DEPLOYMENT,
+                       served_copy=out/'verified-origin' if BRANCH=='feature/account-harbor-views' else None)
     else:
         raise ValueError(action)

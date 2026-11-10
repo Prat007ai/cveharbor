@@ -1,7 +1,7 @@
-// Read the deployed interface with an isolated, entirely fictional account.
+// Render verified bytes read back from production, using a fictional account.
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
-import {mkdir} from 'node:fs/promises';
+import {mkdir,readFile} from 'node:fs/promises';
 import path from 'node:path';
 const require=createRequire(new URL('../staging/package.json',import.meta.url));
 const {chromium}=require('playwright-core');
@@ -18,15 +18,21 @@ const reads=new Map([
   ['/v1/team/organizations/mock-harbor/members',{members,customers:[{id:'demo',name:'Northstar Demo'}]}]
 ]);
 const folder=process.env.TEAM_TEST_SCREENSHOTS;
+const served=path.resolve(process.env.VERIFIED_SITE);
+const types={'.css':'text/css','.js':'text/javascript','.html':'text/html','.jpg':'image/jpeg','.svg':'image/svg+xml'};
 await mkdir(folder,{recursive:true});
 const browser=await chromium.launch({executablePath:process.env.TEAM_TEST_CHROME});
 try{
-  const context=await browser.newContext({viewport:{width:1536,height:1024},serviceWorkers:'block',
-    httpCredentials:{origin,username:'cveharbor',password:process.env.SITE_GATE_PASSWORD}});
-  await context.route('**/*',route=>{
+  const context=await browser.newContext({viewport:{width:1536,height:1024},serviceWorkers:'block'});
+  await context.route('**/*',async route=>{
     const req=route.request(),url=new URL(req.url());
     if(req.method()!=='GET')return route.abort();
-    if(url.origin===origin)return route.continue();
+    if(url.origin===origin){
+      const file=path.resolve(served,'.'+url.pathname+(url.pathname.endsWith('/')?'index.html':''));
+      assert.ok(file.startsWith(served+path.sep));
+      try{return await route.fulfill({body:await readFile(file),contentType:types[path.extname(file)]});}
+      catch(error){if(error.code!=='ENOENT')throw error;return route.fulfill({status:404,body:'Unpublished asset'});}
+    }
     if(url.origin===api && reads.has(url.pathname))return route.fulfill({json:reads.get(url.pathname),
       headers:{'Access-Control-Allow-Origin':origin,'Access-Control-Allow-Credentials':'true'}});
     return route.abort();
