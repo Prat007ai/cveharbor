@@ -42,20 +42,29 @@ export async function openPicker(card,context) {
   results.className='version-results';results.setAttribute('aria-label','Scan results');
   const pageSize=15;
   let resultPage=0;
+  function resultItem(row){
+    const li=element('li'), open=element('button');
+    open.type='button';open.className='version-result';
+    const id=element('strong',row.id),title=element('span',row.title||row.id);
+    title.className='version-result-title';
+    const meta=element('small',[row.severity?.toUpperCase(),row.published?.slice(0,10),row.evidence].filter(Boolean).join(' · '));
+    open.append(id,title,meta);open.onclick=()=>context.detail(row,directory.products[state.id],state.version);
+    li.append(open);return li;
+  }
   function drawResults(){
     results.replaceChildren();
-    if(!state?.records.length)return;
+    if(!state)return;
+    if(state.components.size){
+      const notices=element('section');
+      notices.append(element('h3',state.id==='npm'?'Advisories for bundled packages':'Optional component advisories'));
+      const list=element('ul');
+      for(const row of state.components.values())list.append(resultItem(row));
+      notices.append(list);results.append(notices);
+    }
+    if(!state.records.length)return;
     const start=resultPage*pageSize;
     const list=element('ul');
-    for(const row of state.records.slice(start,start+pageSize)){
-      const li=element('li'), open=element('button');
-      open.type='button';open.className='version-result';
-      const id=element('strong',row.id),title=element('span',row.title||row.id);
-      title.className='version-result-title';
-      const meta=element('small',[row.severity?.toUpperCase(),row.published?.slice(0,10),row.evidence].filter(Boolean).join(' · '));
-      open.append(id,title,meta);open.onclick=()=>context.detail(row,directory.products[state.id],state.version);
-      li.append(open);list.append(li);
-    }
+    for(const row of state.records.slice(start,start+pageSize))list.append(resultItem(row));
     results.append(element('h3','CVEHarbor advisories'),list);
     if(state.records.length<=pageSize)return;
     const nav=element('nav');nav.setAttribute('aria-label','Scan result pages');
@@ -114,6 +123,7 @@ export async function openPicker(card,context) {
         const page=await api('scan?'+params,scanController.signal);
         if(ticket!==generation||!panel.open)return;
         if(page.coverage)s.coverage=page.coverage;
+        for(const row of page.componentRows||[])s.components.set(row.id,row);
         for(const row of page.rows){
           if(s.seen.has(row.id))continue;s.seen.add(row.id);
           s.records.push(row);
@@ -126,7 +136,7 @@ export async function openPicker(card,context) {
         if(s.visited.has(s.q+':'+s.cursor))throw Error('The source repeated a page.');
       }
       if(ticket!==generation||!panel.open)return;
-      resultStatus.textContent=s.seen.size+' published advisories returned for '+s.version+' in the last '+s.months+' months. '+(s.coverage||'Verify vendor coverage and your configuration.');
+      resultStatus.textContent=s.seen.size+' direct product advisories and '+s.components.size+' component advisories returned for '+s.version+' in the last '+s.months+' months. '+(s.coverage||'Verify vendor coverage and your configuration.');
       more.hidden=s.months===12;
     }catch{if(ticket===generation&&panel.open){resultStatus.textContent='The source check is incomplete. Results already shown are retained.';retry.hidden=false;}}
   }
@@ -142,7 +152,7 @@ export async function openPicker(card,context) {
     try{
       await context.save(p,version);
       if(!panel.open)return;
-      state={id,version,months:3,q:0,cursor:'',day:new Date().toISOString().slice(0,10),seen:new Set(),visited:new Set(),records:[]};
+      state={id,version,months:3,q:0,cursor:'',day:new Date().toISOString().slice(0,10),components:new Map(),seen:new Set(),visited:new Set(),records:[]};
       await run();
     }catch(e){if(panel.open)resultStatus.textContent=e.message;}
     finally{locked=false;action.disabled=select.disabled=line.disabled=releases.disabled=input.disabled=false;}

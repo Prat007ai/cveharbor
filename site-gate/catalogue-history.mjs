@@ -44,6 +44,9 @@ export async function cataloguePage(bucket,id,version,range,cursor) {
   if(!index.audited?.includes(id)||!/^[a-f0-9]{64}$/.test(index.snapshot)||index.from>range.start.slice(0,10)||
     !(Math.abs(Date.now()-Date.parse(index.checked))<72*3600000))throw Error('Vendor history is incomplete');
   const keys=scopes(id,version);
+  const componentKey=id==='npm' ? 'npm@'+version+'~components' : id+'~components';
+  const hasComponents=Object.hasOwn(index.products,componentKey);
+  if(hasComponents)keys.push(componentKey);
   const pages=keys.flatMap(k=>index.products[k]||[]).filter(([first,last])=>
     first<=range.end.slice(0,10)&&last>=range.start.slice(0,10)).sort((a,b)=>b[1].localeCompare(a[1]));
   const pos=Number(offset);
@@ -59,5 +62,9 @@ export async function cataloguePage(bucket,id,version,range,cursor) {
     ? 'Distribution notices cover packages for this release. Verify the installed package and patch level.'
     : 'Package-notice coverage is unverified for this release. Check the distribution’s security records.';
   if(id==='sophos')coverage='Includes reviewed Sophos Firewall bulletins and indexed CVEs. Check the vendor for additional hotfix notices.';
-  return {rows,coverage,next:pos+1<pages.length?index.snapshot+'.'+(pos+1):'source:'};
+  if(['sql2014','sql2016'].includes(id))coverage='Public Microsoft bulletins checked. Extended Security Updates may depend on your ESU entitlement. Check the updates offered for your enrolled instance.';
+  if(id==='npm')coverage=hasComponents?'Includes a separate check of the dependencies shipped in this exact npm release.':'Bundled dependencies have not been verified for this npm build.';
+  if(id==='react'||id==='sitefinity')coverage=hasComponents?'Review optional component notices against the separately installed component version.':'Optional component coverage is unavailable.';
+  const componentRows=rows.filter(r=>r.scope==='bundled'||r.scope==='optional');
+  return {rows:rows.filter(r=>!r.scope),componentRows,coverage,next:pos+1<pages.length?index.snapshot+'.'+(pos+1):'source:'};
 }

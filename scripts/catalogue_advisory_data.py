@@ -18,6 +18,7 @@ from zipfile import ZipFile
 import xml.etree.ElementTree as ET
 
 import ijson
+from catalogue_components import renderer_history, npm_history
 from catalogue_vendor_bulletins import sql_bulletins, sophos_bulletins
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -62,7 +63,8 @@ def identify(vendor, product):
 def fetch(url):
     for attempt in range(3):
         try:
-            return urlopen(Request(url,headers={'User-Agent':'CVEHarbor advisory history','Accept':'*/*'}),timeout=90)
+            req = url if isinstance(url,Request) else Request(url,headers={'User-Agent':'CVEHarbor advisory history','Accept':'*/*'})
+            return urlopen(req,timeout=90)
         except OSError:
             if attempt==2:raise
             time.sleep(2**attempt)
@@ -400,7 +402,7 @@ def main():
         from feed_snapshot import S3Store
         store=S3Store();old,etag=store.get(PREFIX+'current.json')
         previous = json.loads(old) if old else {}
-        if previous.get('publisherRevision') == 2 and now-datetime.fromisoformat(previous['checked'])<timedelta(hours=22):return
+        if previous.get('publisherRevision') == 3 and now-datetime.fromisoformat(previous['checked'])<timedelta(hours=22):return
     with tempfile.TemporaryDirectory() as tmp:
         cache=args.cache or Path(tmp);out=defaultdict(dict)
         for name, collect, args_ in [('CVE Program',cve_history,(cache,start,out)),('Reviewed packages',packages,(cache,start,out)),
@@ -410,6 +412,9 @@ def main():
             print('Reading',name,flush=True)
             collect(*args_)
             print(name,'complete;',sum(map(len,out.values())),'records',flush=True)
+        renderer_history(start,out,load_json)
+        npm_versions=json.loads((ROOT/'site-gate/version-releases.json').read_text())['npm']['versions']
+        npm_history(start,out,[v['version'] for v in npm_versions],load_json,fetch)
         if len(out['linux'])<100 or len(out['server'])<100 or not out['next'] or len(out)<65:
             raise ValueError('Incomplete vendor history inputs')
         directory={}
@@ -425,7 +430,7 @@ def main():
                 h=hashlib.sha256(body).hexdigest()
                 write(h+'.json',body);pages.append([page[-1]['published'][:10],page[0]['published'][:10],h])
             directory[key]=pages
-        data={'publisherRevision':2,'from':start,'checked':stamp,'products':directory,'audited':sorted(CONFIG)}
+        data={'publisherRevision':3,'from':start,'checked':stamp,'products':directory,'audited':sorted(CONFIG)}
         digest=hashlib.sha256(json.dumps(data,sort_keys=True).encode()).hexdigest()
         data['snapshot']=digest;body=json.dumps(data,separators=(',',':')).encode()
         write(digest+'.json',body)

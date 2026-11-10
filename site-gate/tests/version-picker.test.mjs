@@ -112,3 +112,17 @@ test('published history and installed-version evidence are separate and both rem
   assert.deepEqual(second.rows,[]);assert.equal(second.next,null);
   assert.equal((await versionResponse(new Request(url),{})).status,503);
 });
+
+test('bundled advisories use the exact installed archive and stay separate from direct findings', async()=>{
+  const {cataloguePage}=await import('../catalogue-history.mjs');
+  const now=new Date().toISOString(),day=now.slice(0,10),hash='c'.repeat(64);
+  const index={audited:['npm'],snapshot:hash,from:'2020-01-01',checked:now,
+    products:{'npm@12.2.2~components':[[day,day,hash]]}};
+  const row={id:'CVE-2099-34567',published:now,scope:'bundled'};
+  const bucket={get:async path=>({json:async()=>path.endsWith('/current.json')?index:[row]})};
+  const range={start:day+'T00:00:00Z',end:day+'T23:59:59.999Z'};
+  const matched=await cataloguePage(bucket,'npm','12.2.2',range,'');
+  assert.deepEqual(matched.rows,[]);assert.deepEqual(matched.componentRows,[row]);
+  const unknown=await cataloguePage(bucket,'npm','12.2.3',range,'');
+  assert.deepEqual(unknown.componentRows,[]);assert.match(unknown.coverage,/not been verified/);
+});
