@@ -1,5 +1,7 @@
 import {api,orgPath,workspaceLink,display,element,field,button,select,table,link,notice} from './team-ui.js';
 
+const countLabel=(count,singular,plural=singular+'s')=>count+' '+(count===1?singular:plural);
+
 export async function reviewInvite(token){
   const info=await api('invitation','POST',{token});
   display(element('h2','Join '+info.organization+'?'),element('p','Signed in as '+info.email),
@@ -11,7 +13,7 @@ export async function reviewInvite(token){
 }
 export async function organizationDashboard(id,preferredCustomer=''){
   const base=orgPath(id),info=await api(base+'/customers');
-  const title=element('h1',info.name),summary=element('p',info.role+' · '+info.customers.length+' assigned customers');
+  const title=element('h1',info.name),summary=element('p',info.role+' · '+countLabel(info.customers.length,'assigned customer'));
   const chooser=select([['','Choose a customer'],...info.customers.map(c=>[c.id,c.name])],'');
   const detail=element('section');
   let serial=0;
@@ -25,7 +27,7 @@ export async function organizationDashboard(id,preferredCustomer=''){
       const records=[...window.CVEHARBOR_DATA.advisories,...(window.CVEHARBOR_CATALOG?.advisories||[])];
       const result=window.CVEHARBOR_INVENTORY_MATCH.evaluate(data.assets,records,100);
       const names=new Map(data.assets.map(a=>[a.id,a.name]));
-      container.replaceChildren(element('h3','Potential findings'),element('p',result.total+' advisory matches · Verify applicability against installed versions.'),
+      container.replaceChildren(element('h3','Potential findings'),element('p',countLabel(result.total,'advisory match','advisory matches')+' · Verify applicability against installed versions.'),
         ...(result.items.length?[table(['Asset','CVE','Severity','Evidence'],result.items.map(f=>[names.get(f.asset_id),f.id,f.severity,f.evidence]))]:[]));
       if(result.limited)container.append(element('p','Showing the first 100 matches.'));
     }catch{sources=null;container.textContent='Advisory matching is temporarily unavailable.';}
@@ -95,7 +97,7 @@ export async function organizationDashboard(id,preferredCustomer=''){
       }));
     }
     const potential=element('section','Checking advisories for these assets…');
-    detail.replaceChildren(element('h2',data.customer.name),element('p',data.environments.length+' environments · '+data.assets.length+' assets · '+data.findings.length+' reviewed findings'),
+    detail.replaceChildren(element('h2',data.customer.name),element('p',countLabel(data.environments.length,'environment')+' · '+countLabel(data.assets.length,'asset')+' · '+countLabel(data.findings.length,'reviewed finding')),
       tools,...group('Environments',['Environment','Type'],data.environments.map(e=>[e.name,e.kind])),
       ...group('Assets',['Asset','Environment','Technology','Version','Notes',...(canEdit?['Actions']:[])],assetRows),
       potential,...group('Reviewed findings',['Asset','CVE','Status','Notes'],data.findings.map(f=>[f.asset,f.cve_id,f.status,f.notes])),

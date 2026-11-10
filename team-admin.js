@@ -1,4 +1,4 @@
-import {api,orgPath,workspaceLink,display,element,field,button,select,link,table,notice} from './team-ui.js';
+import {api,orgPath,workspaceLink,display,element,field,button,select,link,table,notice,actions} from './team-ui.js';
 import {harborLight} from './team-invitation-art.js';
 
 function banner(title){
@@ -40,9 +40,9 @@ async function members(org){
       await api(base+'/'+m.id,'DELETE',{revision:m.revision});await members(org);
     }));
     const date=m.signed_at?new Intl.DateTimeFormat(undefined,{dateStyle:'medium',timeStyle:'long'}).format(m.signed_at*1000):m.active?'No recorded sign-in':'Available after acceptance';
-    return [m.email,m.role,m.scope==='all'?'All current and future customers':m.customers.map(id=>labels.get(id)||'Removed customer').join(', '),m.status,date,actions];
+    return [m.email,m.role,m.scope==='all'?'All current and future customers':m.customers.map(id=>labels.get(id)||'Removed customer').join(', '),element('span',m.status,'team-member-status'),date,actions];
   });
-  display(banner(org.name),element('h3','Team members'),element('p','Active members have accepted their invitation. Last sign-in shows their most recent successful CVEHarbor sign-in.'),button('Invite member',()=>edit(org,customers),true),button('Refresh members',()=>members(org)),
+  display(banner(org.name),element('h3','Team members'),element('p','Active members have accepted their invitation. Last sign-in shows their most recent successful CVEHarbor sign-in.'),actions(button('Invite member',()=>edit(org,customers),true),button('Refresh members',()=>members(org))),
     table(['Member','Role','Customer access','Status','Last sign-in','Actions'],rows),link('Open workspace',workspaceLink(org.id)));
 }
 function edit(org,customers,member){
@@ -89,8 +89,8 @@ function edit(org,customers,member){
     preview.title='Invitation email for '+payload.email;
     preview.setAttribute('sandbox','');
     preview.srcdoc='<meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src \'none\'; style-src \'unsafe-inline\'; img-src data:"><body style="margin:0">'+message.html.replace('cid:harbor-light.png','data:image/png;base64,'+harborLight);
-    display(element('h2','Invitation email preview'),element('p',message.subject),preview,button('Edit invitation',form),send);
+    display(element('h2','Invitation email preview'),element('p',message.subject),preview,actions(send,button('Edit invitation',form)));
   },true);
-  function form(){display(banner(member?'Edit member access':'Invite a team member'),element('p',org.name),field('Email address',email),field('Organization role',role),help,field('Customer access',scope),choices,button('Back to members',()=>members(org)),save);}
+  function form(){display(banner(member?'Edit member access':'Invite a team member'),element('p',org.name),field('Email address',email),field('Organization role',role),help,field('Customer access',scope),choices,actions(save,button('Back to members',()=>members(org))));}
   form();
 }

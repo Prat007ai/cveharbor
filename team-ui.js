@@ -16,6 +16,9 @@ export function button(text,handler,primary=false){
   };
   return node;
 }
+export function actions(...controls){
+  const group=element('div','','team-actions');group.append(...controls);return group;
+}
 export function field(label,control){
   const wrapper=element('label',label,'team-field');wrapper.append(control);return wrapper;
 }

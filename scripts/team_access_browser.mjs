@@ -14,6 +14,8 @@ const fixture=await unifiedFixture(), {env,DB,emails}=fixture;
 for(const file of ['account-backend/migrations/0029_finding_assignment_links.sql','deployment/proposals/customer-remediation/schema.sql','account-backend/migrations/0032_recovery_control.sql','deployment/proposals/organization-team-access/schema.sql']){
   DB.sql.exec(fs.readFileSync(path.join(root,file),'utf8'));
 }
+DB.sql.prepare('UPDATE sessions SET created_at=unixepoch()-3600 WHERE user_id=?').run('a');
+DB.sql.prepare('UPDATE team_last_login SET signed_at=unixepoch()-3600 WHERE user_id=?').run('a');
 env.TEAM_ACCESS_ENABLED='true';env.TOTP_ENCRYPTION_KEY='fictional browser test only encryption key';
 const existingSecret=newSecret();
 DB.sql.prepare('UPDATE user_totp SET encrypted_secret=? WHERE user_id=?').run(await encryptSecret(env,existingSecret,'b'),'b');
@@ -21,6 +23,12 @@ globalThis.fetch=fixture.fetcher;
 const browser=await chromium.launch({headless:true,...(process.env.TEAM_TEST_CHROME?{executablePath:process.env.TEAM_TEST_CHROME}:{})});
 let lane=Promise.resolve();
 const mime={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.json':'application/json','.png':'image/png'};
+async function screenshot(page,name){
+  const folder=process.env.TEAM_TEST_SCREENSHOTS;
+  if(!folder)return;
+  fs.mkdirSync(folder,{recursive:true});
+  await page.locator('#teamAccess').screenshot({path:path.join(folder,name+'.png')});
+}
 async function session(cookie){
   const context=await browser.newContext({viewport:{width:1080,height:900}});
   if(cookie)await context.addCookies([{name:'cvh_session',value:cookie,url:'https://api.cveharbor.com/',httpOnly:true,secure:true,sameSite:'Strict'}]);
@@ -53,6 +61,7 @@ try{
     await owner.getByLabel('Customer North',{exact:true}).check();
     await owner.getByRole('button',{name:'Preview invitation email'}).click();
     await owner.frameLocator('iframe').getByText('Join Fictional Northstar',{exact:true}).waitFor();
+    if(newAccount)await screenshot(owner,'invitation-preview');
     await owner.getByRole('button',{name:'Send invitation'}).click();
     await owner.locator('#teamStatus').getByText('Invitation sent.').waitFor();
     const url=emails.filter(e=>e.subject.includes('invitation')).at(-1).text_body.match(/https:\/\/cveharbor.com\/workspace\/#team-invite=[a-f0-9]{64}/)[0];
@@ -75,13 +84,16 @@ try{
     assert.equal(await john.locator('#teamPanel').getByRole('button',{name:'Edit asset'}).count(),0);
     await john.locator('#teamPanel').getByRole('heading',{name:'Potential findings'}).waitFor();
     if(newAccount){
+      await screenshot(john,'assigned-workspace');
       await owner.getByRole('button',{name:'Refresh members'}).click();
       const member=owner.getByRole('row').filter({hasText:email});
       await member.getByText('Active',{exact:true}).waitFor();
+      await screenshot(owner,'team-members');
       await member.getByRole('button',{name:'Edit'}).click();
       await owner.getByLabel('Organization role').selectOption('Owner');
       await owner.getByLabel('Organization role').selectOption('Editor');
       assert.equal(await owner.getByLabel('Customer access').inputValue(),'selected');
+      await screenshot(owner,'edit-customer-access');
       await owner.getByLabel('Customer North',{exact:true}).uncheck();
       await owner.getByLabel('Customer South',{exact:true}).check();
       await owner.getByRole('button',{name:'Save changes'}).click();
