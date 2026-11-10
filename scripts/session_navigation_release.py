@@ -154,6 +154,10 @@ def readiness():
 
 
 if __name__ == "__main__":
+    if os.environ.get('CVEHARBOR_SITE_RELEASE')=='team-access':
+        import team_release
+        team_release.site(sys.argv[1],Path(sys.argv[2]).resolve() if len(sys.argv)>2 else None)
+        sys.exit(0)
     if os.environ.get("CVEHARBOR_SITE_RELEASE") == "installed-releases":
         import installed_release
         installed_release.run(sys.argv[1], Path(sys.argv[2]).resolve() if len(sys.argv)>2 else None)

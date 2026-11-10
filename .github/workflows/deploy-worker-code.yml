@@ -47,6 +47,15 @@ on:
       - '.github/workflows/deploy-worker-code.yml'
   workflow_dispatch:
     inputs:
+      team_release:
+        description: Publish the reviewed Team & Access backend
+        type: choice
+        options: [none, disabled, enabled]
+        default: none
+      team_commit:
+        description: Exact reviewed main commit for Team & Access
+        type: string
+        required: false
       firewall_digest:
         description: Publish only confirmed firewall signup and daily delivery on the serving backend
         type: boolean
@@ -217,6 +226,32 @@ jobs:
           rsync --archive --delete release/.build/firewall/account-backend/src/ account-backend/src/
           node --input-type=module -e "import {backendIdentity} from './scripts/build_release_identity.mjs'; import fs from 'node:fs'; import assert from 'node:assert/strict'; assert.equal(backendIdentity(),fs.readFileSync('release/firewall-backend-identity.txt','utf8').trim())"
           node --test account-backend/tests/firewall-digest.test.mjs
+      - name: Assemble the reviewed Team & Access backend
+        if: inputs.team_release == 'enabled' || inputs.team_release == 'disabled'
+        env:
+          TEAM_STATE: ${{ inputs.team_release }}
+          TEAM_COMMIT: ${{ inputs.team_commit }}
+          MODE: ${{ inputs.release_mode }}
+          OTHER_PACKAGE: ${{ inputs.firewall_digest || inputs.intelligence || inputs.manual_customer || inputs.customer_reminders || inputs.customer_investigation || inputs.assignment_release || inputs.query_fix_287 }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test "$GITHUB_EVENT_NAME" = workflow_dispatch
+          test "$TEAM_COMMIT" = "$GITHUB_SHA"
+          test "$MODE" = code-only
+          test "$OTHER_PACKAGE" != true
+          python -c "import sys;sys.path.insert(0,'scripts');import team_release as t;t.reviewed()"
+          python scripts/team_release.py "$TEAM_STATE" "$RUNNER_TEMP/team-worker"
+          rsync --archive --delete "$RUNNER_TEMP/team-worker/account-backend/src/" account-backend/src/
+          cp "$RUNNER_TEMP/team-worker/account-backend/wrangler.toml" account-backend/wrangler.toml
+          node --input-type=module -e "import {backendIdentity} from './scripts/build_release_identity.mjs';import fs from 'node:fs';import assert from 'node:assert/strict';assert.equal(backendIdentity(),fs.readFileSync('release/team-backend-'+process.env.TEAM_STATE+'.txt','utf8').trim())"
+          node --test account-backend/tests/team-access.test.mjs
+      - name: Verify the Team & Access predecessor and database
+        if: inputs.team_release == 'enabled' || inputs.team_release == 'disabled'
+        env:
+          TEAM_STATE: ${{ inputs.team_release }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
+        run: node scripts/team_release_check.mjs before
       - name: Confirm deployment credentials
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
@@ -411,6 +446,13 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
         run: npx --yes wrangler@4.156.0 deploy --config wrangler.toml
+      - name: Verify the live Team & Access setting and authentication boundary
+        if: inputs.team_release == 'enabled' || inputs.team_release == 'disabled'
+        env:
+          TEAM_STATE: ${{ inputs.team_release }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
+        run: node scripts/team_release_check.mjs after
       - name: Configure optional existing NVD key securely
         if: steps.mode.outputs.maintenance != 'false'
         working-directory: account-backend

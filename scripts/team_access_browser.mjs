@@ -2,14 +2,14 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import {createRequire} from 'node:module';
-import {fileURLToPath} from 'node:url';
-import worker from '../account-backend/src/index.js';
+import {fileURLToPath,pathToFileURL} from 'node:url';
+const worker=(await import(process.env.TEAM_TEST_WORKER?pathToFileURL(process.env.TEAM_TEST_WORKER).href:'../account-backend/src/index.js')).default;
 import {unifiedFixture} from '../account-backend/tests/helpers/unified-db.mjs';
 import {encryptSecret,totp,newSecret} from '../account-backend/src/totp.js';
 
 const require=createRequire(new URL('../staging/package.json',import.meta.url));
 const {chromium}=require('playwright-core');
-const root=fileURLToPath(new URL('../',import.meta.url)),site=path.join(root,'public');
+const root=fileURLToPath(new URL('../',import.meta.url)),site=process.env.TEAM_TEST_SITE||path.join(root,'public');
 const fixture=await unifiedFixture(), {env,DB,emails}=fixture;
 for(const file of ['account-backend/migrations/0029_finding_assignment_links.sql','deployment/proposals/customer-remediation/schema.sql','account-backend/migrations/0032_recovery_control.sql','deployment/proposals/organization-team-access/schema.sql']){
   DB.sql.exec(fs.readFileSync(path.join(root,file),'utf8'));

@@ -5,7 +5,7 @@ on:
       schema:
         description: Customer assignment storage to activate
         type: choice
-        options: [managed, manual, firewall]
+        options: [managed, manual, firewall, team]
         default: managed
       reviewed_commit:
         description: Exact reviewed main commit
