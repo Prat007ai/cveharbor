@@ -28,6 +28,15 @@ if os.environ.get('CVEHARBOR_SITE_RELEASE') == 'account-harbor-views':
         'tile-authenticator', 'tile-recovery', 'tile-notifications', 'tile-session',
         'tile-workspace', 'symbol-members', 'symbol-active', 'symbol-pending', 'symbol-team', 'symbol-inventory')}
 
+elif os.environ.get('CVEHARBOR_SITE_RELEASE') == 'account-responsive':
+    BASE = '38eefec2e1d61b52a685b3849074dbf3637f4a01'
+    VERSION = 'c12b677c-7c02-4b3b-b844-edc6a09f5bdd'
+    DEPLOYMENT = 'f34e683e-23c7-4509-8701-836538744bfb'
+    PREVIOUS_PACKAGE = 'account-harbor-views'
+    BRANCH = 'fix/account-responsive'
+    CHANGED = {'account-harbor.css'}
+    ADDED = set()
+
 
 def prepare(out):
     team_release.previous(BASE, 'session_navigation_release.py', 'prepare', out, site_release=PREVIOUS_PACKAGE)
@@ -59,6 +68,6 @@ def run(action, out):
     elif action == 'publish':
         picker.publish(out, changed=CHANGED, added=ADDED, reviewed_pr=matches[0], ready=ready,
                        previous_version=VERSION, previous_deployment=DEPLOYMENT,
-                       served_copy=out/'verified-origin' if BRANCH=='feature/account-harbor-views' else None)
+                       served_copy=out/'verified-origin' if BRANCH in ('feature/account-harbor-views','fix/account-responsive') else None)
     else:
         raise ValueError(action)
