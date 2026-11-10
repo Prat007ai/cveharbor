@@ -150,7 +150,20 @@ def evidence(scans,start):
         collect('Canonical Noble notices',noble,canonical_noble)
         collect('other Canonical series',refs({'ubuntu'})-noble,lambda:vendor.other_ubuntu(start,history))
     optional={r for r in needed if r[2]=='optional'}
-    collect('renderer maintainer notices',optional,lambda:renderer_history(start,history,vendor.load_json))
+    def veeam_notices():
+        for ident,kb,when,lines in [('CVE-2026-98432','4966','2026-11-06',('12.3.','13.1.')),
+                                   ('KB4879','4879','2026-07-14',('13.',))]:
+            url='https://www.veeam.com/kb'+kb
+            with vendor.fetch(url) as response:
+                html=response.read().decode()
+            if when not in html or ('12.3.0.65' if kb=='4879' else ident) not in html:
+                raise ValueError('Veeam impact statement could not be verified')
+            for ref in veeam_refs:
+                if ref[1].startswith(lines):
+                    expected[ref].append(dict(id=ident,published=when,url=url))
+    veeam_refs={r for r in optional if r[0]=='veeam'}
+    collect('Veeam impact statements',veeam_refs,veeam_notices)
+    collect('renderer maintainer notices',optional-veeam_refs,lambda:renderer_history(start,history,vendor.load_json))
     bundled={r for r in needed if r[2]=='bundled'}
     collect('npm archive and OSV',bundled,
             lambda:npm_history(start,history,sorted({v for k,v,c in bundled}),vendor.load_json,vendor.fetch))

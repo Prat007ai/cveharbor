@@ -15,7 +15,7 @@ from urllib.parse import urlencode
 from catalogue_promotion import ORIGIN, REPO, request
 
 CONFIG = json.loads((Path(__file__).resolve().parents[1]/'site-gate/version-products.json').read_text())
-COMPONENTS = {'react':'optional', 'sitefinity':'optional', 'npm':'bundled'}
+COMPONENTS = {'react':'optional', 'sitefinity':'optional', 'veeam':'optional', 'npm':'bundled'}
 
 
 def period_start(day, months):

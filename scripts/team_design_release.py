@@ -17,10 +17,10 @@ PREVIOUS_PACKAGE = 'card-source-coverage'
 BRANCH = 'feature/team-harbor-design'
 
 if os.environ.get('CVEHARBOR_SITE_RELEASE') == 'account-harbor-views':
-    BASE = 'd603c5084483a57a341d40b95560874fe91d354f'
-    VERSION = '7880dc83-e350-449e-8f02-806cb60f7f66'
-    DEPLOYMENT = '8f2c9d02-b538-42f9-92f7-374fe1e2427a'
-    PREVIOUS_PACKAGE = 'team-harbor-design'
+    BASE = 'dafadba4e652d2ab58ed19b6d2b32e78db6dedc5'
+    VERSION = '8955f2a2-04c8-4d98-a198-80ed7f3f61aa'
+    DEPLOYMENT = 'fda7eed8-45b6-47c6-924b-d432dd75cc95'
+    PREVIOUS_PACKAGE = 'public-advisory-scopes'
     BRANCH = 'feature/account-harbor-views'
     CHANGED = {'account/index.html', 'team-admin.js'}
     ADDED = {'account-harbor.css'} | {'assets/team-harbor/'+name+'.jpg' for name in (

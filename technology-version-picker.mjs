@@ -56,7 +56,7 @@ export async function openPicker(card,context) {
     if(!state)return;
     if(state.components.size){
       const notices=element('section');
-      notices.append(element('h3',state.id==='npm'?'Advisories for bundled packages':'Optional component advisories'));
+      notices.append(element('h3',state.id==='npm'?'Advisories for bundled packages':state.id==='veeam'?'Deployment and component advisories':'Optional component advisories'));
       const list=element('ul');
       for(const row of state.components.values())list.append(resultItem(row));
       notices.append(list);results.append(notices);
