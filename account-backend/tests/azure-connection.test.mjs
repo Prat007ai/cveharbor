@@ -70,3 +70,16 @@ test('existing recovery hold blocks the deployment probe',async()=>{
   const response=await app.fetch(request(),{DB,RECOVERY_CONTROL_REQUIRED:'true'},{});
   assert.equal(response.status,503);
 });
+
+test('empty HTTP body streams are admitted but streamed content is rejected before Azure',async()=>{
+  const empty=request({body:new Uint8Array(0)});
+  assert.notEqual(empty.body,null);
+  let calls=0;
+  const fetcher=async()=>Response.json(++calls===1?{access_token:'fictional-token',token_type:'Bearer',expires_in:3600}:{data:[]});
+  assert.equal((await azureConnectionProbe(empty,env(),release,{now,fetcher})).status,200);
+  assert.equal(calls,2);
+  for(const content of [' ', 'fictional customer prompt']) {
+    const response=await azureConnectionProbe(request({body:content}),env(),release,{now,fetcher:()=>assert.fail('No Azure request for nonempty body')});
+    assert.equal(response.status,404);
+  }
+});
