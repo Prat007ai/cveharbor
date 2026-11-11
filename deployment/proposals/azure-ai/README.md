@@ -38,6 +38,8 @@ The new D1 schema, allowance enforcement, dashboard, app routes, credential-inst
 
 ## Local verification
 
+The workflow security checker permits the Azure credential only in this exact protected manual verification job. Its changed source hash requires regenerating the existing recovery procedure manifest and the dependent rehearsal manifest. Only those two checksum entries change; recovery SQL, executor code, live approval values and recovery authorization remain unchanged. Any future recovery execution still requires a separately reviewed source and matching approvals.
+
 Run `node --test deployment/proposals/azure-ai/verify.test.mjs` with Node 22 or newer. Tests cover valid authentication, form encoding, redirect rejection settings, credential-safe failures, request bounds, missing usage, caching, reasoning, model changes, resource denial and explicit inference selection. No real credentials or paid APIs are used by tests.
 
 ## Sources
