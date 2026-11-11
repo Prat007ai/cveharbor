@@ -86,3 +86,91 @@ body.workspace-operations{--ws-line:#19465b;--ws-muted:#a1bfd0;--ws-cyan:#25e2dc
 /* Keep finding labels readable when the overview is the initial mobile view. */
 .ws-rem-stats>div>div{min-width:0;overflow-wrap:anywhere}
 @media(max-width:420px){.ws-donut-layout{grid-template-columns:minmax(0,1fr)}.ws-donut{justify-self:center}.ws-rem-stats>div{flex-direction:column;gap:4px;text-align:center}}
+
+/* Approved dark Workspace overview. The platform rail retains its existing behavior. */
+.ws-security-art{display:none}
+.workspace-authenticated .ws-security-art{display:block;position:absolute;right:220px;top:0;width:530px;height:145px;z-index:-1;opacity:.8;pointer-events:none}
+@media(max-width:1400px){.workspace-authenticated .ws-security-art{right:0;opacity:.22;width:450px}}
+.workspace-overview{--workspace-menu:220px;--platform-rail:74px;background:#041322;color:#e6f2fa}
+.workspace-overview.command-sidebar-expanded{--platform-rail:214px}
+.ws-navigation{display:none}
+.workspace-overview.workspace-authenticated .ws-navigation{display:block;position:fixed;left:var(--platform-rail);top:80px;bottom:0;width:var(--workspace-menu);padding:24px 14px;border-right:1px solid #1b384b;background:linear-gradient(150deg,#0b1d2f,#071426);overflow:auto;z-index:25}
+.ws-navigation-heading{display:flex;align-items:center;justify-content:space-between;gap:5px;margin-bottom:25px;font-size:18px;white-space:nowrap}
+.ws-navigation-heading button{background:transparent;border:1px solid #28475a;border-radius:6px;color:#a9d2df;font-size:22px;width:28px;min-height:32px;cursor:pointer}
+.ws-navigation nav{display:grid;gap:9px}
+.ws-navigation nav a{display:flex;align-items:center;gap:14px;padding:12px;color:#b9cbdc;text-decoration:none;font-size:14px;border:1px solid transparent;border-radius:8px;min-height:47px}
+.ws-navigation nav a:hover,.ws-navigation nav a:focus-visible{background:#123248;color:#e6ffff}
+.ws-navigation nav a[aria-current]{color:#d7fff6;border-color:#24887f;background:linear-gradient(110deg,#145e59,#0b303b);box-shadow:inset 2px 0 #45ddc6}
+.ws-navigation svg{width:23px;height:23px;flex:none;display:block}
+.ws-navigation-divider{height:1px;background:#1b3648;margin:16px 10px}
+.ws-menu-collapsed{--workspace-menu:72px}
+.ws-menu-collapsed .ws-navigation-heading strong,.ws-menu-collapsed .ws-navigation nav a>span:last-child{display:none}
+.ws-menu-collapsed .ws-navigation-heading{justify-content:center}
+.ws-menu-collapsed .ws-navigation{padding-inline:8px}
+.ws-menu-collapsed .ws-navigation nav a{padding:12px;justify-content:center}
+.workspace-overview .account-hero-header{min-height:80px;padding:12px 30px;background:linear-gradient(110deg,#06192d,#08273a 65%,#071729);border-bottom:1px solid #1a394e}
+.workspace-overview .account-brand-name{font-size:26px}.workspace-overview .account-logo-icon{font-size:42px}.workspace-overview .account-brand-name small{font-size:9px;letter-spacing:2px}
+.workspace-overview.workspace-authenticated .account-new-main{margin-left:var(--workspace-menu);padding:0 28px 30px;max-width:none;width:auto}
+.workspace-overview.workspace-authenticated .account-hero-grid{min-height:146px;padding:28px 0 22px;isolation:isolate}
+.workspace-overview .account-hero-grid:before{background:none}
+.workspace-overview .ws-heading-beam{display:none}
+.workspace-overview .account-kicker{letter-spacing:2.8px;font-size:11px;margin-bottom:8px}
+.workspace-overview .account-hero-left h1{font-size:38px;letter-spacing:-.8px;line-height:1.2;margin-bottom:9px}
+.workspace-overview .account-hero-description{font-size:15px;line-height:1.5;max-width:72%!important;color:#bed0de}
+.workspace-overview .ws-date-card{top:23px;padding:11px 14px;background:#0b2436;box-shadow:none}.workspace-overview .ws-date-card time{font-size:12px}
+.workspace-overview .ws-toolbar{top:92px;max-width:45%;font-size:10px}.workspace-overview .ws-toolbar .ws-button{padding:5px 8px}
+.workspace-overview .ws-header-actions .account-back-link{display:none}.workspace-overview .ws-search-link{font-size:13px;min-width:300px;padding:11px 14px}.workspace-overview #wsAccountIdentity{font-size:12px}
+.workspace-overview .ws-dashboard{display:flex;flex-direction:column}
+body.workspace-overview.workspace-authenticated #workspaceAccess:not([hidden]){display:flex!important}
+.workspace-overview .ws-metrics{order:0;grid-template-columns:repeat(5,minmax(0,1fr));gap:15px}
+.workspace-overview .ws-metric{min-height:108px;padding:16px;gap:16px;border-radius:10px;border:1px solid #23516a;background:linear-gradient(125deg,color-mix(in srgb,var(--tint) 30%,#10283a),#091e2e);box-shadow:inset 0 1px #ffffff08}
+.workspace-overview .ws-metric:after{display:none}.workspace-overview .ws-metric>div{display:flex;flex-direction:column;min-width:0}.workspace-overview .ws-metric strong{order:-1;font-size:28px;line-height:1.2;margin-bottom:4px}.workspace-overview .ws-metric h2{font-size:13px;line-height:1.4}.workspace-overview .ws-metric small{font-size:10px;line-height:1.5}.workspace-overview .ws-metric .ws-icon{width:55px;height:62px;flex:none}
+.workspace-overview .ws-metric:nth-child(2){order:4}.workspace-overview .ws-metric:nth-child(3){order:1}.workspace-overview .ws-metric:nth-child(4){order:2}.workspace-overview .ws-metric:nth-child(5){order:3}
+.workspace-overview .ws-panels{order:1;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);gap:16px;margin-top:20px}
+.workspace-overview .ws-panel{grid-column:auto;grid-row:auto;padding:18px 20px;border-radius:11px;border:1px solid #22475e;background:radial-gradient(ellipse at top left,#123d5266,transparent 80%),linear-gradient(135deg,#0a2334,#071b2a);min-width:0;min-height:0;box-shadow:inset 0 1px #ffffff08}
+.workspace-overview .ws-remediation{order:0}.workspace-overview .ws-trend{order:1}.workspace-overview .ws-progress{order:2}.workspace-overview .ws-activity{order:3}.workspace-overview .ws-intelligence{order:4}.workspace-overview .ws-health{order:5;align-self:stretch}.workspace-overview .ws-reports{order:6;grid-column:1/-1}
+.workspace-overview .ws-section-heading{order:2}.workspace-overview .ws-tools{order:3}.workspace-overview .ws-footer-note{order:4}
+.workspace-overview .ws-panel-heading h2{font-size:19px;line-height:1.25;letter-spacing:-.2px}.workspace-overview .ws-panel-heading h2>span{width:30px;height:30px}.workspace-overview .ws-panel-heading a{font-size:11px;white-space:nowrap}.workspace-overview .ws-scope{font-size:11px;line-height:1.5;margin:8px 0}
+.workspace-overview .ws-tabs{gap:5px;margin:10px 0 8px}.workspace-overview .ws-tabs button{font-size:11px;padding:5px 9px}.workspace-overview .ws-donut-layout{grid-template-columns:180px minmax(0,1fr);gap:25px;padding:13px 8px}.workspace-overview .ws-donut{height:172px;width:172px;padding:24px}.workspace-overview .ws-donut strong{font-size:30px}.workspace-overview .ws-donut small{font-size:12px}
+.workspace-overview .ws-legend{border:0;padding:0;font-size:12px}.workspace-overview .ws-legend li{margin:0;padding:8px 0;border-bottom:1px solid #204052}.workspace-overview .ws-legend small{font-size:11px}.workspace-overview .ws-dot{height:10px;width:10px;margin-right:5px}.workspace-overview .ws-rem-stats{display:none}
+.workspace-overview .ws-trend-empty{min-height:250px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:25px;background:repeating-linear-gradient(0deg,transparent 0 47px,#24405244 48px 49px)}
+.ws-trend-empty>span svg{width:44px;height:44px;color:#3ce2db}.ws-trend-empty strong{font-size:18px;margin-top:12px}.ws-trend-empty p{font-size:13px;line-height:1.6;color:#9ab7cb;max-width:390px;margin:10px 0 16px}.ws-trend-empty a{font-size:12px;color:#50ded5}
+.ws-progress-summary{display:flex;align-items:center;gap:25px;margin:25px 0}.ws-progress-summary progress{appearance:none;width:100%;min-width:0;height:18px;border:0;border-radius:20px;background:#28465d;overflow:hidden}.ws-progress-summary progress::-webkit-progress-bar{background:#28465d;border-radius:20px}.ws-progress-summary progress::-webkit-progress-value{background:linear-gradient(90deg,#24cfb7,#51ecc6);border-radius:20px}.ws-progress-summary progress::-moz-progress-bar{background:#39dfbf}.ws-progress-summary strong{display:block;font-size:26px;color:#e8f6ff}.ws-progress-summary span{font-size:12px;color:#bbd2df}
+.ws-progress-states{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:10px 0 18px}.ws-progress-states a{padding:12px 8px;border:1px solid color-mix(in srgb,var(--status-color) 35%,#193447);border-radius:8px;text-decoration:none;background:color-mix(in srgb,var(--status-color) 8%,#0b2332)}.ws-progress-states strong{display:block;font-size:21px;color:var(--status-color);margin-bottom:5px}.ws-progress-states span{font-size:11px;color:#d2e3eb;overflow-wrap:anywhere}
+.workspace-overview .ws-table th{font-size:10px;padding:8px 5px}.workspace-overview .ws-table td,.workspace-overview .ws-table td strong{font-size:12px;line-height:1.4;padding-block:7px}.workspace-overview .ws-table td small{font-size:10px;line-height:1.5}.workspace-overview .ws-pagination{font-size:11px}.workspace-overview .ws-pagination button{font-size:11px;padding:4px 7px}.workspace-overview .ws-severity{font-size:9px;padding:4px 6px}.workspace-overview .ws-health-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:20px}.workspace-overview .ws-health-grid article{display:flex;flex-direction:column;min-height:180px;padding:14px;background:#102d3d;border-color:#2a5061}.workspace-overview .ws-health-gauge{width:32px;height:32px;border:0;border-radius:0;background:none;box-shadow:none;margin-bottom:9px}.workspace-overview .ws-health-gauge small{display:none}.workspace-overview .ws-health-gauge svg{width:30px;height:30px}.workspace-overview .ws-health-grid h3{font-size:12px;margin-bottom:8px}.workspace-overview .ws-health-grid strong{font-size:15px;line-height:1.5}.workspace-overview .ws-health-grid p{font-size:11px;line-height:1.6}
+.workspace-overview .ws-reports .ws-empty{min-height:120px}.workspace-overview .ws-navigation a:focus-visible,.workspace-overview .ws-navigation button:focus-visible{outline:2px solid #52e4d7;outline-offset:2px}
+@media(max-width:1600px){.workspace-overview{--workspace-menu:195px}.workspace-overview.ws-menu-collapsed{--workspace-menu:72px}.workspace-overview .ws-metric{padding:12px;gap:9px}.workspace-overview .ws-metric .ws-icon{width:38px;height:45px}.workspace-overview .ws-metric h2{font-size:12px}.workspace-overview .ws-panel{padding:15px}.workspace-overview .ws-donut-layout{grid-template-columns:140px minmax(0,1fr);gap:12px}.workspace-overview .ws-donut{width:138px;height:138px;padding:20px}.workspace-overview .ws-panel-heading h2{font-size:17px}.workspace-overview .ws-health-grid{gap:7px}.workspace-overview .ws-health-grid article{padding:10px}.workspace-overview .ws-legend{font-size:11px}}
+@media(max-width:1200px){.workspace-overview .ws-metrics{grid-template-columns:repeat(3,minmax(0,1fr))}.workspace-overview .ws-health-grid{grid-template-columns:1fr}.workspace-overview .ws-health-grid article{min-height:0}.workspace-overview .ws-date-card{position:static;float:none;width:fit-content;margin:0 0 10px}.workspace-overview .ws-toolbar{position:static;max-width:none;justify-content:flex-start;margin:8px 0}.workspace-overview .account-hero-description{max-width:100%!important}.workspace-overview .ws-donut-layout{grid-template-columns:1fr}.workspace-overview .ws-donut{justify-self:center}.workspace-overview .ws-progress-states{grid-template-columns:repeat(3,minmax(0,1fr))}.workspace-overview .ws-table th:nth-child(2),.workspace-overview .ws-table td:nth-child(2){display:table-cell}}
+@media(max-width:1000px){.workspace-overview .ws-panels{grid-template-columns:1fr}.workspace-overview .ws-reports{grid-column:auto}.workspace-overview .ws-donut-layout{grid-template-columns:170px minmax(0,1fr)}.workspace-overview .ws-health-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.workspace-overview .ws-tools{grid-template-columns:1fr}.workspace-overview .ws-trend-empty{min-height:190px}}
+@media(max-width:820px){.workspace-overview.workspace-authenticated .ws-navigation{position:relative;left:auto;top:auto;bottom:auto;width:100%;padding:12px 16px;border-bottom:1px solid #254252}.ws-navigation-heading{margin-bottom:8px;font-size:16px}.ws-navigation nav{display:flex;flex-wrap:wrap;gap:5px}.ws-navigation nav a{font-size:12px;gap:7px;min-height:38px;padding:7px}.ws-navigation svg{width:18px;height:18px}.ws-navigation-divider{display:none}.workspace-overview.ws-menu-collapsed .ws-navigation-heading{justify-content:space-between}.ws-menu-collapsed .ws-navigation-heading strong{display:block}.ws-menu-collapsed #wsNavigationLinks{display:none}.workspace-overview.workspace-authenticated .account-new-main{margin-left:0;padding:0 16px 24px}.workspace-overview .account-hero-header{min-height:70px;padding:12px 16px}.workspace-overview .account-brand-name{font-size:22px}.workspace-overview .account-hero-left h1{font-size:32px}.workspace-overview .ws-header-actions{margin-left:auto}.workspace-overview .account-hero-description{font-size:14px}.workspace-overview .ws-panels{gap:14px}.workspace-overview .ws-metrics{gap:10px}.workspace-overview .ws-metric{min-height:110px}.workspace-overview .ws-health-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.workspace-overview .ws-progress-states{grid-template-columns:repeat(5,minmax(0,1fr))}}
+@media(max-width:540px){.workspace-overview .ws-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.workspace-overview .ws-metric:last-child{grid-column:auto}.workspace-overview .ws-metric .ws-icon{width:29px;height:36px}.workspace-overview .ws-metric .ws-icon svg{width:22px;height:22px}.workspace-overview .ws-metric strong{font-size:24px}.workspace-overview .ws-metric h2{font-size:11px}.workspace-overview .ws-panel-heading{align-items:flex-start;gap:10px;flex-wrap:wrap}.workspace-overview .ws-panel-heading h2{font-size:17px}.workspace-overview .ws-donut-layout{grid-template-columns:1fr}.workspace-overview .ws-health-grid{grid-template-columns:1fr}.workspace-overview .ws-progress-states{grid-template-columns:repeat(3,minmax(0,1fr))}.workspace-overview .ws-table td,.workspace-overview .ws-table td strong{font-size:10px}.workspace-overview .ws-table th{font-size:8px}.workspace-overview .ws-table td small{font-size:9px}.workspace-overview .ws-severity{font-size:7px;padding:3px}.workspace-overview .ws-tabs{flex-wrap:wrap}.workspace-overview .ws-tabs button{font-size:10px}.workspace-overview .ws-header-actions .ws-account-link{font-size:10px}.workspace-overview .account-brand-name small{font-size:7px}.workspace-overview .ws-progress-summary{gap:12px}}
+@media print{.workspace-overview .ws-navigation{display:none!important}.workspace-overview.workspace-authenticated .account-new-main{margin-left:0}}
+
+/* Keep the desktop overview close to the reference's three compact rows. */
+@media(min-width:1500px){
+ .workspace-overview.workspace-authenticated .account-hero-grid{min-height:130px;padding-top:22px;padding-bottom:16px}
+ .workspace-overview .ws-panels{grid-template-rows:310px 275px 285px auto}
+ .workspace-overview .ws-panels>.ws-panel:not(.ws-reports){display:flex;flex-direction:column}
+ .workspace-overview .ws-remediation>.ws-scope{font-size:10px;margin:3px 0}
+ .workspace-overview .ws-donut-layout{grid-template-columns:156px minmax(0,1fr);padding:6px 4px;gap:20px}
+ .workspace-overview .ws-donut{width:148px;height:148px;padding:21px}
+ .workspace-overview .ws-legend li{padding:6px 0}
+ .workspace-overview #wsRemediationPanel,.workspace-overview #wsActivityPanel,.workspace-overview #wsIntelligencePanel{flex:1;min-height:0;overflow:auto;scrollbar-width:thin;scrollbar-color:#30576d transparent}
+ .workspace-overview .ws-trend-empty{flex:1;min-height:0;padding:14px}
+ .workspace-overview #wsProgressPanel{min-height:0;overflow:auto;scrollbar-width:thin}
+ .workspace-overview .ws-progress-summary{margin:6px 0}
+ .workspace-overview .ws-progress-summary strong{font-size:24px;line-height:1.2}
+ .workspace-overview .ws-progress-states{margin:8px 0}
+ .workspace-overview .ws-progress-states a{padding:8px}
+ .workspace-overview .ws-health-grid{margin-top:10px;gap:10px;flex:1;min-height:0}
+ .workspace-overview .ws-health-grid article{min-height:0;padding:12px;overflow:auto;scrollbar-width:thin}
+ .workspace-overview .ws-health-grid p{font-size:10px;line-height:1.5}
+ .workspace-overview .ws-table td,.workspace-overview .ws-table td strong{padding-block:5px}
+}
+
+.workspace-overview.team-requested .ws-navigation{display:none}
+.workspace-overview.team-requested .account-new-main{margin-left:0}
+.workspace-overview .ws-panel-heading{flex-wrap:wrap}
+.workspace-overview .ws-panel-heading h2{min-width:0;overflow-wrap:anywhere}
+.workspace-overview .ws-table th{white-space:normal;overflow-wrap:anywhere}
+@media(max-width:1200px){.workspace-overview .ws-panels{grid-template-columns:1fr}.workspace-overview .ws-reports{grid-column:auto}}
