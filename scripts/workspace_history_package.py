@@ -3,13 +3,19 @@ from pathlib import Path
 import sys
 import team_release as team
 import catalogue_package as pkg
+import azure_worker_package as azure
 
-BASE = 'b7b8d85775f11261629843f838d55d1ce67f019e'
-PREDECESSOR = 'd075a90fa2afd00deb5d500e0beb7129daf343d2deed0127bc94fa4f4f4b9f6e'
+BASE = 'f99101a2ed8f23804b0181af0f8888f911a9b40c'
+PREDECESSOR = 'f903b738021362b5a008a8b9704481699af4b9cc41c49d2f8ae75503d8d87abc'
 
 def build(out, check=True):
     pkg.require(not out.exists(), 'Use a new package directory')
-    team.previous(BASE, 'team_release.py', 'cvie-refresh', out)
+    # Preserve the separately approved Azure connection byte-for-byte. Its own
+    # builder reconstructs the serving CVIE predecessor and checks the Azure pin.
+    for name in ('scripts/azure_worker_package.py','account-backend/src/azure-client.js',
+                 'account-backend/src/azure-connection.js','release/azure-worker-backend.txt'):
+        pkg.require(Path(name).read_bytes().replace(b'\r\n',b'\n') == pkg.git('show',BASE+':'+name), 'Azure source changed: '+name)
+    azure.build(out)
     pkg.require(team.identity(out) == PREDECESSOR, 'Serving predecessor mismatch')
     source = out / 'account-backend/src'
     before = {p.name: p.read_bytes() for p in source.iterdir() if p.is_file()}

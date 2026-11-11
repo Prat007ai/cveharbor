@@ -11,7 +11,7 @@ assert.ok(after||process.argv[2]==='before');
 const account='aa99b9b15e0492302e4f6484b8d27bc2';
 assert.equal(process.env.CLOUDFLARE_ACCOUNT_ID,account);
 const prior=state==='disabled'?'firewall-backend-identity':'team-backend-disabled';
-const file=state==='workspace-history'?(after?'workspace-history-backend':'cvie-refresh-backend'):state==='cvie-refresh'?(after?'cvie-refresh-backend':'team-backend-enabled'):(after?'team-backend-'+state:prior);
+const file=state==='workspace-history'?(after?'workspace-history-backend':'azure-worker-backend'):state==='cvie-refresh'?(after?'cvie-refresh-backend':'team-backend-enabled'):(after?'team-backend-'+state:prior);
 await verifyService({expectedRelease:fs.readFileSync('release/'+file+'.txt','utf8').trim()});
 const db=d1Client({database:PRODUCTION_DB,readOnly:true});
 const md=await db.metadata();
@@ -26,6 +26,9 @@ assert.ok(res.ok,'Cannot confirm live Worker bindings');
 const settings=await res.json();
 assert.equal(settings.success,true);
 if(state==='workspace-history'){
+ const azure={CVEHARBOR_AZURE_OPENAI_ENDPOINT:'https://cvie-prod.openai.azure.com/',CVEHARBOR_AZURE_OPENAI_DEPLOYMENT:'gpt-5.4-mini',CVEHARBOR_AZURE_OPENAI_TENANT_ID:'f95d3766-898f-4e4d-a0ad-9b5efa394592',CVEHARBOR_AZURE_OPENAI_CLIENT_ID:'dec0de99-1e60-461f-bfb2-aa518b40036a'};
+ for(const [name,value]of Object.entries(azure)){const binding=settings.result.bindings.find(b=>b.name===name);assert.equal(binding?.type,'plain_text');assert.equal(binding.text,value,'Azure configuration must be preserved');}
+ for(const name of ['CVEHARBOR_AZURE_OPENAI_CLIENT_SECRET','CVEHARBOR_AZURE_CONNECTION_PROBE'])assert.equal(settings.result.bindings.find(b=>b.name===name)?.type,'secret_text','Existing Azure secret binding must remain present');
  await db.prepare('SELECT day,captured_at,metric_version,needs_review,in_progress,fixed,accepted_risk,not_applicable,inventory_records FROM workspace_finding_daily_snapshots LIMIT 0').all();
  const history=settings.result.bindings.find(b=>b.name==='WORKSPACE_HISTORY_ENABLED');
  if(after){assert.equal(history?.type,'plain_text');assert.equal(history.text,'true');}

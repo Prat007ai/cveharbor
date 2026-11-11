@@ -252,7 +252,7 @@ jobs:
           node --input-type=module -e "import {backendIdentity} from './scripts/build_release_identity.mjs';import fs from 'node:fs';import assert from 'node:assert/strict';assert.equal(backendIdentity(),fs.readFileSync(process.env.TEAM_STATE==='workspace-history'?'release/workspace-history-backend.txt':process.env.TEAM_STATE==='cvie-refresh'?'release/cvie-refresh-backend.txt':'release/team-backend-'+process.env.TEAM_STATE+'.txt','utf8').trim())"
           node --test account-backend/tests/team-access.test.mjs
           if [ "$TEAM_STATE" = cvie-refresh ]; then node --test account-backend/tests/cvie-evidence.test.mjs account-backend/tests/cvie-shared.test.mjs; fi
-          if [ "$TEAM_STATE" = workspace-history ]; then node --test account-backend/tests/workspace-history.test.mjs account-backend/tests/workspace-summary.test.mjs account-backend/tests/cvie-evidence.test.mjs account-backend/tests/cvie-shared.test.mjs; fi
+          if [ "$TEAM_STATE" = workspace-history ]; then node --test account-backend/tests/azure-connection.test.mjs account-backend/tests/workspace-history.test.mjs account-backend/tests/workspace-summary.test.mjs account-backend/tests/cvie-evidence.test.mjs account-backend/tests/cvie-shared.test.mjs; fi
       - name: Verify the Team & Access predecessor and database
         if: inputs.team_release == 'enabled' || inputs.team_release == 'disabled' || inputs.team_release == 'cvie-refresh' || inputs.team_release == 'workspace-history'
         env:

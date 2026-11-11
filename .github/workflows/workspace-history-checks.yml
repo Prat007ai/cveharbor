@@ -34,6 +34,6 @@ jobs:
           python scripts/workspace_history_package.py "$RUNNER_TEMP/history-worker"
           rsync --archive --delete "$RUNNER_TEMP/history-worker/account-backend/src/" account-backend/src/
           cp "$RUNNER_TEMP/history-worker/account-backend/wrangler.toml" account-backend/wrangler.toml
-          node --test account-backend/tests/workspace-history.test.mjs account-backend/tests/workspace-summary.test.mjs account-backend/tests/team-access.test.mjs account-backend/tests/cvie-evidence.test.mjs account-backend/tests/cvie-shared.test.mjs
+          node --test account-backend/tests/azure-connection.test.mjs account-backend/tests/workspace-history.test.mjs account-backend/tests/workspace-summary.test.mjs account-backend/tests/team-access.test.mjs account-backend/tests/cvie-evidence.test.mjs account-backend/tests/cvie-shared.test.mjs
           cd account-backend
           npx --yes wrangler@4.156.0 deploy --dry-run --outdir "$RUNNER_TEMP/history-worker-bundle"
