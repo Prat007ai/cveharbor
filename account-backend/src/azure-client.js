@@ -36,7 +36,9 @@ async function jsonRequest(fetcher, url, options, stage) {
   try {
     const response = await fetcher(url, {
       ...options,
-      redirect: 'error',
+      // Workers supports manual/follow, not error. Never follow a redirect:
+      // the non-2xx check below rejects it before credentials can be forwarded.
+      redirect: 'manual',
       signal: AbortSignal.timeout(45000),
     });
     if (!response.ok) fail(stage + '_http_error', response.status);

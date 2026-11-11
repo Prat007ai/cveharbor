@@ -22,7 +22,7 @@ test('deployment access probe authenticates from runtime without inference or pr
   const calls=[];
   const fetcher=async(url,options)=>{
     calls.push(url);
-    assert.equal(options.redirect,'error');
+    assert.equal(options.redirect,'manual');
     if(calls.length===1){assert.match(url,/login.microsoftonline.com/);return Response.json({access_token:'fictional-token',token_type:'Bearer',expires_in:3600});}
     assert.equal(url,'https://cvie-prod.openai.azure.com/openai/v1/models');
     assert.equal(options.headers.Authorization,'Bearer fictional-token');
