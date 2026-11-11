@@ -8,7 +8,7 @@ import {holdStatus} from './recovery_control.mjs';
 import {verifyService} from './production_service_health.mjs';
 
 const account='aa99b9b15e0492302e4f6484b8d27bc2';
-const predecessor='f903b738021362b5a008a8b9704481699af4b9cc41c49d2f8ae75503d8d87abc';
+const predecessor='fc616f9638ee264a5ff28dfc5f9a116ec02e0c61fdf6fba16ee0c0bbf5436635';
 const sql=fs.readFileSync('deployment/proposals/workspace-history/schema.sql','utf8').replaceAll('\r\n','\n');
 const hash='317c1d4a42ad569554ecaeee644d552d4bd1420037754861375721627418c8ce';
 assert.equal(digest(sql),hash,'Only the reviewed exact SQL is permitted');
