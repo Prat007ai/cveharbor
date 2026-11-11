@@ -1,0 +1,39 @@
+name: Workspace daily history rehearsal
+on:
+  pull_request:
+    paths:
+      - 'account-backend/src/workspace-*.js'
+      - 'account-backend/src/index.js'
+      - 'account-backend/tests/workspace-*.test.mjs'
+      - 'deployment/proposals/workspace-history/**'
+      - 'scripts/workspace_history*'
+      - 'scripts/activate_customer_assignment_schema.mjs'
+      - 'release/workspace-history-backend.txt'
+      - '.github/workflows/workspace-history-checks.yml'
+permissions:
+  contents: read
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - name: Rehearse additive storage with fictional records
+        env:
+          CUSTOMER_SCHEMA: workspace-history
+        run: |
+          node scripts/activate_customer_assignment_schema.mjs --rehearse
+          node --test account-backend/tests/workspace-history.test.mjs account-backend/tests/workspace-summary.test.mjs
+      - name: Validate the exact backend package without credentials
+        run: |
+          python scripts/workspace_history_package.py "$RUNNER_TEMP/history-worker"
+          rsync --archive --delete "$RUNNER_TEMP/history-worker/account-backend/src/" account-backend/src/
+          cp "$RUNNER_TEMP/history-worker/account-backend/wrangler.toml" account-backend/wrangler.toml
+          node --test account-backend/tests/azure-connection.test.mjs account-backend/tests/workspace-history.test.mjs account-backend/tests/workspace-summary.test.mjs account-backend/tests/team-access.test.mjs account-backend/tests/cvie-evidence.test.mjs account-backend/tests/cvie-shared.test.mjs
+          cd account-backend
+          npx --yes wrangler@4.156.0 deploy --dry-run --outdir "$RUNNER_TEMP/history-worker-bundle"

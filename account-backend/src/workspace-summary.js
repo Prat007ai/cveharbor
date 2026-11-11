@@ -1,4 +1,5 @@
 import {activeRecords} from './remediation-integrity.js';
+import {readWorkspaceHistory} from './workspace-history.js';
 // Read-only workspace projection. Authentication is supplied by index.js.
 // Existing account ownership remains authoritative; no scope IDs come from the caller.
 const json=(data,status=200)=>new Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Access-Control-Allow-Origin':'https://cveharbor.com','Access-Control-Allow-Credentials':'true','Vary':'Origin'}});
@@ -8,6 +9,7 @@ export async function workspaceRoute(req,env,user){
  if(!user?.id)return json({error:'Sign in required'},401);
  if(req.method!=='GET')return json({error:'Read only'},405);
  const url=new URL(req.url);
+ if(url.pathname==='/v1/workspace/trend')return json(await readWorkspaceHistory(env,user.id));
  if(url.pathname==='/v1/workspace/summary'){
   const active=await activeRecords(env);
   const [inventory,remediation,findings,monitoring,notifications,providerDelivery]=await Promise.all([

@@ -21,6 +21,7 @@ import {FyiError,scheduleFyi,retryFyi} from './assignment-fyi.js';
 import {acknowledgementRoute,assignmentHistory,revokeAssignment,AssignmentError} from './assignment-acknowledgement.js';
 import {approvedTest} from './monitor-approved-test.js';
 import {workspaceRoute} from './workspace-summary.js';
+import {captureWorkspaceHistory} from './workspace-history.js';
 import {catalogueProducts,catalogueRevision} from './catalogue-selection.js';
 // CVEHarbor account API with opt-in vulnerability digest support.
 import {newSecret,totp,verifyTotp,encryptSecret,decryptSecret,newRecoveryCodes,hashRecovery} from './totp.js';
@@ -422,6 +423,7 @@ const application = {async fetch(req,env,ctx){
  }catch(error){error=integrityError(error);if(error instanceof ReviewError||error instanceof WorkflowError||error instanceof FyiError||error instanceof AssignmentError||error instanceof MonitorError||error instanceof CvieError||error instanceof RemediationError||error instanceof InventoryError||error instanceof FindingStatusError||error instanceof LifecycleError)return response({error:error.message},error.status);return response({error:'Unable to process request'},500)}
 },
  async scheduled(_event,env,ctx) {
+  if(_event?.cron==='5 * * * *')ctx.waitUntil(captureWorkspaceHistory(env));
   if(_event.cron==='*/5 * * * *')ctx.waitUntil(dispatchFirewallDigest(env));
   if(_event.cron==='* * * * *'&&env.CVIE_TOPIC_HISTORY_ENABLED==='true'){
    ctx.waitUntil(updateTopicHistory(env));

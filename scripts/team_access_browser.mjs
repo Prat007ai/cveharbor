@@ -130,7 +130,7 @@ try{
       await member.getByText('Active',{exact:true}).waitFor();
       if(accountDesign){
         await verifyArt(owner,'.account-new-main','team-beacon.jpg');
-        await verifyArt(owner,'#teamAccess','team-coast.jpg',['account-responsive','workspace-overview'].includes(process.env.CVEHARBOR_SITE_RELEASE)?'::after':null);
+        await verifyArt(owner,'#teamAccess','team-coast.jpg',['account-responsive','workspace-overview','workspace-history'].includes(process.env.CVEHARBOR_SITE_RELEASE)?'::after':null);
         await owner.locator('.member-counts').getByText('2 Active').waitFor();
         await owner.locator('.member-counts').getByText('0 Pending').waitFor();
         await screenshot(owner,'account-team','body');
