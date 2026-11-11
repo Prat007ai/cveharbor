@@ -14,7 +14,7 @@ export async function azureConnectionProbe(req, env, release, {fetcher = fetch, 
   const unavailable = () => reply({error: 'Connection check unavailable'}, 404);
   const url = new URL(req.url);
   if (url.hostname !== 'api.cveharbor.com' || url.pathname !== probePath || url.search ||
-      req.method !== 'POST' || req.body !== null) return unavailable();
+      req.method !== 'POST') return unavailable();
   let proof;
   try { proof = JSON.parse(env.CVEHARBOR_AZURE_CONNECTION_PROBE); } catch { return unavailable(); }
   const seconds = Math.floor(now / 1000);
@@ -28,6 +28,17 @@ export async function azureConnectionProbe(req, env, release, {fetcher = fetch, 
       !hex(nonce) || !hex(signature)) return unavailable();
   const key = await crypto.subtle.importKey('raw', bytes(proof.key), {name: 'HMAC', hash: 'SHA-256'}, false, ['verify']);
   if (!await crypto.subtle.verify('HMAC', key, bytes(signature), encoder.encode(probeMessage(stamp, nonce, release)))) return unavailable();
+
+  // Workers exposes a stream even for an empty HTTP POST. Admit only a stream
+  // that is already at EOF; never accept prompt bytes or buffer a request body.
+  if (req.body !== null) {
+    const reader = req.body.getReader();
+    try {
+      const {done} = await reader.read();
+      if (!done) { await reader.cancel(); return unavailable(); }
+    } catch { return unavailable(); }
+    finally { reader.releaseLock(); }
+  }
 
   const result = {release, authentication_verified: false, resource_access_verified: false,
     inference_attempted: false, customer_ai_enabled: false};
