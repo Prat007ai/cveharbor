@@ -14,6 +14,11 @@ on:
       - 'account-page.js'
       - 'account-security.js'
       - 'workspace/index.html'
+      - 'workspace-dashboard.js'
+      - 'workspace-dashboard.css'
+      - 'scripts/workspace_overview_release.py'
+      - 'scripts/workspace_overview_browser.mjs'
+      - 'scripts/workspace_fixture.mjs'
       - 'scripts/firewall_release.py'
       - 'scripts/installed_release.py'
       - 'scripts/team_release.py'
@@ -38,7 +43,7 @@ on:
       site_release:
         description: Reviewed production package
         type: choice
-        options: [followed-topics, assignment-291, customer-investigation, manual-customer, intelligence, version-picker, firewall-digest, installed-releases, team-access, sql-esu-coverage, card-source-coverage, team-harbor-design, public-advisory-scopes, account-harbor-views, account-responsive]
+        options: [followed-topics, assignment-291, customer-investigation, manual-customer, intelligence, version-picker, firewall-digest, installed-releases, team-access, sql-esu-coverage, card-source-coverage, team-harbor-design, public-advisory-scopes, account-harbor-views, account-responsive, workspace-overview]
         default: followed-topics
       feed_run_id:
         description: Data run containing the verified intelligence receipt (intelligence release only)
@@ -55,9 +60,9 @@ jobs:
     env:
       FEED_RUN_ID: ${{ inputs.feed_run_id }}
       FEED_RECEIPT: ${{ github.workspace }}/.feed-receipt/feed-receipt.json
-      CVEHARBOR_SITE_RELEASE: ${{ inputs.site_release || (github.head_ref == 'fix/account-responsive' && 'account-responsive') || (github.head_ref == 'feature/account-harbor-views' && 'account-harbor-views') || (github.head_ref == 'fix/public-advisory-scopes' && 'public-advisory-scopes') || (github.head_ref == 'feature/team-harbor-design' && 'team-harbor-design') || (github.head_ref == 'fix/card-source-coverage' && 'card-source-coverage') || (github.head_ref == 'fix/sql-esu-release-baseline' && 'sql-esu-coverage') || (github.head_ref == 'release/organization-team-access' && 'team-access') || (github.head_ref == 'fix/vendor-zero-scan-audit' && 'installed-releases') || (github.head_ref == 'feat/daily-firewall-digest' && 'firewall-digest') || (github.head_ref == 'fix/version-picker-cloudflare' && 'version-picker') || (github.head_ref == 'feature/assignment-manual-customer' && 'manual-customer') || (github.head_ref == 'feature/customer-advisory-review' && 'customer-investigation') || 'followed-topics' }}
+      CVEHARBOR_SITE_RELEASE: ${{ inputs.site_release || (github.head_ref == 'feature/workspace-dark-redesign' && 'workspace-overview') || (github.head_ref == 'fix/account-responsive' && 'account-responsive') || (github.head_ref == 'feature/account-harbor-views' && 'account-harbor-views') || (github.head_ref == 'fix/public-advisory-scopes' && 'public-advisory-scopes') || (github.head_ref == 'feature/team-harbor-design' && 'team-harbor-design') || (github.head_ref == 'fix/card-source-coverage' && 'card-source-coverage') || (github.head_ref == 'fix/sql-esu-release-baseline' && 'sql-esu-coverage') || (github.head_ref == 'release/organization-team-access' && 'team-access') || (github.head_ref == 'fix/vendor-zero-scan-audit' && 'installed-releases') || (github.head_ref == 'feat/daily-firewall-digest' && 'firewall-digest') || (github.head_ref == 'fix/version-picker-cloudflare' && 'version-picker') || (github.head_ref == 'feature/assignment-manual-customer' && 'manual-customer') || (github.head_ref == 'feature/customer-advisory-review' && 'customer-investigation') || 'followed-topics' }}
     name: Test followed topics in the production package
-    if: (github.event_name == 'pull_request' && (github.head_ref == 'fix/account-responsive' || github.head_ref == 'feature/account-harbor-views' || github.head_ref == 'fix/public-advisory-scopes' || github.head_ref == 'feature/team-harbor-design' || github.head_ref == 'fix/card-source-coverage' || github.head_ref == 'fix/sql-esu-release-baseline' || github.head_ref == 'release/organization-team-access' || github.head_ref == 'fix/vendor-zero-scan-audit' || github.head_ref == 'feat/daily-firewall-digest' || github.head_ref == 'fix/version-picker-cloudflare' || github.head_ref == 'feature/cvie-topic-delivery' || github.head_ref == 'feature/customer-advisory-review' || github.head_ref == 'feature/assignment-manual-customer') && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'workflow_dispatch' && inputs.reviewed_commit != '')
+    if: (github.event_name == 'pull_request' && (github.head_ref == 'feature/workspace-dark-redesign' || github.head_ref == 'fix/account-responsive' || github.head_ref == 'feature/account-harbor-views' || github.head_ref == 'fix/public-advisory-scopes' || github.head_ref == 'feature/team-harbor-design' || github.head_ref == 'fix/card-source-coverage' || github.head_ref == 'fix/sql-esu-release-baseline' || github.head_ref == 'release/organization-team-access' || github.head_ref == 'fix/vendor-zero-scan-audit' || github.head_ref == 'feat/daily-firewall-digest' || github.head_ref == 'fix/version-picker-cloudflare' || github.head_ref == 'feature/cvie-topic-delivery' || github.head_ref == 'feature/customer-advisory-review' || github.head_ref == 'feature/assignment-manual-customer') && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'workflow_dispatch' && inputs.reviewed_commit != '')
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -102,10 +107,13 @@ jobs:
           if [ "$CVEHARBOR_SITE_RELEASE" = account-responsive ]; then
             VERIFIED_SITE="$RUNNER_TEMP/catalogue/after" TEAM_TEST_SCREENSHOTS="$RUNNER_TEMP/responsive-check" TEAM_TEST_CHROME=/usr/bin/google-chrome node scripts/account_harbor_live.mjs
           fi
+          if [ "$CVEHARBOR_SITE_RELEASE" = workspace-overview ]; then
+            WORKSPACE_SITE="$RUNNER_TEMP/catalogue/after" WORKSPACE_BEFORE="$RUNNER_TEMP/catalogue/before" WORKSPACE_SCREENSHOTS="$RUNNER_TEMP/workspace-screens" node scripts/workspace_overview_browser.mjs
+          fi
           node scripts/catalogue_scope_browser_smoke.mjs
           if [ "$CVEHARBOR_SITE_RELEASE" != "followed-topics" ]; then node scripts/remediation_workflow_browser.mjs; fi
       - name: Require production application and security tests for the team design
-        if: github.event_name == 'workflow_dispatch' && (inputs.site_release == 'team-harbor-design' || (inputs.site_release == 'account-harbor-views' || inputs.site_release == 'account-responsive'))
+        if: github.event_name == 'workflow_dispatch' && (inputs.site_release == 'workspace-overview' || inputs.site_release == 'team-harbor-design' || (inputs.site_release == 'account-harbor-views' || inputs.site_release == 'account-responsive'))
         env:
           GH_TOKEN: ${{ github.token }}
         run: python scripts/production_release_checks.py
@@ -120,6 +128,14 @@ jobs:
           test "$GLOBAL_PUBLICATION" != true
           test "$GITHUB_RUN_ATTEMPT" = 1
           python scripts/session_navigation_release.py preflight
+
+      - name: Save fictional Workspace comparison screenshots
+        if: env.CVEHARBOR_SITE_RELEASE == 'workspace-overview'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: workspace-review-screens
+          path: ${{ runner.temp }}/workspace-screens
+          if-no-files-found: error
 
   publish:
     env:
@@ -185,4 +201,22 @@ jobs:
         with:
           name: account-production-screens
           path: ${{ runner.temp }}/account-screens/*.png
+          if-no-files-found: error
+
+      - name: Verify the live Workspace assets with fictional records
+        if: inputs.site_release == 'workspace-overview'
+        env:
+          CVEHARBOR_CHROMIUM_PATH: /usr/bin/google-chrome
+          CVEHARBOR_PLAYWRIGHT_MODULE: ${{ github.workspace }}/staging/node_modules/playwright-core/index.mjs
+          WORKSPACE_SITE: ${{ runner.temp }}/catalogue/verified-origin
+          WORKSPACE_SCREENSHOTS: ${{ runner.temp }}/workspace-live-screens
+        run: |
+          npm install --prefix staging --ignore-scripts --no-package-lock
+          node scripts/workspace_overview_browser.mjs
+      - name: Save fictional Workspace production screenshots
+        if: inputs.site_release == 'workspace-overview'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: workspace-production-screens
+          path: ${{ runner.temp }}/workspace-live-screens
           if-no-files-found: error
