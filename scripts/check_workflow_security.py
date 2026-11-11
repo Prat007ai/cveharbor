@@ -100,8 +100,29 @@ def validate(doc, filename):
         if env:
             require(env in ENVIRONMENTS, label + ': unknown or dynamic environment')
             requested = {m.group().split('.', 1)[1] for m in SENSITIVE.finditer(raw)}
-            require(requested <= SECRET_BOUNDARIES.get(env, set()), label + ': credential is outside the environment boundary')
+            azure_verification = filename == 'verify-azure-ai.yml' and name == 'verify'
+            allowed_secrets = {'CVEHARBOR_AZURE_OPENAI_CLIENT_SECRET'} if azure_verification else SECRET_BOUNDARIES.get(env, set())
+            require(requested <= allowed_secrets, label + ': credential is outside the environment boundary')
             prefix = REPAIR_WRITE if filename == 'production-compatibility-repair.yml' and name == 'change' else (CANDIDATE_STAGING if name == 'customer-candidate' else SIMPLE_STAGING if name == 'automatic-staging' else STAGING_RECOVERY if name == 'recovery' else STAGING_NORMAL) if env == 'cloudflare-cvie-staging' else MANUAL if filename == 'recovery-write-hold.yml' and name == 'control' else MAIN + " && vars.FEED_PUBLICATION_ENABLED == 'true'" if env == 'cloudflare-intelligence-data' else MANUAL if env in {'cloudflare-production-audit','cloudflare-notifications-production','cloudflare-phase1-staging'} else RELEASE
+            if azure_verification:
+                prefix = MANUAL + ' && inputs.reviewed_commit == github.sha'
+                require(condition == prefix and env == 'cloudflare-worker-production' and job.get('needs') == 'test',
+                        label + ': Azure verification requires reviewed main, tests and protected owner approval')
+                require(requested == allowed_secrets and job.get('timeout-minutes') == 5,
+                        label + ': Azure verification requires its single credential and bounded execution')
+                mode = events.get('workflow_dispatch', {}).get('inputs', {}).get('mode', {})
+                require(mode.get('options') == ['access', 'inference'] and mode.get('default') == 'access',
+                        label + ': Azure inference must be selected explicitly')
+                expected = {'AZURE_AI_VERIFY_MODE': '${{ inputs.mode }}',
+                            'CVEHARBOR_AZURE_OPENAI_CLIENT_SECRET': '${{ secrets.CVEHARBOR_AZURE_OPENAI_CLIENT_SECRET }}'}
+                for key in ['ENDPOINT', 'DEPLOYMENT', 'TENANT_ID', 'CLIENT_ID']:
+                    variable = 'CVEHARBOR_AZURE_OPENAI_' + key
+                    expected[variable] = '${{ vars.' + variable + ' }}'
+                credential_steps = [step for step in job.get('steps', []) if SENSITIVE.search(json.dumps(step))]
+                require(len(credential_steps) == 1 and credential_steps[0].get('env') == expected and
+                        credential_steps[0].get('run') == 'node deployment/proposals/azure-ai/verify.mjs' and
+                        not SENSITIVE.search(json.dumps(job.get('env', {}))),
+                        label + ': Azure credential is restricted to its verification entrypoint')
             customer_schema = filename == 'customer-investigation-schema.yml' and name == 'activate'
             if 'CVEHARBOR_PROD_CUSTOMER_SCHEMA_TOKEN' in requested or customer_schema:
                 prefix = MANUAL + " && inputs.reviewed_commit == github.sha && vars.PRODUCTION_DEPLOYMENTS_ENABLED != 'true'"
