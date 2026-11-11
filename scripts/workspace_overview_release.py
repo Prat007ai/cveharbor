@@ -9,16 +9,16 @@ import production_release_checks as checks
 import team_release
 import version_picker_release as publisher
 
-BASE = 'f44bacc15906f99941591c60c10aa2bc66a1d830'
-VERSION = 'cf692c90-6524-476a-83d2-ec8582e96acf'
-DEPLOYMENT = '978f76c5-3cd0-4307-b74b-cee56dc84725'
+BASE = 'bc70b948714bf511758ca165301dab28302636a8'
+VERSION = '7063b903-56b6-4e9e-8641-5f8484d4727e'
+DEPLOYMENT = 'e88d0e2d-5254-4233-8c95-256a537f8d48'
 BRANCH = 'feature/workspace-dark-redesign'
-CHANGED = {'workspace/index.html', 'workspace-dashboard.js', 'workspace-dashboard.css'}
+CHANGED = {'workspace/index.html', 'workspace-dashboard.js'}
 
 
 def prepare(out):
     team_release.previous(BASE, 'session_navigation_release.py', 'prepare', out,
-                          site_release='account-responsive')
+                          site_release='workspace-overview')
     shutil.copytree(out / 'after', out / 'before', dirs_exist_ok=True)
     for name in sorted(CHANGED):
         target = out / 'after' / name
