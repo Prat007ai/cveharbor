@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {createHash} from 'node:crypto';
 import {d1Client} from './cloudflare_d1.mjs';
 import {PRODUCTION_DB} from './production_schema_baseline.mjs';
 import {verifyService} from './production_service_health.mjs';
@@ -26,6 +27,16 @@ assert.ok(res.ok,'Cannot confirm live Worker bindings');
 const settings=await res.json();
 assert.equal(settings.success,true);
 if(state==='workspace-history'){
+ const provider=async suffix=>{const r=await fetch(url.replace('/settings',suffix),{headers:{Authorization:'Bearer '+process.env.CLOUDFLARE_API_TOKEN},redirect:'error',signal:AbortSignal.timeout(15000)});assert.ok(r.ok,'Worker recovery evidence unavailable');const data=await r.json();assert.equal(data.success,true);return data.result;};
+ const stable=value=>Array.isArray(value)?value.map(stable):value&&typeof value==='object'?Object.fromEntries(Object.keys(value).sort().map(k=>[k,stable(value[k])])):value;
+ const bindings=settings.result.bindings.filter(b=>b.name!=='WORKSPACE_HISTORY_ENABLED').sort((a,b)=>a.name.localeCompare(b.name));
+ const bindingsHash=createHash('sha256').update(JSON.stringify(stable(bindings))).digest('hex');
+ const current=(await provider('/deployments')).deployments[0];
+ assert.equal(current.versions.length,1);assert.equal(current.versions[0].percentage,100);
+ const version=current.versions[0].version_id;await provider('/versions/'+version);
+ const receipt='workspace-history-backend-recovery.json';
+ if(!after){fs.writeFileSync(receipt,JSON.stringify({commit:process.env.GITHUB_SHA,previous_version:version,previous_deployment:current.id,bindings_sha256:bindingsHash,status:'predecessor_preserved'},null,2)+'\n');}
+ else {const before=JSON.parse(fs.readFileSync(receipt,'utf8'));assert.equal(before.commit,process.env.GITHUB_SHA);assert.equal(before.bindings_sha256,bindingsHash,'Unrelated Worker bindings changed');assert.notEqual(version,before.previous_version);await provider('/versions/'+before.previous_version);fs.writeFileSync(receipt,JSON.stringify({...before,deployed_version:version,deployed_deployment:current.id,status:'verified'},null,2)+'\n');}
  const azure={CVEHARBOR_AZURE_OPENAI_ENDPOINT:'https://cvie-prod.openai.azure.com/',CVEHARBOR_AZURE_OPENAI_DEPLOYMENT:'gpt-5.4-mini',CVEHARBOR_AZURE_OPENAI_TENANT_ID:'f95d3766-898f-4e4d-a0ad-9b5efa394592',CVEHARBOR_AZURE_OPENAI_CLIENT_ID:'dec0de99-1e60-461f-bfb2-aa518b40036a'};
  for(const [name,value]of Object.entries(azure)){const binding=settings.result.bindings.find(b=>b.name===name);assert.equal(binding?.type,'plain_text');assert.equal(binding.text,value,'Azure configuration must be preserved');}
  for(const name of ['CVEHARBOR_AZURE_OPENAI_CLIENT_SECRET','CVEHARBOR_AZURE_CONNECTION_PROBE'])assert.equal(settings.result.bindings.find(b=>b.name===name)?.type,'secret_text','Existing Azure secret binding must remain present');

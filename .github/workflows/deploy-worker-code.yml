@@ -461,6 +461,14 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
         run: node scripts/team_release_check.mjs after
+      - name: Retain history backend recovery evidence
+        if: always() && inputs.team_release == 'workspace-history'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: workspace-history-backend-recovery-${{ github.run_id }}
+          path: workspace-history-backend-recovery.json
+          if-no-files-found: warn
+          retention-days: 30
       - name: Configure optional existing NVD key securely
         if: steps.mode.outputs.maintenance != 'false'
         working-directory: account-backend
