@@ -9,6 +9,7 @@ import {verifyService} from './production_service_health.mjs';
 
 const account='aa99b9b15e0492302e4f6484b8d27bc2';
 const schema=process.env.CUSTOMER_SCHEMA||'managed';
+if(schema==='organization-ai'){await import('./organization_ai_schema.mjs');process.exit(0);}
 if(schema==='workspace-history'){await import('./workspace_history_schema.mjs');process.exit(0);}
 assert.ok(['managed','manual','firewall','team'].includes(schema));
 const team=schema==='team';

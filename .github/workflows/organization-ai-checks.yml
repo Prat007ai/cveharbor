@@ -1,0 +1,52 @@
+name: Organization AI allowance checks
+on:
+  pull_request:
+    paths:
+      - 'account-backend/src/ai-*.js'
+      - 'account-backend/src/index.js'
+      - 'account-backend/tests/ai-*.test.mjs'
+      - 'account-backend/tests/helpers/ai-db.mjs'
+      - 'deployment/proposals/organization-ai/**'
+      - 'scripts/organization_ai*'
+      - 'scripts/test_ai_runtime.mjs'
+      - 'scripts/ai_usage_browser.mjs'
+      - 'ai-*.js'
+      - 'ai-usage.css'
+      - 'ai/**'
+      - 'admin/ai-usage/**'
+      - 'release/organization-ai*'
+      - '.github/workflows/organization-ai-checks.yml'
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  accounting:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - name: Verify ledger, authorization and additive schema
+        env:
+          CUSTOMER_SCHEMA: organization-ai
+        run: |
+          node --test account-backend/tests/ai-*.test.mjs
+          node scripts/activate_customer_assignment_schema.mjs --rehearse
+      - name: Verify concurrent requests in the native Cloudflare runtime
+        run: |
+          npm install --prefix "$RUNNER_TEMP/ai-runtime-tools" --no-save --ignore-scripts wrangler@4.156.0
+          node scripts/test_ai_runtime.mjs "$RUNNER_TEMP/ai-runtime-tools"
+      - name: Check the exact isolated backend package
+        run: |
+          python scripts/organization_ai_package.py "$RUNNER_TEMP/ai-worker"
+          rsync --archive --delete "$RUNNER_TEMP/ai-worker/account-backend/src/" account-backend/src/
+          cp "$RUNNER_TEMP/ai-worker/account-backend/wrangler.toml" account-backend/wrangler.toml
+          node --test account-backend/tests/ai-*.test.mjs account-backend/tests/azure-connection.test.mjs account-backend/tests/team-access.test.mjs account-backend/tests/workspace-history.test.mjs
+          cd account-backend
+          npx --yes wrangler@4.156.0 deploy --dry-run --outdir "$RUNNER_TEMP/ai-bundle"

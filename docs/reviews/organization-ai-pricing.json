@@ -1,0 +1,20 @@
+{
+  "verified_on": "2026-11-11",
+  "source": "https://prices.azure.com/api/retail/prices",
+  "filter": "serviceName eq 'Foundry Models' and armRegionName eq 'eastus' and contains(skuName, '5.4 mini')",
+  "currencyCode": "USD",
+  "type": "Consumption",
+  "productName": "Azure OpenAI GPT5",
+  "unitOfMeasure": "1M",
+  "effectiveStartDate": "2026-03-01T00:00:00Z",
+  "meters": [
+    {"skuName": "5.4 mini Inp Dz", "meterId": "8d2648cd-6716-5fe4-80c0-88259d1f3afc", "retailPrice": 0.825},
+    {"skuName": "5.4 mini cd Inp Dz", "meterId": "e4eaf15c-1cee-53a2-b946-3d63d29a04aa", "retailPrice": 0.0825},
+    {"skuName": "5.4 mini Opt Dz", "meterId": "afb7eabc-e336-5360-b03e-11dd0edb6533", "retailPrice": 4.95}
+  ],
+  "reviewed_response_model": "gpt-5.4-mini-2026-03-17",
+  "price_card_valid_until": "2026-12-12T00:00:00Z",
+  "reservation_usd": 0.0321016,
+  "example_88_input_172_output_usd": 0.000924,
+  "billing_note": "Public retail rate basis for the USD application allowance; not an Azure invoice guarantee or subscription hard cap."
+}

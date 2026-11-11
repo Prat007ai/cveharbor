@@ -5,7 +5,7 @@ on:
       schema:
         description: Customer assignment storage to activate
         type: choice
-        options: [managed, manual, firewall, team, workspace-history]
+        options: [managed, manual, firewall, team, workspace-history, organization-ai]
         default: managed
       reviewed_commit:
         description: Exact reviewed main commit
@@ -62,3 +62,11 @@ jobs:
           path: workspace-history-migration.json
           if-no-files-found: warn
           retention-days: 30
+
+      - name: Retain AI migration recovery receipt
+        if: always() && inputs.schema == 'organization-ai'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: organization-ai-migration-${{ github.run_id }}
+          path: organization-ai-migration.json
+          if-no-files-found: warn

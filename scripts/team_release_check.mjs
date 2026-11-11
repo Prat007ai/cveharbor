@@ -6,6 +6,7 @@ import {PRODUCTION_DB} from './production_schema_baseline.mjs';
 import {verifyService} from './production_service_health.mjs';
 
 const state=process.env.TEAM_STATE;
+if(state==='organization-ai'){await import('./organization_ai_check.mjs');process.exit(0);}
 let completedRecoveryReceipt=null;
 assert.ok(['disabled','enabled','cvie-refresh','workspace-history'].includes(state));
 const after=process.argv[2]==='after';

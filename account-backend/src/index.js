@@ -1,4 +1,5 @@
 import {azureConnectionProbe, probePath} from './azure-connection.js';
+import {aiRoute} from './ai-routes.js';
 import {releaseIdentity} from './release-build.js';
 import {teamRoute} from './team-access.js';
 import {updateTopicHistory} from './cvie-topic-history.js';
@@ -216,6 +217,7 @@ const application = {async fetch(req,env,ctx){
   const user=await me(req,env);
   if(path==='/v1/me'&&req.method==='GET')return response(user?{authenticated:true,email:user.email}:{authenticated:false},user?200:401);
   if(!user)return response({error:'Sign in required'},401);
+  if(path.startsWith('/v1/ai/'))return await aiRoute(req,env,user,path,{response,body,limit},ctx);
   if(path.startsWith('/v1/team/'))return await teamRoute(req,env,user,path,{response,body,token,sha,limit});
   const recordPath=/^\/v1\/(remediations|remediation-records)\/(CVE-\d{4}-\d{4,}(?:~[A-F0-9-]{36})?)(.*)$/.exec(path);
   if(recordPath){const canonical=await canonicalRecord(env,user.id,recordPath[2]);if(canonical!==recordPath[2]){if(req.method!=='GET')return response({error:'This record was linked to an existing assignment. Open the current shared record before making changes.',canonical_id:canonical},409);path='/v1/'+recordPath[1]+'/'+canonical+recordPath[3];}}

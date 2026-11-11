@@ -154,6 +154,10 @@ def readiness():
 
 
 if __name__ == "__main__":
+    if os.environ.get("CVEHARBOR_SITE_RELEASE") == "organization-ai":
+        import organization_ai_site
+        organization_ai_site.run(sys.argv[1], Path(sys.argv[2]).resolve() if len(sys.argv)>2 else None)
+        sys.exit(0)
     if os.environ.get("CVEHARBOR_SITE_RELEASE") == "workspace-history":
         import workspace_history_site
         workspace_history_site.run(sys.argv[1], Path(sys.argv[2]).resolve() if len(sys.argv)>2 else None)
