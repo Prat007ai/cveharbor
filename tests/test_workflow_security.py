@@ -23,6 +23,34 @@ class WorkflowSecurityTests(unittest.TestCase):
             with self.subTest(path=p.name):self.assertEqual(policy.validate(policy.load_workflow(p.read_text()),p.name),[])
     def test_duplicate_yaml_is_rejected(self):
         with self.assertRaises(ValueError):policy.load_workflow('jobs:\n  audit:\n    if: guarded\n    if: true\n')
+    def test_azure_verification_rejects_wrong_scope_and_extra_credentials(self):
+        source = policy.load_workflow((ROOT / '.github/workflows/verify-azure-ai.yml').read_text())
+        mutations = [
+            lambda job: job.update(environment='cloudflare-production-audit'),
+            lambda job: job.update(needs=[]),
+            lambda job: job.update({'if': policy.MANUAL}),
+            lambda job: job.update({'if': 'true'}),
+            lambda job: job.update({'timeout-minutes': 30}),
+            lambda job: job.update(env={'TOKEN': '${{ secrets.CVEHARBOR_AZURE_OPENAI_CLIENT_SECRET }}'}),
+            lambda job: job['steps'][2]['env'].update(TOKEN='${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}'),
+            lambda job: job['steps'][2].update(run='echo copied-credential'),
+        ]
+        for mutate in mutations:
+            changed = copy.deepcopy(source)
+            mutate(changed['jobs']['verify'])
+            self.assertTrue(policy.validate(changed, 'verify-azure-ai.yml'))
+
+    def test_azure_credential_cannot_be_reused_by_other_workflows(self):
+        doc = self.audit()
+        doc['jobs']['audit']['steps'][-1]['env']['AZURE_SECRET'] = '${{ secrets.CVEHARBOR_AZURE_OPENAI_CLIENT_SECRET }}'
+        self.assertTrue(policy.validate(doc, 'security-phase1-audit.yml'))
+        source = policy.load_workflow((ROOT / '.github/workflows/verify-azure-ai.yml').read_text())
+        self.assertTrue(policy.validate(source, 'renamed-azure-workflow.yml'))
+
+    def test_azure_inference_cannot_become_the_default(self):
+        doc = policy.load_workflow((ROOT / '.github/workflows/verify-azure-ai.yml').read_text())
+        doc['on']['workflow_dispatch']['inputs']['mode']['default'] = 'inference'
+        self.assertTrue(policy.validate(doc, 'verify-azure-ai.yml'))
     def test_no_environment(self):self.reject(lambda d:d['jobs']['audit'].pop('environment'))
     def test_wrong_branch(self):self.reject(lambda d:d['jobs']['audit'].update({'if':policy.MANUAL.replace('refs/heads/main','refs/heads/feature')}))
     def test_owner_review_environment_is_exclusive_to_the_scoped_release(self):

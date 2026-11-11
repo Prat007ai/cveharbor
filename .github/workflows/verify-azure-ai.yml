@@ -38,7 +38,7 @@ jobs:
       - run: node --test deployment/proposals/azure-ai/verify.test.mjs
   verify:
     needs: test
-    if: github.repository == 'Prat007ai/cveharbor' && github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.reviewed_commit == github.sha
+    if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch' && inputs.reviewed_commit == github.sha
     environment: cloudflare-worker-production
     runs-on: ubuntu-latest
     timeout-minutes: 5
