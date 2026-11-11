@@ -47,6 +47,7 @@ try{
  assert.match(await page.locator('#wsProgressPanel').innerText(),/Accepted Risk/);
  assert.match(await page.locator('#wsProgressPanel').innerText(),/Not Applicable/);
  assert.equal(await page.locator('#wsAdvisories').innerText(),'12');
+ assert.ok(await page.evaluate(()=>document.querySelector('.ws-panels').getBoundingClientRect().top<document.querySelector('.ws-tools').getBoundingClientRect().top),'Dashboard panels precede quick-access tools');
  const links=await page.locator('.ws-navigation nav a').evaluateAll(nodes=>nodes.map(n=>({href:n.getAttribute('href'),label:n.getAttribute('aria-label')})));
  assert.equal(links.length,9);for(const l of links){assert.ok(l.label);assert.ok(fs.existsSync(path.join(site,l.href.split('#')[0],'index.html')),l.href);}
  for(const [width,height] of [[2048,1158],[1920,1080],[1536,1024],[1366,768],[1024,768],[821,900],[820,900],[768,1024],[540,900],[390,844],[320,740]]){
