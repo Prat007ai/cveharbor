@@ -86,7 +86,7 @@ jobs:
       - name: Preserve the reviewed environment and exact merged change
         env:
           GH_TOKEN: ${{ github.token }}
-        run: python -c "import sys;sys.path.insert(0,'scripts');import catalogue_promotion as p;import team_release as t;p.policy('cloudflare-worker-production');p.approval('cloudflare-worker-production');t.reviewed('release/azure-worker-retry')"
+        run: python -c "import sys;sys.path.insert(0,'scripts');import catalogue_promotion as p;import team_release as t;p.policy('cloudflare-worker-production');p.approval('cloudflare-worker-production');t.reviewed('fix/azure-empty-request')"
       - name: Install encrypted runtime credentials and verify the Cloudflare connection
         env:
           REVIEWED_COMMIT: ${{ inputs.reviewed_commit }}

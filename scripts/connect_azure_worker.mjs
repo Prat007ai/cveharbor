@@ -13,7 +13,7 @@ import {probeMessage, probePath} from '../account-backend/src/azure-connection.j
 import {diagnosticFetch} from './azure_connection_diagnostics.mjs';
 
 const account = 'aa99b9b15e0492302e4f6484b8d27bc2';
-const predecessor = 'd075a90fa2afd00deb5d500e0beb7129daf343d2deed0127bc94fa4f4f4b9f6e';
+const predecessor = 'f903b738021362b5a008a8b9704481699af4b9cc41c49d2f8ae75503d8d87abc';
 const api = 'https://api.cloudflare.com/client/v4/accounts/'+account+'/workers/scripts/cveharbor-accounts';
 const report = {status:'failed',source_commit:process.env.GITHUB_SHA,usage_category:'platform_verification',
   inference_attempted:false,customer_ai_enabled:false,started_at:new Date().toISOString()};
@@ -55,13 +55,19 @@ try {
   await provider('/versions/'+report.previous_version);
   const added=new Set([...Object.keys(config.vars).filter(n=>n.startsWith('CVEHARBOR_AZURE_')),
     'CVEHARBOR_AZURE_OPENAI_CLIENT_SECRET','CVEHARBOR_AZURE_CONNECTION_PROBE']);
-  assert.ok(!before.bindings.some(b=>added.has(b.name)),'Unexpected existing Azure bindings; reconcile before any overwrite');
+  // This successor preserves the installed Azure credential and refreshes only
+  // the short-lived deployment probe. Refuse an unexpected existing setup.
+  for(const name of added){
+    const binding=before.bindings.find(b=>b.name===name);
+    assert.ok(binding);
+    if(name in config.vars){assert.equal(binding.type,'plain_text');assert.equal(binding.text,config.vars[name]);}
+    else assert.equal(binding.type,'secret_text');
+  }
   const created=Math.floor(Date.now()/1000), key=randomBytes(32).toString('hex');
   const proof={key,created,expires:created+900,release};
   privateDirectory=await fs.mkdtemp(path.join(os.tmpdir(),'cvh-azure-'));
   const secretFile=path.join(privateDirectory,'secrets.json');
   await fs.writeFile(secretFile,JSON.stringify({
-    CVEHARBOR_AZURE_OPENAI_CLIENT_SECRET:process.env.CVEHARBOR_AZURE_OPENAI_CLIENT_SECRET,
     CVEHARBOR_AZURE_CONNECTION_PROBE:JSON.stringify(proof),
   }),{mode:0o600});
   // Do not forward the Azure credential or GitHub token to Wrangler as environment variables.
@@ -78,7 +84,7 @@ try {
   stage='runtime_verification';
   await verifyService({expectedRelease:release,fetcher:checkedFetch});
   const after=await provider('/settings');
-  assert.deepEqual(stable(after.bindings.filter(b=>!added.has(b.name))),stable(before.bindings));
+  assert.deepEqual(stable(after.bindings.filter(b=>!added.has(b.name))),stable(before.bindings.filter(b=>!added.has(b.name))));
   for(const name of added){
     const binding=after.bindings.find(b=>b.name===name);
     assert.ok(binding);
@@ -99,6 +105,13 @@ try {
     Origin:'https://cveharbor.com','X-CVH-Timestamp':timestamp,'X-CVH-Nonce':nonce,'X-CVH-Signature':signature,
   },redirect:'error',signal:AbortSignal.timeout(100000)});
   const result=await response.json();
+  report.probe_http_status=response.status;
+  if(response.status!==200){
+    const allowed=new Set(['invalid_configuration','authentication_http_error','authentication_request_failed',
+      'authentication_invalid_response','resource_access_http_error','resource_access_request_failed',
+      'resource_access_invalid_response','verification_failed']);
+    report.probe_error=allowed.has(result.error)?result.error:'probe_unavailable';
+  }
   report.authentication_verified=result.authentication_verified===true;
   report.resource_access_verified=result.resource_access_verified===true;
   assert.equal(response.status,200);
