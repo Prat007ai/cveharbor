@@ -10,6 +10,7 @@ import {preflight} from './production_worker_preflight.mjs';
 import {verifyService} from './production_service_health.mjs';
 import {azureConfiguration} from '../account-backend/src/azure-client.js';
 import {probeMessage, probePath} from '../account-backend/src/azure-connection.js';
+import {diagnosticFetch} from './azure_connection_diagnostics.mjs';
 
 const account = 'aa99b9b15e0492302e4f6484b8d27bc2';
 const predecessor = 'd075a90fa2afd00deb5d500e0beb7129daf343d2deed0127bc94fa4f4f4b9f6e';
@@ -17,8 +18,9 @@ const api = 'https://api.cloudflare.com/client/v4/accounts/'+account+'/workers/s
 const report = {status:'failed',source_commit:process.env.GITHUB_SHA,usage_category:'platform_verification',
   inference_attempted:false,customer_ai_enabled:false,started_at:new Date().toISOString()};
 let privateDirectory, stage = 'release_validation';
+const checkedFetch = diagnosticFetch(report, value => {stage=value;});
 async function provider(suffix) {
-  const res = await fetch(api+suffix,{headers:{Authorization:'Bearer '+process.env.CLOUDFLARE_API_TOKEN},redirect:'error',signal:AbortSignal.timeout(20000)});
+  const res = await checkedFetch(api+suffix,{headers:{Authorization:'Bearer '+process.env.CLOUDFLARE_API_TOKEN},redirect:'error',signal:AbortSignal.timeout(20000)});
   if(!res.ok) throw Error('cloudflare_read_failed');
   const data=await res.json();
   if(!data.success) throw Error('cloudflare_read_failed');
@@ -40,8 +42,9 @@ try {
   const config=JSON.parse(execFileSync('python3',['-c','import json,tomllib; print(json.dumps(tomllib.load(open("account-backend/wrangler.toml","rb"))))'],{encoding:'utf8'}));
   azureConfiguration({...config.vars,CVEHARBOR_AZURE_OPENAI_CLIENT_SECRET:process.env.CVEHARBOR_AZURE_OPENAI_CLIENT_SECRET});
   stage='production_preflight';
-  await verifyService({expectedRelease:predecessor});
-  await preflight(process.env,config);
+  await verifyService({expectedRelease:predecessor,fetcher:checkedFetch});
+  stage='production_compatibility';
+  await preflight(process.env,config,checkedFetch);
   const before=await provider('/settings');
   const deployment=(await provider('/deployments')).deployments[0];
   assert.equal(deployment.versions.length,1);
@@ -73,7 +76,7 @@ try {
   report.deployment_command_completed=true;
   await fs.rm(secretFile);
   stage='runtime_verification';
-  await verifyService({expectedRelease:release});
+  await verifyService({expectedRelease:release,fetcher:checkedFetch});
   const after=await provider('/settings');
   assert.deepEqual(stable(after.bindings.filter(b=>!added.has(b.name))),stable(before.bindings));
   for(const name of added){
@@ -87,6 +90,7 @@ try {
   assert.equal(current.versions[0].percentage,100);
   assert.notEqual(current.versions[0].version_id,report.previous_version);
   report.deployed_version=current.versions[0].version_id;
+  stage='azure_runtime_verification';
   const unsigned=await fetch('https://api.cveharbor.com'+probePath,{method:'POST',headers:{Origin:'https://cveharbor.com'},redirect:'error',signal:AbortSignal.timeout(15000)});
   assert.equal(unsigned.status,404);
   const timestamp=String(Math.floor(Date.now()/1000)),nonce=randomBytes(32).toString('hex');

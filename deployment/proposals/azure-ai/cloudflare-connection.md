@@ -30,3 +30,9 @@ Before customer enablement, implement durable per-request attribution/usage in C
 
 - [Cloudflare encrypted secrets and simultaneous code/secret deployment](https://developers.cloudflare.com/workers/configuration/secrets/)
 - [Microsoft Entra application authentication](https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-client-creds-grant-flow)
+# Release diagnostic follow-up
+
+PR #333 merged at `b4ca4ec36cb295b5cb2b920b1ff69f8f96412b28`. Approved run [42946912204](https://github.com/Prat007ai/cveharbor/actions/runs/42946912204) passed package, exact-main checks and environment policy, then stopped at `production_preflight` before uploading any code or credential. The serving backend remained the reviewed predecessor. Azure was not contacted by that release.
+
+The follow-up records only a fixed network-operation label and its HTTP status in the sanitized report. It never records request URLs, headers, bodies, provider errors or credentials. Runtime bytes, permissions, release identity and all deployment guards remain unchanged. Two diagnostic tests plus the 18 existing Azure tests pass locally. The workflow requires this follow-up's own merged PR for release provenance. A fresh first-attempt run is appropriate only while the live predecessor is unchanged; partial deployment still requires reconciliation.
+
