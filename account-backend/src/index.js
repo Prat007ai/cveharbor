@@ -1,3 +1,5 @@
+import {azureConnectionProbe, probePath} from './azure-connection.js';
+import {releaseIdentity} from './release-build.js';
 import {teamRoute} from './team-access.js';
 import {updateTopicHistory} from './cvie-topic-history.js';
 import {firewallRoute,dispatchFirewallDigest} from './firewall-digest.js';
@@ -101,6 +103,7 @@ const application = {async fetch(req,env,ctx){
  if(!env.DB)return response({error:'Account service not configured'},503);
  let path=url.pathname;
  try {
+  if(path===probePath)return azureConnectionProbe(req,env,releaseIdentity);
   if(path==='/v1/health'&&req.method==='GET')return response({ready:!!(env.SMTP2GO_API_KEY&&env.EMAIL_FROM),accounts:'configured'});
   if(path==='/v1/auth/request'&&req.method==='POST'){
    if(!env.SMTP2GO_API_KEY||!env.EMAIL_FROM)return response({error:'Email login unavailable'},503);

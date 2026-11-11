@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - 'deployment/proposals/azure-ai/**'
+      - 'account-backend/src/azure-client.js'
       - '.github/workflows/verify-azure-ai.yml'
   workflow_dispatch:
     inputs:

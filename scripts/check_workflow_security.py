@@ -71,6 +71,7 @@ def validate(doc, filename):
     require(not SENSITIVE.search(json.dumps(doc.get('env', {}))), 'no workflow-wide production secrets')
     publishers = {'deploy-worker-code.yml':'deploy','deploy-account-worker.yml':'deploy','activate-confirmation-domain.yml':'activate','bootstrap.yml':'sync'}
     publishers['customer-investigation-schema.yml'] = 'activate'
+    publishers['connect-azure-worker.yml'] = 'connect'
     if filename in publishers:
         jobs=doc.get('jobs',{})
         gate=jobs.get('release-ready',{})
@@ -101,7 +102,9 @@ def validate(doc, filename):
             require(env in ENVIRONMENTS, label + ': unknown or dynamic environment')
             requested = {m.group().split('.', 1)[1] for m in SENSITIVE.finditer(raw)}
             azure_verification = filename == 'verify-azure-ai.yml' and name == 'verify'
-            allowed_secrets = {'CVEHARBOR_AZURE_OPENAI_CLIENT_SECRET'} if azure_verification else SECRET_BOUNDARIES.get(env, set())
+            azure_connection = filename == 'connect-azure-worker.yml' and name == 'connect'
+            azure_runtime_secrets = {'CVEHARBOR_AZURE_OPENAI_CLIENT_SECRET', 'CVEHARBOR_PROD_WORKER_TOKEN', 'CVEHARBOR_PROD_ACCOUNT_ID'}
+            allowed_secrets = azure_runtime_secrets if azure_connection else {'CVEHARBOR_AZURE_OPENAI_CLIENT_SECRET'} if azure_verification else SECRET_BOUNDARIES.get(env, set())
             require(requested <= allowed_secrets, label + ': credential is outside the environment boundary')
             prefix = REPAIR_WRITE if filename == 'production-compatibility-repair.yml' and name == 'change' else (CANDIDATE_STAGING if name == 'customer-candidate' else SIMPLE_STAGING if name == 'automatic-staging' else STAGING_RECOVERY if name == 'recovery' else STAGING_NORMAL) if env == 'cloudflare-cvie-staging' else MANUAL if filename == 'recovery-write-hold.yml' and name == 'control' else MAIN + " && vars.FEED_PUBLICATION_ENABLED == 'true'" if env == 'cloudflare-intelligence-data' else MANUAL if env in {'cloudflare-production-audit','cloudflare-notifications-production','cloudflare-phase1-staging'} else RELEASE
             if azure_verification:
@@ -123,6 +126,22 @@ def validate(doc, filename):
                         credential_steps[0].get('run') == 'node deployment/proposals/azure-ai/verify.mjs' and
                         not SENSITIVE.search(json.dumps(job.get('env', {}))),
                         label + ': Azure credential is restricted to its verification entrypoint')
+            if azure_connection:
+                prefix = MANUAL + " && inputs.reviewed_commit == github.sha && github.run_attempt == 1 && vars.PRODUCTION_DEPLOYMENTS_ENABLED != 'true'"
+                require(condition == prefix and env == 'cloudflare-worker-production' and job.get('needs') == 'release-ready',
+                        label + ': Azure connection requires reviewed main and protected production checks')
+                require(requested == azure_runtime_secrets and job.get('timeout-minutes') == 15 and
+                        job.get('concurrency') == {'group':'cveharbor-production-release','cancel-in-progress':False},
+                        label + ': Azure connection requires bounded execution and the shared release lock')
+                expected = {'REVIEWED_COMMIT':'${{ inputs.reviewed_commit }}',
+                            'CLOUDFLARE_ACCOUNT_ID':'${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}',
+                            'CLOUDFLARE_API_TOKEN':'${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}',
+                            'CVEHARBOR_AZURE_OPENAI_CLIENT_SECRET':'${{ secrets.CVEHARBOR_AZURE_OPENAI_CLIENT_SECRET }}'}
+                credential_steps = [step for step in job.get('steps', []) if SENSITIVE.search(json.dumps(step))]
+                require(len(credential_steps) == 1 and credential_steps[0].get('env') == expected and
+                        credential_steps[0].get('run') == 'node scripts/connect_azure_worker.mjs' and
+                        not credential_steps[0].get('continue-on-error') and not SENSITIVE.search(json.dumps(job.get('env', {}))),
+                        label + ': credentials are restricted to the reviewed connection publisher')
             customer_schema = filename == 'customer-investigation-schema.yml' and name == 'activate'
             if 'CVEHARBOR_PROD_CUSTOMER_SCHEMA_TOKEN' in requested or customer_schema:
                 prefix = MANUAL + " && inputs.reviewed_commit == github.sha && vars.PRODUCTION_DEPLOYMENTS_ENABLED != 'true'"

@@ -1,12 +1,12 @@
 # Azure AI application connection verification
 
-Status is prepared for review. Live application authentication and model calls from this code await approval. The feature is a prerequisite for the backend integration. The existing website and Worker release entry points do not consume this proposal.
+GitHub application authentication and Azure model-list access passed in [run 42941293544, attempt 2](https://github.com/Prat007ai/cveharbor/actions/runs/42941293544/attempts/2) on November 10, 2026. No inference was attempted. The owner corrected the stored client secret value before that successful run. The Cloudflare connection release is described in [the runtime runbook](cloudflare-connection.md); its live outcome must be recorded separately.
 
 ## Verified configuration evidence
 
 Owner screenshots on November 10, 2026 show `CVIE-Prod` in East US, deployment `gpt-5.4-mini` version `2026-03-17`, Data Zone Standard (US), 10,000 TPM and 10 RPM. Priority processing is disabled. The configured version policy upgrades when a new default is available. DefaultV2 content filtering is selected.
 
-The owner registered `CVIE-Prod-AI-Backend`, assigned Cognitive Services OpenAI User at the resource scope, and reported saving the role assignment. GitHub screenshots show the four `CVEHARBOR_AZURE_OPENAI_*` variables and the `CVEHARBOR_AZURE_OPENAI_CLIENT_SECRET` environment secret. Secret validity has not been checked. The owner chose a client secret expiring November 9, 2028 and retains Azure administration. Record rotation responsibility with the owner before rollout.
+The owner registered `CVIE-Prod-AI-Backend`, assigned Cognitive Services OpenAI User at the resource scope, and reported saving the role assignment. GitHub screenshots show the four `CVEHARBOR_AZURE_OPENAI_*` variables and the `CVEHARBOR_AZURE_OPENAI_CLIENT_SECRET` environment secret. Secret validity was confirmed by the access verification above. The owner chose a client secret expiring November 9, 2028 and retains Azure administration and credential renewal responsibility.
 
 The owner completed one Foundry playground request with 88 input and 172 output tokens. This exercised their portal session. The resource-group budget is CA$20 monthly, with actual-cost email alerts at 50%, 80%, and 100%. It covers the resource group and is independent of the planned shared US$20 customer-organization allowance. Alert delivery and final invoice reconciliation are outstanding.
 
