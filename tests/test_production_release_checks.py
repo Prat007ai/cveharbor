@@ -43,3 +43,15 @@ class ProductionChecksTest(unittest.TestCase):
         self.jobs[0]["conclusion"] = "skipped"
         with self.assertRaises(ValueError):
             release.check_commit(self.sha, self.api)
+
+    def test_ai_release_requires_its_exact_native_accounting_run(self):
+        self.run['path'] = '.github/workflows/organization-ai-checks.yml'
+        self.jobs = [dict(name='accounting', status='completed', conclusion='success')]
+        def get(path):
+            return {'workflow_runs': [self.run]} if '/workflows/' in path else {'jobs': self.jobs}
+        self.assertTrue(release.check_ai_commit(self.sha, get))
+        self.jobs[0]['conclusion'] = 'skipped'
+        self.assertFalse(release.check_ai_commit(self.sha, get))
+        self.run['head_sha'] = 'b' * 40
+        with self.assertRaises(ValueError):
+            release.check_ai_commit(self.sha, get)

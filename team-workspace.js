@@ -168,6 +168,7 @@ export async function organizationDashboard(id,preferredCustomer=''){
   orgInfo.append(title,summary);
   header.append(orgInfo,field('Customer',chooser),actions);
   display(header,detail,link('My personal workspace','/workspace/'));
+  import('./ai-common.js').then(async({api})=>{const caps=await api('/ai/capabilities');if(caps.available&&header.isConnected)header.append(link('AI assistance','/ai/?org='+encodeURIComponent(id)));}).catch(()=>{});
   const selected=info.customers.find(c=>c.id===preferredCustomer)||(info.customers.length===1?info.customers[0]:null);
   if(selected){chooser.value=selected.id;await load();}
 }

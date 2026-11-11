@@ -1,0 +1,18 @@
+import {$,money,api,metric,status} from './ai-common.js';
+let balance,pending,busy=false,generation=0;
+const path=()=>'/ai/organizations/'+encodeURIComponent($('organization').value);
+function showBalance(b){balance=b;$('metrics').replaceChildren(metric('Monthly allowance','$20.00 USD','Shared across this organization'),metric('Consumed',money(b.spent_usd),'Recorded token usage'),metric('Reserved',money(b.reserved_usd),'In progress or under review'),metric('Available',money(b.available_usd),'Resets next month · UTC'));$('send').disabled=busy||!b.enabled||!$('customer').value;}
+async function refresh(){const b=await api(path()+'/allowance');showBalance(b);if(!b.enabled)status('AI assistance is currently paused for this organization.');}
+async function selectOrg(){const current=++generation;pending=null;$('answerSection').hidden=true;$('send').disabled=true;try{const org=$('organization').value;const data=await api('/team/organizations/'+encodeURIComponent(org)+'/customers');if(current!==generation)return;$('customer').replaceChildren(...data.customers.map(c=>new Option(c.name,c.id)));await refresh();if(balance.enabled)status('Ready. Requests use your organization’s shared allowance.');}catch(e){status(e.message);}}
+$('organization').onchange=selectOrg;$('refresh').onclick=()=>refresh().catch(e=>status(e.message));
+$('question').oninput=()=>{if(!busy){pending=null;$('send').disabled=!balance?.enabled||!$('customer').value;$('send').textContent='Ask AI';}};
+$('customer').onchange=()=>{pending=null;$('answerSection').hidden=true;$('send').disabled=!balance?.enabled||busy||!$('customer').value;};
+$('questionForm').onsubmit=async e=>{
+ e.preventDefault();if(busy||!balance?.enabled)return;busy=true;$('send').disabled=true;$('organization').disabled=true;$('customer').disabled=true;$('question').disabled=true;
+ pending??={request_key:crypto.randomUUID(),customer:$('customer').value,question:$('question').value};
+ status('Preparing your response…');let completed=false;
+ try{const r=await api(path()+'/assistance','POST',pending);showBalance({...r.allowance,enabled:balance.enabled});$('requestReference').textContent='Request: '+r.request_id;if(r.answer){$('answer').textContent=r.answer;$('answerSection').hidden=false;status('Response received. Usage has been recorded.');}else status(r.message||'This request is already recorded. No duplicate request was sent.');completed=true;}
+ catch(err){if(err.data?.allowance)showBalance({...err.data.allowance,enabled:balance.enabled});if(err.data?.request_id)$('requestReference').textContent='Request: '+err.data.request_id;status(err.message);completed=!!err.data?.state||[401,403,404].includes(err.status);if(!completed)$('send').textContent='Check / retry this request';}
+ finally{busy=false;$('organization').disabled=false;$('customer').disabled=false;$('question').disabled=false;$('send').disabled=completed||!balance.enabled;}
+};
+try{const caps=await api('/ai/capabilities');if(!caps.available)status('AI assistance is not enabled yet.');else{const data=await api('/team/organizations');if(!data.organizations.length)status('Join an organization to use its shared AI allowance.');else{$('organization').replaceChildren(...data.organizations.map(o=>new Option(o.name,o.id)));const preferred=new URLSearchParams(location.search).get('org');if(data.organizations.some(o=>o.id===preferred))$('organization').value=preferred;$('assistance').hidden=false;await selectOrg();}}}catch(e){status(e.status===401?'Sign in to CVEHarbor first.':e.message);}

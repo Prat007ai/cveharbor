@@ -1,0 +1,20 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import worker from '../src/index.js';
+import {unifiedFixture} from './helpers/unified-db.mjs';
+test('AI routes inherit production MFA, session, origin and recovery protection',async()=>{
+ const f=await unifiedFixture();
+ for(const p of ['../migrations/0032_recovery_control.sql','../../deployment/proposals/organization-ai/schema.sql'])f.DB.sql.exec(fs.readFileSync(new URL(p,import.meta.url),'utf8'));
+ f.env.CVEHARBOR_AI_ACCOUNTING_ENABLED='true';f.env.CVEHARBOR_AI_PLATFORM_OWNER_EMAIL=f.DB.sql.prepare("SELECT email FROM users WHERE id='a'").get().email;
+ const call=(who,path='/ai/admin/usage',method='GET',data)=>worker.fetch(f.request(path,method,data,who),f.env);
+ assert.equal((await call('')).status,401);
+ assert.equal((await call('b')).status,403);
+ assert.equal((await call('a','/ai/capabilities')).status,200);
+ f.DB.sql.exec("UPDATE user_totp SET enabled=0 WHERE user_id='a'");assert.equal((await call('a')).status,401);
+ f.DB.sql.exec("UPDATE user_totp SET enabled=1 WHERE user_id='a'");
+ const bad=f.request('/ai/admin/access','POST',{action:'grant',email:'other@example.test'},'a');
+ bad.headers.set('origin','https://untrusted.example');assert.equal((await worker.fetch(bad,f.env)).status,403);
+ const noOrigin=f.request('/ai/admin/access','POST',{},'a');noOrigin.headers.delete('origin');assert.equal((await worker.fetch(noOrigin,f.env)).status,403);
+ f.DB.sql.exec('UPDATE operations_control SET write_hold=1');assert.equal((await call('a','/ai/capabilities')).status,503);
+});
