@@ -1,0 +1,103 @@
+name: Connect production Cloudflare backend to Azure AI
+on:
+  pull_request:
+    paths:
+      - 'account-backend/src/azure-*.js'
+      - 'account-backend/tests/azure-*.test.mjs'
+      - 'deployment/proposals/azure-ai/**'
+      - 'scripts/azure_worker_package.py'
+      - 'scripts/connect_azure_worker.mjs'
+      - 'release/azure-worker-backend.txt'
+      - '.github/workflows/connect-azure-worker.yml'
+  workflow_dispatch:
+    inputs:
+      reviewed_commit:
+        description: Exact reviewed main commit for the connection-only backend release
+        type: string
+        required: true
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - run: node --test account-backend/tests/azure-connection.test.mjs deployment/proposals/azure-ai/verify.test.mjs
+      - name: Rebuild the exact scoped production package without credentials
+        run: |
+          python scripts/azure_worker_package.py "$RUNNER_TEMP/azure-worker"
+          rsync --archive --delete "$RUNNER_TEMP/azure-worker/account-backend/src/" account-backend/src/
+          cp "$RUNNER_TEMP/azure-worker/account-backend/wrangler.toml" account-backend/wrangler.toml
+          node --input-type=module -e "import assert from 'node:assert/strict';import fs from 'node:fs';import {backendIdentity} from './scripts/build_release_identity.mjs';assert.equal(backendIdentity(),fs.readFileSync('release/azure-worker-backend.txt','utf8').trim())"
+          node --test account-backend/tests/azure-connection.test.mjs account-backend/tests/team-access.test.mjs account-backend/tests/cvie-evidence.test.mjs account-backend/tests/cvie-shared.test.mjs
+          cd account-backend
+          npx --yes wrangler@4.156.0 deploy --dry-run --outdir "$RUNNER_TEMP/azure-worker-bundle"
+  release-ready:
+    needs: test
+    if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch' && inputs.reviewed_commit == github.sha
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Verify application and security checks for the exact main commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python scripts/production_release_checks.py
+  connect:
+    permissions:
+      contents: read
+      pull-requests: read
+    needs: release-ready
+    if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch' && inputs.reviewed_commit == github.sha && github.run_attempt == 1 && vars.PRODUCTION_DEPLOYMENTS_ENABLED != 'true'
+    environment: cloudflare-worker-production
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    concurrency:
+      group: cveharbor-production-release
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - name: Assemble and test the reviewed production overlay
+        run: |
+          python scripts/azure_worker_package.py "$RUNNER_TEMP/azure-worker"
+          rsync --archive --delete "$RUNNER_TEMP/azure-worker/account-backend/src/" account-backend/src/
+          cp "$RUNNER_TEMP/azure-worker/account-backend/wrangler.toml" account-backend/wrangler.toml
+          node --test account-backend/tests/azure-connection.test.mjs account-backend/tests/team-access.test.mjs account-backend/tests/cvie-evidence.test.mjs account-backend/tests/cvie-shared.test.mjs
+          node --input-type=module -e "import assert from 'node:assert/strict';import fs from 'node:fs';import {backendIdentity} from './scripts/build_release_identity.mjs';assert.equal(backendIdentity(),fs.readFileSync('release/azure-worker-backend.txt','utf8').trim())"
+      - name: Preserve the reviewed environment and exact merged change
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python -c "import sys;sys.path.insert(0,'scripts');import catalogue_promotion as p;import team_release as t;p.policy('cloudflare-worker-production');p.approval('cloudflare-worker-production');t.reviewed('feat/azure-worker-connection')"
+      - name: Install encrypted runtime credentials and verify the Cloudflare connection
+        env:
+          REVIEWED_COMMIT: ${{ inputs.reviewed_commit }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
+          CVEHARBOR_AZURE_OPENAI_CLIENT_SECRET: ${{ secrets.CVEHARBOR_AZURE_OPENAI_CLIENT_SECRET }}
+        run: node scripts/connect_azure_worker.mjs
+      - name: Retain only sanitized connection and release evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: azure-worker-verification-${{ github.run_id }}-${{ github.run_attempt }}
+          path: azure-worker-verification.json
+          if-no-files-found: warn
+          retention-days: 30

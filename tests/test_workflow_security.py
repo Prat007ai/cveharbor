@@ -51,6 +51,24 @@ class WorkflowSecurityTests(unittest.TestCase):
         doc = policy.load_workflow((ROOT / '.github/workflows/verify-azure-ai.yml').read_text())
         doc['on']['workflow_dispatch']['inputs']['mode']['default'] = 'inference'
         self.assertTrue(policy.validate(doc, 'verify-azure-ai.yml'))
+    def test_azure_runtime_publisher_rejects_unreviewed_execution_and_secret_forwarding(self):
+        source = policy.load_workflow((ROOT / '.github/workflows/connect-azure-worker.yml').read_text())
+        mutations = [
+            lambda job: job.update({'if': policy.MANUAL}),
+            lambda job: job.update(environment='cloudflare-production-audit'),
+            lambda job: job.update(needs='test'),
+            lambda job: job.update(concurrency=None),
+            lambda job: job.update({'timeout-minutes': 60}),
+            lambda job: job.update(env={'SECRET':'${{ secrets.CVEHARBOR_AZURE_OPENAI_CLIENT_SECRET }}'}),
+            lambda job: job['steps'][4].update(run='echo copied-credential'),
+            lambda job: job['steps'][4]['env'].update(EXTRA='${{ secrets.CVEHARBOR_PROD_CUSTOMER_SCHEMA_TOKEN }}'),
+        ]
+        for mutate in mutations:
+            changed = copy.deepcopy(source)
+            mutate(changed['jobs']['connect'])
+            self.assertTrue(policy.validate(changed, 'connect-azure-worker.yml'))
+        source['jobs']['release-ready']['steps'][-1]['run'] = 'echo skipped-checks'
+        self.assertTrue(policy.validate(source, 'connect-azure-worker.yml'))
     def test_no_environment(self):self.reject(lambda d:d['jobs']['audit'].pop('environment'))
     def test_wrong_branch(self):self.reject(lambda d:d['jobs']['audit'].update({'if':policy.MANUAL.replace('refs/heads/main','refs/heads/feature')}))
     def test_owner_review_environment_is_exclusive_to_the_scoped_release(self):
