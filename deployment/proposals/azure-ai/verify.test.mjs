@@ -23,7 +23,7 @@ function transport(overrides = {}) {
   const calls = [];
   const fetcher = async (url, options) => {
     calls.push({ url, options });
-    assert.equal(options.redirect, 'error');
+    assert.equal(options.redirect, 'manual');
     assert.ok(options.signal instanceof AbortSignal);
     if (url.endsWith('/token')) {
       const body = new URLSearchParams(options.body);
@@ -40,6 +40,20 @@ function transport(overrides = {}) {
   };
   return { calls, fetcher };
 }
+
+test('redirects at authentication and resource access are rejected without following or exposing destinations', async () => {
+  for (const status of [301,302,303,307,308]) {
+    for (const stage of ['auth','models']) {
+      const {calls,fetcher}=transport({[stage]:()=>new Response(null,{status,headers:{Location:'https://untrusted.example/private'}})});
+      const result=await runVerification(env,fetcher);
+      assert.equal(result.status,'failed');
+      assert.equal(result.error,stage==='auth'?'authentication_http_error':'resource_access_http_error');
+      assert.equal(calls.length,stage==='auth'?1:2);
+      assert.equal(result.inference_attempted,false);
+      assert.ok(!JSON.stringify(result).includes('untrusted.example'));
+    }
+  }
+});
 
 test('access mode authenticates and checks resource permissions without inference', async () => {
   const { calls, fetcher } = transport();
