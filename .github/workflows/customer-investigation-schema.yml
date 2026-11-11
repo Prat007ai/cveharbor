@@ -5,7 +5,7 @@ on:
       schema:
         description: Customer assignment storage to activate
         type: choice
-        options: [managed, manual, firewall, team]
+        options: [managed, manual, firewall, team, workspace-history]
         default: managed
       reviewed_commit:
         description: Exact reviewed main commit
@@ -54,3 +54,11 @@ jobs:
           CUSTOMER_SCHEMA: ${{ inputs.schema }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_CUSTOMER_SCHEMA_TOKEN }}
+      - name: Retain Workspace migration and recovery receipt
+        if: always() && inputs.schema == 'workspace-history'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: workspace-history-migration-${{ github.run_id }}
+          path: workspace-history-migration.json
+          if-no-files-found: warn
+          retention-days: 30

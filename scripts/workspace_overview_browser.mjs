@@ -43,7 +43,11 @@ try{
  assert.match(await page.locator('#wsAssetsHint').innerText(),/Multiple entries can belong to one device/);
  assert.equal(await page.locator('#wsEnvironments').innerText(),'3');
  assert.equal(await page.getByRole('heading',{name:'Registered Environments',exact:true}).count(),1);
- assert.match(await page.locator('.ws-trend').innerText(),/Trend history not available/);
+ assert.match(await page.locator('.ws-trend').innerText(),/7 daily observations.*1 missing day/);
+ const paths=await page.locator('.ws-history-chart path').evaluateAll(nodes=>nodes.map(n=>n.getAttribute('d')));
+ assert.equal(paths.length,5);assert.ok(paths.every(d=>(d.match(/M/g)||[]).length===2),'Every series breaks across the missing day');
+ assert.equal(await page.locator('.ws-history-legend li').count(),5);
+ await page.locator('.ws-history-details summary').click();assert.equal(await page.locator('.ws-history-table tbody tr').count(),7);await page.locator('.ws-history-details summary').click();
  assert.match(await page.locator('#wsProgressPanel').innerText(),/33%/);
  assert.equal(await page.locator('#wsProgressPanel progress').getAttribute('value'),'4');
  assert.match(await page.locator('#wsProgressPanel').innerText(),/Accepted Risk/);
@@ -56,6 +60,7 @@ try{
   await page.setViewportSize({width,height});
   const layout=await page.evaluate(()=>({width:innerWidth,page:document.documentElement.scrollWidth,rail:document.querySelector('.command-sidebar').getBoundingClientRect().width,overflow:[...document.querySelectorAll('.ws-panel,.ws-metric,.ws-navigation')].filter(n=>n.scrollWidth>n.clientWidth+1).map(n=>n.className)}));
   assert.ok(layout.page<=width+1,JSON.stringify(layout));assert.deepEqual(layout.overflow,[],JSON.stringify(layout));if(width>820)assert.ok(layout.rail<100);
+  assert.ok(await page.locator('.ws-trend').evaluate(n=>n.querySelector('.ws-history-details').getBoundingClientRect().bottom<=n.getBoundingClientRect().bottom),'Trend controls must not be clipped');
   results.push(layout);
   if([2048,1366,768,390,320].includes(width))await page.screenshot({path:path.join(output,'after-'+width+'.png'),fullPage:true});
   if(width===2048)await page.screenshot({path:path.join(output,'after-2048-viewport.png')});
@@ -72,12 +77,19 @@ try{
  await page.locator('#ws-drafts-tab').click();assert.match(await page.locator('#wsReportsPanel').innerText(),/No saved report drafts/);
  await page.locator('#wsIntelNext').click();assert.equal(await page.locator('#wsIntelPage').innerText(),'Page 2');
  // A second fictional account must replace, not combine with, the prior summary.
+ const originalHistory=structuredClone(fixture.trend.rows);
+ fixture.trend.rows=[{...originalHistory.at(-1),needs_review:0,in_progress:0,fixed:0,accepted_risk:0,not_applicable:0,inventory_records:0}];
  fixture.summary.inventory.customers=7;fixture.summary.inventory.environments=4;fixture.summary.inventory.inventory_entries=12;fixture.summary.remediation.rows=[{status:'Open',count:1,overdue:0}];
  await page.locator('#wsRefresh').click();await page.waitForFunction(()=>document.getElementById('wsCustomers').textContent==='7');assert.equal(await page.locator('#wsOpenRemediation').innerText(),'1');assert.equal(await page.locator('#wsAssets').innerText(),'12');assert.equal(await page.locator('#wsEnvironments').innerText(),'4');assert.match(await page.locator('#wsProgressPanel').innerText(),/0%/);
+ assert.match(await page.locator('#wsTrendPanel').innerText(),/First snapshot recorded/);assert.match(await page.locator('#wsTrendPanel').innerText(),/Snapshots overdue/);assert.equal(await page.locator('.ws-history-chart circle').count(),5);assert.equal(await page.locator('.ws-history-table tbody tr').count(),1);assert.deepEqual(await page.locator('.ws-history-legend b').allTextContents(),['0','0','0','0','0']);
+ assert.ok((await page.locator('.ws-history-chart path').evaluateAll(nodes=>nodes.map(n=>n.getAttribute('d')))).every(d=>!d.includes('L')),'One snapshot must not invent a line');
+ await page.screenshot({path:path.join(output,'first-snapshot-zero.png'),fullPage:true});
+ fixture.trend.rows=[{...originalHistory.at(-1),needs_review:-1}];await page.locator('#wsRefresh').click();await page.waitForFunction(()=>document.getElementById('wsTrendPanel').textContent.includes('could not be verified'));assert.equal(await page.locator('.ws-history-chart').count(),0);
+ fixture.trend.rows=originalHistory;
  fixture.summary.inventory.available=false;await page.locator('#wsRefresh').click();await page.waitForFunction(()=>document.getElementById('wsRefreshStatus').textContent.includes('unavailable'));assert.equal(await page.locator('#wsAssets').innerText(),'—');assert.equal(await page.locator('#wsEnvironments').innerText(),'—');
- fixture.setEmpty(true);await page.locator('#wsRefresh').click();await page.waitForFunction(()=>document.getElementById('wsCustomers').textContent==='0');assert.match(await page.locator('#wsProgressPanel').innerText(),/No remediation records/);assert.equal(await page.locator('#wsAssets').innerText(),'0');assert.equal(await page.locator('#wsEnvironments').innerText(),'0');await page.screenshot({path:path.join(output,'empty.png'),fullPage:true});
- fixture.setFailed(true);await page.locator('#wsRefresh').click();await page.waitForFunction(()=>document.getElementById('wsRefreshStatus').textContent.includes('unavailable'));assert.match(await page.locator('#wsProgressPanel').innerText(),/Progress unavailable/);assert.equal(await page.locator('#wsAssets').innerText(),'—');assert.equal(await page.locator('#wsEnvironments').innerText(),'—');await page.screenshot({path:path.join(output,'error.png'),fullPage:true});
- fixture.setAuthenticated(false);await page.locator('#wsRefresh').click();await page.waitForFunction(()=>!document.body.classList.contains('workspace-authenticated'));assert.equal(await page.locator('#workspaceAccess').isVisible(),false);assert.equal(await page.locator('.ws-navigation').isVisible(),false);assert.equal(await page.locator('#wsProgressPanel').innerText(),'');assert.equal(await page.locator('#accountPageRequest').isVisible(),true);
+ fixture.setEmpty(true);await page.locator('#wsRefresh').click();await page.waitForFunction(()=>document.getElementById('wsCustomers').textContent==='0');assert.match(await page.locator('#wsProgressPanel').innerText(),/No remediation records/);assert.match(await page.locator('#wsTrendPanel').innerText(),/Awaiting daily snapshots/);assert.equal(await page.locator('#wsAssets').innerText(),'0');assert.equal(await page.locator('#wsEnvironments').innerText(),'0');await page.screenshot({path:path.join(output,'empty.png'),fullPage:true});
+ fixture.setFailed(true);await page.locator('#wsRefresh').click();await page.waitForFunction(()=>document.getElementById('wsRefreshStatus').textContent.includes('unavailable'));assert.match(await page.locator('#wsProgressPanel').innerText(),/Progress unavailable/);assert.match(await page.locator('#wsTrendPanel').innerText(),/Trend history unavailable/);assert.equal(await page.locator('#wsAssets').innerText(),'—');assert.equal(await page.locator('#wsEnvironments').innerText(),'—');await page.screenshot({path:path.join(output,'error.png'),fullPage:true});
+ fixture.setAuthenticated(false);await page.locator('#wsRefresh').click();await page.waitForFunction(()=>!document.body.classList.contains('workspace-authenticated'));assert.equal(await page.locator('#workspaceAccess').isVisible(),false);assert.equal(await page.locator('.ws-navigation').isVisible(),false);assert.equal(await page.locator('#wsProgressPanel').innerText(),'');assert.equal(await page.locator('#wsTrendPanel').innerText(),'');assert.equal(await page.locator('#accountPageRequest').isVisible(),true);
  assert.deepEqual(errors,[]);assert.ok(fixture.seen.every(r=>r.method==='GET'));
  fs.writeFileSync(path.join(output,'measurements.json'),JSON.stringify(results,null,2));
  console.log('PASS: exact package, 11 viewports, preserved rail, secondary menu, keyboard tabs, navigation destinations, progress, pagination, fictional account replacement, empty/error/401 clearing, no writes or network access.');
