@@ -33,6 +33,7 @@ def prepare(out):
 
 
 def ready():
+    # PR #333 did not deploy: retain the exact serving CVIE backend identity.
     prod.ready(Path('release/cvie-refresh-backend.txt').read_text().strip())
 
 
