@@ -10,6 +10,10 @@ test('AI routes inherit production MFA, session, origin and recovery protection'
  const call=(who,path='/ai/admin/usage',method='GET',data)=>worker.fetch(f.request(path,method,data,who),f.env);
  assert.equal((await call('')).status,401);
  assert.equal((await call('b')).status,403);
+ f.env.CVEHARBOR_AI_PLATFORM_BACKUP_OWNER_EMAIL=f.DB.sql.prepare("SELECT email FROM users WHERE id='b'").get().email;
+ assert.equal((await (await call('b','/ai/capabilities')).json()).platform_owner,true);
+ f.DB.sql.exec("UPDATE user_totp SET enabled=0 WHERE user_id='b'");assert.equal((await call('b')).status,401);
+ f.DB.sql.exec("UPDATE user_totp SET enabled=1 WHERE user_id='b'");
  assert.equal((await call('a','/ai/capabilities')).status,200);
  f.DB.sql.exec("UPDATE user_totp SET enabled=0 WHERE user_id='a'");assert.equal((await call('a')).status,401);
  f.DB.sql.exec("UPDATE user_totp SET enabled=1 WHERE user_id='a'");
