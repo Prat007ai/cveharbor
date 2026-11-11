@@ -1,0 +1,72 @@
+name: Verify Azure AI application connection
+on:
+  pull_request:
+    paths:
+      - 'deployment/proposals/azure-ai/**'
+      - '.github/workflows/verify-azure-ai.yml'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'access checks authentication and model-list permission; inference sends one billable fictional request'
+        type: choice
+        options: [access, inference]
+        default: access
+        required: true
+      reviewed_commit:
+        description: Exact main commit reviewed and approved for this run
+        type: string
+        required: true
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - name: Require exact reviewed main commit for manual execution
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          REVIEWED_COMMIT: ${{ inputs.reviewed_commit }}
+        run: |
+          test "$GITHUB_REF" = refs/heads/main
+          test "$REVIEWED_COMMIT" = "$GITHUB_SHA"
+      - run: node --test deployment/proposals/azure-ai/verify.test.mjs
+  verify:
+    needs: test
+    if: github.repository == 'Prat007ai/cveharbor' && github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.reviewed_commit == github.sha
+    environment: cloudflare-worker-production
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    concurrency:
+      group: cveharbor-azure-ai-verification
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - name: Verify application access or run one approved fictional inference
+        env:
+          AZURE_AI_VERIFY_MODE: ${{ inputs.mode }}
+          CVEHARBOR_AZURE_OPENAI_ENDPOINT: ${{ vars.CVEHARBOR_AZURE_OPENAI_ENDPOINT }}
+          CVEHARBOR_AZURE_OPENAI_DEPLOYMENT: ${{ vars.CVEHARBOR_AZURE_OPENAI_DEPLOYMENT }}
+          CVEHARBOR_AZURE_OPENAI_TENANT_ID: ${{ vars.CVEHARBOR_AZURE_OPENAI_TENANT_ID }}
+          CVEHARBOR_AZURE_OPENAI_CLIENT_ID: ${{ vars.CVEHARBOR_AZURE_OPENAI_CLIENT_ID }}
+          CVEHARBOR_AZURE_OPENAI_CLIENT_SECRET: ${{ secrets.CVEHARBOR_AZURE_OPENAI_CLIENT_SECRET }}
+        run: node deployment/proposals/azure-ai/verify.mjs
+      - name: Retain sanitized verification and token usage
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: azure-ai-verification-${{ github.run_id }}-${{ github.run_attempt }}
+          path: azure-ai-verification.json
+          if-no-files-found: error
+          retention-days: 30
