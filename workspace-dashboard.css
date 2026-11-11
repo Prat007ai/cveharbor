@@ -146,5 +146,27 @@ body.workspace-overview.workspace-authenticated #workspaceAccess:not([hidden]){d
 @media(max-width:540px){.workspace-overview .ws-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.workspace-overview .ws-metric:last-child{grid-column:auto}.workspace-overview .ws-metric .ws-icon{width:29px;height:36px}.workspace-overview .ws-metric .ws-icon svg{width:22px;height:22px}.workspace-overview .ws-metric strong{font-size:24px}.workspace-overview .ws-metric h2{font-size:11px}.workspace-overview .ws-panel-heading{align-items:flex-start;gap:10px;flex-wrap:wrap}.workspace-overview .ws-panel-heading h2{font-size:17px}.workspace-overview .ws-donut-layout{grid-template-columns:1fr}.workspace-overview .ws-health-grid{grid-template-columns:1fr}.workspace-overview .ws-progress-states{grid-template-columns:repeat(3,minmax(0,1fr))}.workspace-overview .ws-table td,.workspace-overview .ws-table td strong{font-size:10px}.workspace-overview .ws-table th{font-size:8px}.workspace-overview .ws-table td small{font-size:9px}.workspace-overview .ws-severity{font-size:7px;padding:3px}.workspace-overview .ws-tabs{flex-wrap:wrap}.workspace-overview .ws-tabs button{font-size:10px}.workspace-overview .ws-header-actions .ws-account-link{font-size:10px}.workspace-overview .account-brand-name small{font-size:7px}.workspace-overview .ws-progress-summary{gap:12px}}
 @media print{.workspace-overview .ws-navigation{display:none!important}.workspace-overview.workspace-authenticated .account-new-main{margin-left:0}}
 
+/* Keep the desktop overview close to the reference's three compact rows. */
+@media(min-width:1500px){
+ .workspace-overview.workspace-authenticated .account-hero-grid{min-height:130px;padding-top:22px;padding-bottom:16px}
+ .workspace-overview .ws-panels{grid-template-rows:310px 275px 285px auto}
+ .workspace-overview .ws-panels>.ws-panel:not(.ws-reports){display:flex;flex-direction:column}
+ .workspace-overview .ws-remediation>.ws-scope{font-size:10px;margin:3px 0}
+ .workspace-overview .ws-donut-layout{grid-template-columns:156px minmax(0,1fr);padding:6px 4px;gap:20px}
+ .workspace-overview .ws-donut{width:148px;height:148px;padding:21px}
+ .workspace-overview .ws-legend li{padding:6px 0}
+ .workspace-overview #wsRemediationPanel,.workspace-overview #wsActivityPanel,.workspace-overview #wsIntelligencePanel{flex:1;min-height:0;overflow:auto;scrollbar-width:thin;scrollbar-color:#30576d transparent}
+ .workspace-overview .ws-trend-empty{flex:1;min-height:0;padding:14px}
+ .workspace-overview #wsProgressPanel{min-height:0;overflow:auto;scrollbar-width:thin}
+ .workspace-overview .ws-progress-summary{margin:6px 0}
+ .workspace-overview .ws-progress-summary strong{font-size:24px;line-height:1.2}
+ .workspace-overview .ws-progress-states{margin:8px 0}
+ .workspace-overview .ws-progress-states a{padding:8px}
+ .workspace-overview .ws-health-grid{margin-top:10px;gap:10px;flex:1;min-height:0}
+ .workspace-overview .ws-health-grid article{min-height:0;padding:12px;overflow:auto;scrollbar-width:thin}
+ .workspace-overview .ws-health-grid p{font-size:10px;line-height:1.5}
+ .workspace-overview .ws-table td,.workspace-overview .ws-table td strong{padding-block:5px}
+}
+
 .workspace-overview.team-requested .ws-navigation{display:none}
 .workspace-overview.team-requested .account-new-main{margin-left:0}

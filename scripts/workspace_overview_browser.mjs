@@ -34,7 +34,7 @@ try{
  });
  const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
  async function load(){await page.goto('https://cveharbor.com/workspace/');await page.waitForFunction(()=>document.getElementById('wsCustomers')?.textContent==='2');await page.waitForFunction(()=>document.getElementById('wsRefresh')?.disabled===false);}
- if(process.env.WORKSPACE_BEFORE){served=path.resolve(process.env.WORKSPACE_BEFORE);await load();await page.screenshot({path:path.join(output,'before-2048.png'),fullPage:true});served=site;}
+ if(process.env.WORKSPACE_BEFORE){served=path.resolve(process.env.WORKSPACE_BEFORE);await load();await page.screenshot({path:path.join(output,'before-2048.png'),fullPage:true});await page.screenshot({path:path.join(output,'before-2048-viewport.png')});served=site;}
  await load();
  assert.equal(await page.locator('#accountPageHeading').innerText(),'Workspace Overview');
  assert.equal(await page.locator('#wsOpenRemediation').innerText(),'5');
@@ -56,6 +56,8 @@ try{
   assert.ok(layout.page<=width+1,JSON.stringify(layout));assert.deepEqual(layout.overflow,[],JSON.stringify(layout));if(width>820)assert.ok(layout.rail<100);
   results.push(layout);
   if([2048,1366,768,390,320].includes(width))await page.screenshot({path:path.join(output,'after-'+width+'.png'),fullPage:true});
+  if(width===2048)await page.screenshot({path:path.join(output,'after-2048-viewport.png')});
+  if(width===390)await page.screenshot({path:path.join(output,'after-390-viewport.png')});
  }
  await page.setViewportSize({width:2048,height:1158});
  await page.locator('#wsMenuToggle').click();assert.equal(await page.locator('#wsMenuToggle').getAttribute('aria-expanded'),'false');assert.equal(await page.getByRole('link',{name:'Overview',exact:true}).isVisible(),true);
