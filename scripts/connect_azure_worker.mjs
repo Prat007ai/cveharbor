@@ -13,7 +13,7 @@ import {probeMessage, probePath} from '../account-backend/src/azure-connection.j
 import {diagnosticFetch} from './azure_connection_diagnostics.mjs';
 
 const account = 'aa99b9b15e0492302e4f6484b8d27bc2';
-const predecessor = 'f903b738021362b5a008a8b9704481699af4b9cc41c49d2f8ae75503d8d87abc';
+const predecessor = 'fc616f9638ee264a5ff28dfc5f9a116ec02e0c61fdf6fba16ee0c0bbf5436635';
 const api = 'https://api.cloudflare.com/client/v4/accounts/'+account+'/workers/scripts/cveharbor-accounts';
 const report = {status:'failed',source_commit:process.env.GITHUB_SHA,usage_category:'platform_verification',
   inference_attempted:false,customer_ai_enabled:false,started_at:new Date().toISOString()};
