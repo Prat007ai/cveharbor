@@ -170,3 +170,7 @@ body.workspace-overview.workspace-authenticated #workspaceAccess:not([hidden]){d
 
 .workspace-overview.team-requested .ws-navigation{display:none}
 .workspace-overview.team-requested .account-new-main{margin-left:0}
+.workspace-overview .ws-panel-heading{flex-wrap:wrap}
+.workspace-overview .ws-panel-heading h2{min-width:0;overflow-wrap:anywhere}
+.workspace-overview .ws-table th{white-space:normal;overflow-wrap:anywhere}
+@media(max-width:1200px){.workspace-overview .ws-panels{grid-template-columns:1fr}.workspace-overview .ws-reports{grid-column:auto}}

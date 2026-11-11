@@ -100,7 +100,7 @@ jobs:
             node scripts/card_coverage_browser.mjs
             python -m unittest discover -s scripts -p test_monitor_version_scans.py
           fi
-          if [ "$CVEHARBOR_SITE_RELEASE" = team-access ] || [ "$CVEHARBOR_SITE_RELEASE" = team-harbor-design ] || [ "$CVEHARBOR_SITE_RELEASE" = account-harbor-views ] || [ "$CVEHARBOR_SITE_RELEASE" = account-responsive ]; then
+          if [ "$CVEHARBOR_SITE_RELEASE" = workspace-overview ] || [ "$CVEHARBOR_SITE_RELEASE" = team-access ] || [ "$CVEHARBOR_SITE_RELEASE" = team-harbor-design ] || [ "$CVEHARBOR_SITE_RELEASE" = account-harbor-views ] || [ "$CVEHARBOR_SITE_RELEASE" = account-responsive ]; then
             python scripts/team_release.py enabled "$RUNNER_TEMP/team-worker"
             TEAM_TEST_SITE="$RUNNER_TEMP/catalogue/after" TEAM_TEST_WORKER="$RUNNER_TEMP/team-worker/account-backend/src/index.js" TEAM_TEST_CHROME=/usr/bin/google-chrome node scripts/team_access_browser.mjs
           fi
