@@ -35,8 +35,8 @@ function clear(){summary=null;intel=null;intelPage=0;nextOffset=null;offset=0;fo
 function endSession(){authenticated=false;epoch++;itemEpoch++;controller?.abort();clear();root.hidden=true;document.body.classList.remove('workspace-authenticated');$('accountPageSignedIn').hidden=true;$('accountPageSignedOut').hidden=false;$('accountPageRequest').hidden=false;$('accountPageVerify').hidden=true;$('wsRefresh').disabled=false;$('wsRefreshStatus').textContent='Sign in to load your workspace.';}
 function renderSummary(data){summary=data;const inventory=data.inventory;
  metric('Customers',inventory.available?count(inventory.customers):'—',inventory.available?'Customers in your account':'Inventory unavailable');
- metric('Environments','—',inventory.available?count(inventory.environments)+' registered · Active status unknown':'Active state unavailable');
- metric('Assets','—',inventory.available?count(inventory.inventory_entries)+' inventory entries · Unique assets unavailable':'Unique monitored assets not defined');
+ metric('Environments',inventory.available?count(inventory.environments):'—',inventory.available?'Environments registered in your account':'Environment records unavailable');
+ metric('Assets',inventory.available?count(inventory.inventory_entries):'—',inventory.available?'Saved software and technology entries · Multiple entries can belong to one device':'Inventory records unavailable');
  const open=data.remediation.rows.filter(r=>['Open','Investigating'].includes(r.status)).reduce((n,r)=>n+Number(r.count),0);
  metric('OpenRemediation',data.remediation.available?count(open):'—',data.remediation.available?'Saved tracker: Open + Investigating':'Remediation records unavailable');
  renderRemediation();renderProgress();

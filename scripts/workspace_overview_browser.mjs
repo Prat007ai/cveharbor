@@ -38,9 +38,11 @@ try{
  await load();
  assert.equal(await page.locator('#accountPageHeading').innerText(),'Workspace Overview');
  assert.equal(await page.locator('#wsOpenRemediation').innerText(),'5');
- assert.equal(await page.locator('#wsAssets').innerText(),'—');
- assert.match(await page.locator('#wsAssetsHint').innerText(),/9 inventory entries/);
- assert.equal(await page.locator('#wsEnvironments').innerText(),'—');
+ assert.equal(await page.locator('#wsAssets').innerText(),'9');
+ assert.equal(await page.getByRole('heading',{name:'Inventory Records',exact:true}).count(),1);
+ assert.match(await page.locator('#wsAssetsHint').innerText(),/Multiple entries can belong to one device/);
+ assert.equal(await page.locator('#wsEnvironments').innerText(),'3');
+ assert.equal(await page.getByRole('heading',{name:'Registered Environments',exact:true}).count(),1);
  assert.match(await page.locator('.ws-trend').innerText(),/Trend history not available/);
  assert.match(await page.locator('#wsProgressPanel').innerText(),/33%/);
  assert.equal(await page.locator('#wsProgressPanel progress').getAttribute('value'),'4');
@@ -70,10 +72,11 @@ try{
  await page.locator('#ws-drafts-tab').click();assert.match(await page.locator('#wsReportsPanel').innerText(),/No saved report drafts/);
  await page.locator('#wsIntelNext').click();assert.equal(await page.locator('#wsIntelPage').innerText(),'Page 2');
  // A second fictional account must replace, not combine with, the prior summary.
- fixture.summary.inventory.customers=7;fixture.summary.remediation.rows=[{status:'Open',count:1,overdue:0}];
- await page.locator('#wsRefresh').click();await page.waitForFunction(()=>document.getElementById('wsCustomers').textContent==='7');assert.equal(await page.locator('#wsOpenRemediation').innerText(),'1');assert.match(await page.locator('#wsProgressPanel').innerText(),/0%/);
- fixture.setEmpty(true);await page.locator('#wsRefresh').click();await page.waitForFunction(()=>document.getElementById('wsCustomers').textContent==='0');assert.match(await page.locator('#wsProgressPanel').innerText(),/No remediation records/);await page.screenshot({path:path.join(output,'empty.png'),fullPage:true});
- fixture.setFailed(true);await page.locator('#wsRefresh').click();await page.waitForFunction(()=>document.getElementById('wsRefreshStatus').textContent.includes('unavailable'));assert.match(await page.locator('#wsProgressPanel').innerText(),/Progress unavailable/);await page.screenshot({path:path.join(output,'error.png'),fullPage:true});
+ fixture.summary.inventory.customers=7;fixture.summary.inventory.environments=4;fixture.summary.inventory.inventory_entries=12;fixture.summary.remediation.rows=[{status:'Open',count:1,overdue:0}];
+ await page.locator('#wsRefresh').click();await page.waitForFunction(()=>document.getElementById('wsCustomers').textContent==='7');assert.equal(await page.locator('#wsOpenRemediation').innerText(),'1');assert.equal(await page.locator('#wsAssets').innerText(),'12');assert.equal(await page.locator('#wsEnvironments').innerText(),'4');assert.match(await page.locator('#wsProgressPanel').innerText(),/0%/);
+ fixture.summary.inventory.available=false;await page.locator('#wsRefresh').click();await page.waitForFunction(()=>document.getElementById('wsRefreshStatus').textContent.includes('unavailable'));assert.equal(await page.locator('#wsAssets').innerText(),'—');assert.equal(await page.locator('#wsEnvironments').innerText(),'—');
+ fixture.setEmpty(true);await page.locator('#wsRefresh').click();await page.waitForFunction(()=>document.getElementById('wsCustomers').textContent==='0');assert.match(await page.locator('#wsProgressPanel').innerText(),/No remediation records/);assert.equal(await page.locator('#wsAssets').innerText(),'0');assert.equal(await page.locator('#wsEnvironments').innerText(),'0');await page.screenshot({path:path.join(output,'empty.png'),fullPage:true});
+ fixture.setFailed(true);await page.locator('#wsRefresh').click();await page.waitForFunction(()=>document.getElementById('wsRefreshStatus').textContent.includes('unavailable'));assert.match(await page.locator('#wsProgressPanel').innerText(),/Progress unavailable/);assert.equal(await page.locator('#wsAssets').innerText(),'—');assert.equal(await page.locator('#wsEnvironments').innerText(),'—');await page.screenshot({path:path.join(output,'error.png'),fullPage:true});
  fixture.setAuthenticated(false);await page.locator('#wsRefresh').click();await page.waitForFunction(()=>!document.body.classList.contains('workspace-authenticated'));assert.equal(await page.locator('#workspaceAccess').isVisible(),false);assert.equal(await page.locator('.ws-navigation').isVisible(),false);assert.equal(await page.locator('#wsProgressPanel').innerText(),'');assert.equal(await page.locator('#accountPageRequest').isVisible(),true);
  assert.deepEqual(errors,[]);assert.ok(fixture.seen.every(r=>r.method==='GET'));
  fs.writeFileSync(path.join(output,'measurements.json'),JSON.stringify(results,null,2));
