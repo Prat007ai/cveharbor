@@ -37,6 +37,7 @@ jobs:
           CUSTOMER_SCHEMA: organization-ai
         run: |
           node --test account-backend/tests/ai-*.test.mjs
+          node --test scripts/organization_ai_health.test.mjs
           node scripts/activate_customer_assignment_schema.mjs --rehearse
       - name: Verify concurrent requests in the native Cloudflare runtime
         run: |

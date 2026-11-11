@@ -4,7 +4,11 @@ import {PRICE,USD,charge,period,priceCurrent} from './ai-pricing.js';
 
 // Account emails are verified by the existing MFA sign-in flow. This binding is
 // release-controlled, never a request field or an organization role.
-export function owner(env,user){return typeof env.CVEHARBOR_AI_PLATFORM_OWNER_EMAIL==='string'&&!!env.CVEHARBOR_AI_PLATFORM_OWNER_EMAIL&&user.email?.toLowerCase()===env.CVEHARBOR_AI_PLATFORM_OWNER_EMAIL.toLowerCase();}
+export function owner(env,user){
+ if(typeof user.email!=='string'||!user.email)return false;
+ return [env.CVEHARBOR_AI_PLATFORM_OWNER_EMAIL,env.CVEHARBOR_AI_PLATFORM_BACKUP_OWNER_EMAIL]
+  .some(email=>typeof email==='string'&&!!email&&user.email.toLowerCase()===email.toLowerCase());
+}
 export async function administrator(env,user){return owner(env,user)||!!await sql(env.DB,'SELECT user_id FROM ai_admins WHERE user_id=?',user.id).first();}
 const denied=()=>new WorkflowError('Platform administrator access required.',403);
 const ownerOnly=(env,user)=>{if(!owner(env,user))throw denied();};
