@@ -5,8 +5,8 @@ import team_release as team
 import catalogue_package as pkg
 import azure_worker_package as azure
 
-BASE = '4817be7409deb657e33971e9a2913ba0c8678db7'
-PREDECESSOR = 'fc616f9638ee264a5ff28dfc5f9a116ec02e0c61fdf6fba16ee0c0bbf5436635'
+BASE = 'df80d10531ef9faa52b6c693c96af9fcd54cd46a'
+PREDECESSOR = '3e7311dc8ffb33a06324b3e7f601f801139b6ea74f5d39323f5dbff221169991'
 
 def build(out, check=True):
     pkg.require(not out.exists(), 'Use a new package directory')
