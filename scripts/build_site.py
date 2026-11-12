@@ -20,6 +20,9 @@ shutil.copy2(ROOT / 'lifecycle-directory-search.js', OUT / 'lifecycle-directory-
 for name in ('index.html', 'cvie.js', 'technology-version-picker.mjs', 'cvie.css', 'styles.css', 'homepage.css', 'remediation.css', 'app.js', 'advisory-details.js', 'workspace.js', 'operations.js', 'customer-remediation-ui.js', 'accounts.js', 'disclosure-trend.js', 'page-router.js', 'header-auth.js', 'command-center.js', 'account-page.js', 'account-security.js', 'workspace-page.js', 'workspace-dashboard.js', 'website-monitor-page.js', 'website-monitor-dashboard.js', 'lifecycle-monitor.js', 'product-monitoring.js', 'lifecycle-monitor.css', 'inventory.js', 'inventory-matching.js', 'customer-security.js', 'shared-remediation.js', 'shared-remediation.css', 'customer-score.js', 'malware.js', 'geo-map.js', 'malware-data.js', 'data.js', 'CNAME', 'robots.txt'):
     shutil.copy2(ROOT / name, OUT / name)
 shutil.copy2(ROOT / 'workspace-dashboard.css', OUT / 'workspace-dashboard.css')
+for name in ('asset-import.js','inventory-assessment.js','organization-security.js','inventory-import.css'):
+    shutil.copy2(ROOT / name, OUT / name)
+shutil.copytree(ROOT / 'collectors', OUT / 'collectors')
 for name in ('account-harbor.css', 'team-access.css', 'team-entry.js', 'team-ui.js', 'team-admin.js', 'team-workspace.js'):
     shutil.copy2(ROOT / name, OUT / name)
 shutil.copy2(ROOT / 'account-backend/src/team-invitation-art.js', OUT / 'team-invitation-art.js')

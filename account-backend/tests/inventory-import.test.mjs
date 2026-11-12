@@ -1,0 +1,30 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import worker from '../src/index.js';
+import {unifiedFixture,assetOne,assetTwo} from './helpers/unified-db.mjs';
+test('team imports preserve versions and environment identity while enforcing current grants',async t=>{
+ const f=await unifiedFixture(),db=f.DB.sql;t.mock.method(globalThis,'fetch',f.fetcher);
+ for(const path of ['../migrations/0029_finding_assignment_links.sql','../../deployment/proposals/customer-remediation/schema.sql','../migrations/0032_recovery_control.sql','../../deployment/proposals/organization-team-access/schema.sql'])db.exec(fs.readFileSync(new URL(path,import.meta.url),'utf8'));
+ f.env.TEAM_ACCESS_ENABLED='true';
+ async function call(user,path,method='GET',body,status=200){const r=await worker.fetch(f.request('/team/'+path,method,body,user),f.env);const data=await r.json();assert.equal(r.status,status,JSON.stringify(data));return data;}
+ const org=(await call('a','organizations','POST',{name:'Fictional Northstar',include_existing:true},201)).id,base='organizations/'+org;
+ const original=await call('a',base+'/customers/c-'+assetOne);
+ assert.equal(original.assets[0].environment_id,original.environments[0].id);
+ const customer=(await call('a',base+'/customers','POST',{name:'Fictional Customer'},201)).id;
+ const env=(await call('a',base+'/environments/'+customer,'POST',{name:'Fictional import environment',kind:'QA'},201)).id;
+ await call('a',base+'/members','POST',{email:'other@example.test',role:'Viewer',scope:'selected',customers:[customer]},201);
+ const token=f.emails.at(-1).text_body.match(/#team-invite=([a-f0-9]{64})/)[1];await call('b','accept','POST',{token,revision:1});
+ const row={name:'DEMO-WEB01',asset_type:'Server',technology:'.NET Runtime',version:'8.0.1',environment_id:env};
+ await call('b',base+'/assets/'+customer,'POST',row,403);
+ const member=(await call('a',base+'/members')).members.find(m=>m.email==='other@example.test');
+ await call('a',base+'/members/'+member.id,'PUT',{role:'Editor',scope:'selected',customers:[customer],revision:member.revision});
+ for(const version of ['8.0.1','8.0.2'])await call('b',base+'/assets/'+customer,'POST',{...row,version},201);
+ const saved=await call('b',base+'/customers/'+customer);assert.deepEqual(saved.assets.filter(a=>a.name==='DEMO-WEB01').map(a=>a.version).sort(),['8.0.1','8.0.2']);
+ assert.ok(saved.assets.filter(a=>a.name==='DEMO-WEB01').every(a=>a.environment_id===env));
+ await call('b',base+'/assets/c-'+assetTwo,'POST',row,404);
+ const foreign=(await call('a',base+'/customers/c-'+assetTwo)).environments[0].id;
+ await call('b',base+'/assets/'+customer,'POST',{...row,environment_id:foreign},404);
+ await call('a',base+'/members/'+member.id,'DELETE',{revision:member.revision+1});
+ await call('b',base+'/assets/'+customer,'POST',row,404);
+});

@@ -6,6 +6,7 @@ import {PRODUCTION_DB} from './production_schema_baseline.mjs';
 import {verifyService} from './production_service_health.mjs';
 
 const state=process.env.TEAM_STATE;
+if(state==='windows-inventory'){await import('./windows_inventory_check.mjs');process.exit(0);}
 if(state==='organization-ai'){await import('./organization_ai_check.mjs');process.exit(0);}
 let completedRecoveryReceipt=null;
 assert.ok(['disabled','enabled','cvie-refresh','workspace-history'].includes(state));

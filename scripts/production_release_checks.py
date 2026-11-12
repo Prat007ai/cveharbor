@@ -61,6 +61,22 @@ def check_ai_commit(sha, get=github):
     return any(j['name'] == 'accounting' and j['status'] == 'completed' and j['conclusion'] == 'success' for j in jobs)
 
 
+def check_inventory_commit(sha, get=github):
+    workflow = '.github/workflows/windows-inventory-checks.yml'
+    runs = get('/actions/workflows/windows-inventory-checks.yml/runs?branch=main&event=push&head_sha='+sha+'&per_page=1')['workflow_runs']
+    if not runs:
+        return False
+    run = runs[0]
+    if (run['path'], run['head_sha'], run['head_branch'], run['event'], run['repository']['full_name']) != (workflow, sha, 'main', 'push', REPOSITORY):
+        raise ValueError('Inventory CI provenance mismatch.')
+    if run['status'] != 'completed':
+        return False
+    if run['conclusion'] != 'success':
+        raise ValueError('Inventory workflow checks failed: '+run['html_url'])
+    jobs = get(f"/actions/runs/{run['id']}/jobs?filter=latest&per_page=100")['jobs']
+    return {'collector','workflow'} <= {j['name'] for j in jobs if j['status']=='completed' and j['conclusion']=='success'}
+
+
 def main():
     if os.environ["GITHUB_REPOSITORY"] != REPOSITORY or os.environ["GITHUB_REF"] != "refs/heads/main":
         raise ValueError("Production releases must run from the repository's main branch.")
@@ -74,7 +90,8 @@ def main():
     deadline = time.monotonic() + 900
     while time.monotonic() < deadline:
         ai_release = any(inputs.get(key) == 'organization-ai' for key in ('team_release', 'site_release', 'schema'))
-        if check_commit(sha) and (not ai_release or check_ai_commit(sha)):
+        inventory_release = any(inputs.get(key) == 'windows-inventory' for key in ('team_release', 'site_release'))
+        if check_commit(sha) and (not ai_release or check_ai_commit(sha)) and (not inventory_release or check_inventory_commit(sha)):
             print(f"Verified production CI for {sha}.")
             return
         time.sleep(10)

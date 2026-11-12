@@ -1,7 +1,7 @@
 (()=>{
 'use strict';
 const $=id=>document.getElementById(id);
-if(!$('customerDashStatus'))return;
+if(!$('customerDashStatus')||new URLSearchParams(location.search).has('org'))return;
 const reporting=!!$('customerReportBody');
 let inventory={customers:[],environments:[],assets:[]},records=[],customerReady=false,accountEmail='';
 let pluginFindings=[],pluginChecks={},pluginMonitorRows={};
@@ -499,6 +499,7 @@ function drawDashboard(){
  for(const id of ['customerSoftwareAttention','customerFindingsAttention'])$(id).replaceChildren(attentionBadge(scopedStats.issues));
  const plugins=$('customerDashboardPlugins');plugins.replaceChildren();renderPluginMonitoring(plugins,scopedStats);
  const assessment=$('customerDashboardAssessment');assessment.replaceChildren();
+ if(window.CVEHARBOR_ASSESSMENT)assessment.append(window.CVEHARBOR_ASSESSMENT.summary(scopedStats.assets,records));
  if(chosen&&all[0])renderScorePanel(assessment,all[0].customer,env,all[0].stats);
  const historyRoot=$('customerDashboardUpgradeHistory');if(historyRoot){historyRoot.replaceChildren();renderUpgradeHistory(historyRoot,chosen,env)}
  const root=$('customerDashRows');root.replaceChildren();
@@ -1218,6 +1219,8 @@ async function init(){
   const requested=new URLSearchParams(location.search).get('customer');
   if(inventory.customers.some(c=>c.id===requested)){
    $('customerDashFilter').value=requested;environments();
+   const requestedEnvironment=new URLSearchParams(location.search).get('environment');
+   if(inventory.environments.some(e=>e.id===requestedEnvironment&&e.customer_id===requested))$('customerDashEnvironment').value=requestedEnvironment;
   }
   await refreshPluginFindings(false);
   if(reporting)layoutReportIntelligence();

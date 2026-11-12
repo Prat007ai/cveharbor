@@ -1,5 +1,7 @@
 (function(){
 'use strict';
+// Organization inventory has a separate permission-scoped data path.
+if(location.pathname.startsWith('/customer-dashboard/')&&new URLSearchParams(location.search).has('org'))return;
 // Dedicated public routes share hidden explorer markup.
 if(['threats','malware','lifecycle','admin-tools'].includes(document.body.dataset.page))return;
 const API='https://api.cveharbor.com/v1/cvie';

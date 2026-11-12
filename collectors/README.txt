@@ -1,0 +1,39 @@
+CVEHarbor Windows inventory collector
+
+1. Download Export-CVEHarborInventory.ps1 into a local folder on the target server.
+2. Review the script under your organization's normal script approval policy.
+3. Open Windows PowerShell 5.1 or PowerShell 7 and run:
+   .\Export-CVEHarborInventory.ps1 -AssetName 'DEMO-WEB01'
+   Replace DEMO-WEB01 with the server's inventory name. Omit -AssetName to use the computer name.
+4. Read collection-report.json and review the generated CSV files.
+5. In CVEHarbor select the customer environment, upload one numbered CSV at a time,
+   review all rows, then select Import and assess vulnerabilities.
+
+The script reads local inventory and only writes a new output folder. It does not
+upload, call AI, install software, change execution policy, repair MSI packages,
+or contact other servers. If your policy blocks scripts, use your approved signing
+or execution process; do not bypass it. Access restrictions are reported. Running
+with an approved elevated account may improve coverage but is not required to start.
+
+Programs and Features data is read from machine 32-bit and 64-bit installation
+records and the current user's records. Some hidden installer components can be
+included; review before importing. Other user profiles, Store apps, containers,
+portable software and application-bundled runtimes are not exhaustively discovered.
+Optional -DotNetRoot accepts additional local .NET installation directories.
+
+Each CSV has exactly: Asset Name,Asset Type,Technology,Version,Notes.
+Files are UTF-8 and split at 200 rows / 128 KB. No secret values, license keys,
+connection strings, installed-software command lines or environment dumps are collected.
+Names and publisher metadata may still be confidential: review before uploading.
+Exact duplicate product/version entries are consolidated. Distinct versions remain
+separate rows. Existing matching rows are skipped. This is not inventory synchronization:
+remove obsolete versions manually after verifying they are no longer installed.
+
+Assessment uses the available CVEHarbor advisory index. It is not an authenticated
+endpoint scan and does not prove exploitability or absence of vulnerabilities.
+Unmapped software and missing versions remain explicitly unverified. AI stays paused.
+
+Detection references:
+https://learn.microsoft.com/en-us/powershell/scripting/samples/working-with-software-installations
+https://learn.microsoft.com/en-us/dotnet/framework/migration-guide/how-to-determine-which-versions-are-installed
+https://learn.microsoft.com/en-us/dotnet/core/install/how-to-detect-installed-versions
