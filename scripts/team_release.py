@@ -131,7 +131,10 @@ def site(action,out):
 if __name__=='__main__':
     action=sys.argv[1]
     output=Path(sys.argv[2]).resolve() if len(sys.argv)>2 else None
-    if action == 'windows-inventory':
+    if action == 'dotnet-mapping':
+        from dotnet_mapping_release import build
+        build(output)
+    elif action == 'windows-inventory':
         from windows_inventory_release import backend
         backend(output)
     elif action == 'organization-ai':

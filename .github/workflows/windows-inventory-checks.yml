@@ -45,3 +45,20 @@ jobs:
           name: inventory-review-screens
           path: ${{ runner.temp }}/inventory-screens
           if-no-files-found: error
+  mapping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - name: Test exact mapping package with fictional inventory and AI paused
+        run: |
+          python scripts/dotnet_mapping_release.py build "$RUNNER_TEMP/mapping-worker"
+          rsync --archive --delete "$RUNNER_TEMP/mapping-worker/account-backend/src/" account-backend/src/
+          cp "$RUNNER_TEMP/mapping-worker/account-backend/wrangler.toml" account-backend/wrangler.toml
+          node --test account-backend/tests/dotnet-inventory-mapping.test.mjs account-backend/tests/cvie.test.mjs account-backend/tests/cvie-dotnet.test.mjs account-backend/tests/cvie-evidence.test.mjs account-backend/tests/cvie-shared.test.mjs account-backend/tests/product-chooser.test.mjs account-backend/tests/inventory-import.test.mjs account-backend/tests/team-access.test.mjs account-backend/tests/ai-*.test.mjs account-backend/tests/azure-connection.test.mjs
