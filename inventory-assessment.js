@@ -17,8 +17,9 @@ function familyWarning(asset,record){
  if(norm(asset.technology)!=='windows server')return '';
  const build=/^10\.0\.(\d+)(?:\.\d+)?$/.exec(String(asset.version||'').trim()),release=build&&serverBuilds[build[1]];
  if(!release)return '';
- const affected=String(record.affected||''),families=[...affected.matchAll(/\bWindows Server\s+(2003|2008|2012|2016|2019|2022|2025)\b/gi)].map(m=>m[1]);
- if(!families.length||families.includes(release))return '';
+ const affected=String(record.affected||''),families=[...affected.matchAll(/\bWindows Server\s*:?\s*(2003|2008|2012|2016|2019|2022|2025)\b/gi)].map(m=>m[1]);
+ // Grouped affected-product lists may omit the product name after a semicolon.
+ if(!families.length||new RegExp('\\b'+release+'\\b').test(affected))return '';
  return 'Version family mismatch: installed build '+asset.version+' identifies Windows Server '+release+', while the indexed affected text names Windows Server '+[...new Set(families)].join(', ')+'. Verify the complete vendor affected-product list before treating this as a vulnerability or recommending a patch. Build mapping: https://learn.microsoft.com/en-us/windows-server/get-started/windows-server-release-info';
 }
 function patterns(technology){
