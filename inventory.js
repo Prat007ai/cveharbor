@@ -1,7 +1,8 @@
 (() => {
 'use strict';
 const $=id=>document.getElementById(id);
-if(!$('inventoryWorkspace'))return;
+if(!$('inventoryWorkspace')||$('inventoryWorkspace').dataset.inventoryBound)return;
+$('inventoryWorkspace').dataset.inventoryBound='true';
 const api='https://api.cveharbor.com/v1/inventory';
 const inventoryChanges=typeof BroadcastChannel==='function'?new BroadcastChannel('cveharbor-inventory-changed'):null;
 let signedIn=false,ready=false,data={customers:[],environments:[],assets:[]};
@@ -711,7 +712,8 @@ async function load(){
  try{const r=await fetch('https://api.cveharbor.com/v1/plugin-sources',{credentials:'include'});const s=await r.json();pluginSourceReady=!!s.ready;pluginSources=new Map((s.sources||[]).map(x=>[x.asset_id,x]));}catch(_){pluginSourceReady=false;pluginSources=new Map()}
  render();
 }
-function confirmInventoryRemoval(type,name){
+let removalPending=false;
+function confirmInventoryRemoval(type,name,removalRequest){
  return new Promise(resolve=>{
   const overlay=make('div','inventory-confirm-overlay');
   const dialog=make('section','inventory-confirm-dialog');
@@ -719,26 +721,40 @@ function confirmInventoryRemoval(type,name){
   dialog.setAttribute('aria-modal','true');
   dialog.setAttribute('aria-labelledby','inventoryConfirmHeading');
   dialog.setAttribute('aria-describedby','inventoryConfirmDescription');
+  dialog.tabIndex=-1;
   const heading=make('h3','','Remove '+name+'?');heading.id='inventoryConfirmHeading';
   const detail=type==='customers'?'This permanently removes the customer, all of its environments, and associated asset inventory.':type==='environments'?'This permanently removes the environment and its associated asset inventory.':'This permanently removes this asset entry.';
   const description=make('p','',detail+' This action cannot be undone.');description.id='inventoryConfirmDescription';
   const actions=make('div','inventory-confirm-actions');
   const cancel=make('button','inventory-confirm-cancel','Cancel');cancel.type='button';
   const accept=make('button','inventory-confirm-delete','Remove');accept.type='button';
-  const previous=document.activeElement;
-  function finish(answer){document.removeEventListener('keydown',onKey);overlay.remove();previous?.focus?.();resolve(answer)}
-  function onKey(e){if(e.key==='Escape'){e.preventDefault();finish(false)}else if(e.key==='Tab'){const target=e.shiftKey?cancel:accept;if(document.activeElement===target){e.preventDefault();(e.shiftKey?accept:cancel).focus()}}}
+  const feedback=make('p','ops-note','');feedback.setAttribute('role','status');
+  const previous=document.activeElement;let busy=false,finished=false;
+  function finish(answer){if(finished||busy)return;finished=true;document.removeEventListener('keydown',onKey);overlay.remove();previous?.focus?.();resolve(answer)}
+  function onKey(e){if(e.key==='Escape'){e.preventDefault();finish(false)}else if(e.key==='Tab'){if(busy){e.preventDefault();dialog.focus();return}const target=e.shiftKey?cancel:accept;if(document.activeElement===target||!dialog.contains(document.activeElement)){e.preventDefault();(e.shiftKey?accept:cancel).focus()}}}
   cancel.addEventListener('click',()=>finish(false));
-  accept.addEventListener('click',()=>finish(true));
+  accept.addEventListener('click',async()=>{
+   if(busy||finished)return;
+   busy=true;accept.disabled=true;cancel.disabled=true;accept.textContent='Removing…';dialog.setAttribute('aria-busy','true');
+   feedback.textContent='Removing '+name+'. Please wait; no need to click again.';
+   dialog.focus();
+   try{await removalRequest();busy=false;finish(true)}
+   catch(e){busy=false;accept.disabled=false;cancel.disabled=false;accept.textContent='Retry removal';dialog.removeAttribute('aria-busy');feedback.textContent='Removal could not be confirmed: '+e.message;accept.focus();}
+  });
   overlay.addEventListener('click',e=>{if(e.target===overlay)finish(false)});
   document.addEventListener('keydown',onKey);
-  actions.append(cancel,accept);dialog.append(heading,description,actions);overlay.append(dialog);document.body.append(overlay);cancel.focus();
+  actions.append(cancel,accept);dialog.append(heading,description,feedback,actions);overlay.append(dialog);document.body.append(overlay);cancel.focus();
  });
 }
 async function remove(type,id,name){
- if(!await confirmInventoryRemoval(type,name))return;
- try{await call('/'+type+'/'+id,'DELETE');await load();status(name+' removed from your private inventory.')}
- catch(e){status(e.message)}
+ if(removalPending)return;
+ removalPending=true;
+ try{
+  if(!await confirmInventoryRemoval(type,name,()=>call('/'+type+'/'+id,'DELETE')))return;
+  status(name+' removed. Refreshing inventory…');
+  try{await load();status(name+' removed from your private inventory.')}
+  catch(e){status(name+' was removed, but inventory could not refresh: '+e.message+'. Refresh the page to update the list.')}
+ }finally{removalPending=false}
 }
 async function onAccount(event){
  signedIn=!!event.detail?.authenticated;
