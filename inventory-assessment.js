@@ -3,22 +3,35 @@
 const norm=v=>String(v||'').trim().toLowerCase();
 const escape=v=>v.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
 const names={'.net runtime':['.NET Runtime','.NET Core Runtime'],'.net desktop runtime':['.NET Desktop Runtime','Windows Desktop Runtime'],'asp.net core runtime':['ASP.NET Core'],'.net sdk':['.NET SDK'],'.net framework':['.NET Framework'],'windows server':['Windows Server'],'windows':['Windows 10','Windows 11'],'iis':['Internet Information Services','Microsoft IIS']};
-function source(record){return (record.sources||[]).find(s=>{try{return new URL(s.url).protocol==='https:';}catch{return false;}});}
+const legacy=new Set(['php','wordpress','mysql','mariadb','sql server','microsoft sql server','asp.net','.net','python','azure','fortigate','fortios','docker','kubernetes','linux','ubuntu','ubuntu linux','debian','debian linux','sitefinity']);
+const sourceCache=new WeakMap();
+function source(record){
+ if(!sourceCache.has(record))sourceCache.set(record,(record.sources||[]).find(s=>{try{return new URL(s.url).protocol==='https:';}catch{return false;}}));
+ return sourceCache.get(record);
+}
+const productPatterns=new Map();
+function patterns(technology){
+ if(!productPatterns.has(technology)){
+  if(productPatterns.size>=1000)productPatterns.clear();
+  productPatterns.set(technology,(names[norm(technology)]||[technology]).map(name=>new RegExp('(?:^|[^a-z0-9])'+escape(name)+'(?:$|[^a-z0-9])','i')));
+ }
+ return productPatterns.get(technology);
+}
 function candidate(asset,record,base){
  const product=norm(asset.technology),special=Object.hasOwn(names,product);
  const original=base.candidate(asset,record);
- const legacy=new Set(['php','wordpress','mysql','mariadb','sql server','microsoft sql server','asp.net','.net','python','azure','fortigate','fortios','docker','kubernetes','linux','ubuntu','ubuntu linux','debian','debian linux','sitefinity']);
  if(!special&&(legacy.has(product)||product.startsWith('wordpress plugin:')))return original;
  if(!special&&original)return original;
  if(!/^(CVE-\d{4}-\d{4,}|GHSA-[a-z0-9-]+)$/i.test(record.id||'')||/rejected|withdrawn/i.test(record.status||''))return null;
  if((record.cvie_excluded_products||[]).some(p=>norm(p)===product))return null;
- const reference=source(record);if(!reference)return null;
+
  // Explicit reviewed CVIE identities retain the existing structured CPE rules.
  // OS/.NET Framework/IIS builds still require patch evidence, not a generic numeric comparison.
- if(original&&/^cvie_/.test(record.source_type||'')&&!['windows','windows server','.net framework','iis'].includes(product))return original;
+ if(original&&/^cvie_/.test(record.source_type||'')&&!['windows','windows server','.net framework','iis'].includes(product))return source(record)?original:null;
  const affected=String(record.affected||'');
- const aliases=names[product]||[asset.technology];
- if((!special&&product.length<4)||!aliases.some(name=>new RegExp('(?:^|[^a-z0-9])'+escape(name)+'(?:$|[^a-z0-9])','i').test(affected)))return null;
+ const aliases=patterns(asset.technology);
+ if((!special&&product.length<4)||!aliases.some(pattern=>pattern.test(affected)))return null;
+ const reference=source(record);if(!reference)return null;
  // Installer marketing names are not guessed into another product family.
  return {id:record.id,title:record.title||record.summary||record.id,severity:record.severity||'unknown',known_exploited:!!record.known_exploited,
   asset_id:asset.id,technology:asset.technology,version:asset.version||'',level:'category',
@@ -29,9 +42,36 @@ function candidate(asset,record,base){
 function install(){
  const base=root.CVEHARBOR_INVENTORY_MATCH;if(!base||base.inventoryAssessment)return;
  const original={...base};
+ // CVIE replaces advisory snapshots when evidence changes. Reuse product/version
+ // work within a snapshot while assigning every finding to its current asset.
+ const assessments=new WeakMap();
  base.candidate=(a,r)=>candidate(a,r,original);
  base.evaluate=(assets,records,limit=150)=>{
-  const items=[],seen=new Set();for(const a of assets||[])for(const r of records||[]){const f=base.candidate(a,r);if(!f)continue;const k=a.id+'|'+f.id;if(seen.has(k))continue;seen.add(k);items.push(f);}
+  const items=[],seen=new Set();
+  const advisoryRecords=records||[];
+  let cached=assessments.get(advisoryRecords);
+  if(!cached||cached.length!==advisoryRecords.length){
+   cached={products:new Map(),findings:0,length:advisoryRecords.length};
+   assessments.set(advisoryRecords,cached);
+  }
+  const byProduct=cached.products;
+  for(const asset of assets||[]){
+   const key=JSON.stringify([asset.technology,asset.version]);
+   let matches=byProduct.get(key);
+   if(!matches){
+    matches=[];
+    for(const record of advisoryRecords){const finding=base.candidate(asset,record);if(finding)matches.push(finding);}
+    // Bound retained results even for unusually broad advisory matches.
+    if(byProduct.size<1000&&cached.findings+matches.length<=10000){
+     byProduct.set(key,matches);cached.findings+=matches.length;
+    }
+   }
+   for(const finding of matches){
+    const identity=asset.id+'|'+finding.id;
+    if(seen.has(identity))continue;
+    seen.add(identity);items.push({...finding,asset_id:asset.id});
+   }
+  }
   const rank={critical:4,high:3,medium:2,low:1};items.sort((a,b)=>Number(b.known_exploited)-Number(a.known_exploited)||(rank[norm(b.severity)]||0)-(rank[norm(a.severity)]||0)||a.id.localeCompare(b.id));
   return {items:items.slice(0,limit),total:items.length,limited:items.length>limit};
  };base.inventoryAssessment=true;
