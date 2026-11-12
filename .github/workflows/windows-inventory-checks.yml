@@ -7,15 +7,14 @@ permissions:
   contents: read
 jobs:
   collector:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
-      - name: Test the collector using fictional data in Windows PowerShell 5.1
-        shell: powershell
-        run: ./scripts/test_windows_collector.ps1
+      - name: Test the collector exporter using fictional data in PowerShell
+        run: pwsh -NoProfile -File scripts/test_windows_collector.ps1
   workflow:
     runs-on: ubuntu-latest
     timeout-minutes: 20
