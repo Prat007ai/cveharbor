@@ -216,7 +216,7 @@ jobs:
       FEED_RECEIPT: ${{ github.workspace }}/.feed-receipt/feed-receipt.json
       CVEHARBOR_SITE_RELEASE: ${{ inputs.site_release }}
     name: Publish reviewed website to production
-    if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch' && inputs.reviewed_commit == github.sha && github.run_attempt == 1 && vars.PRODUCTION_DEPLOYMENTS_ENABLED != 'true'
+    if: always() && !cancelled() && needs.check.result == 'success' && github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch' && inputs.reviewed_commit == github.sha && github.run_attempt == 1 && vars.PRODUCTION_DEPLOYMENTS_ENABLED != 'true'
     needs: check
     runs-on: ubuntu-latest
     timeout-minutes: 25
