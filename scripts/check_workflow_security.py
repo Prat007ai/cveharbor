@@ -85,7 +85,11 @@ def validate(doc, filename):
         env = job.get('environment')
         env = env.get('name') if isinstance(env, dict) else env
         condition = job.get('if', '')
-        require(job.get('runs-on') == 'ubuntu-latest', label + ': use an isolated hosted runner')
+        native_collector = filename == 'session-navigation.yml' and name == 'collector-build'
+        require(job.get('runs-on') == ('windows-2022' if native_collector else 'ubuntu-latest'), label + ': use an isolated hosted runner')
+        if native_collector:
+            require(not env and 'secrets.' not in raw and 'secrets[' not in raw and job.get('permissions') == {'contents':'read'}, label + ': native build must be credential-free and read-only')
+            require(job.get('timeout-minutes') == 15, label + ': bounded native build required')
         require('uses' not in job, label + ': reusable credential forwarding requires separate review')
         require('secrets[' not in raw and 'toJSON(secrets)' not in raw and 'toJson(secrets)' not in raw,
                 label + ': dynamic or bulk secret access is forbidden')

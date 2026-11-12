@@ -23,6 +23,12 @@ class WorkflowSecurityTests(unittest.TestCase):
             with self.subTest(path=p.name):self.assertEqual(policy.validate(policy.load_workflow(p.read_text()),p.name),[])
     def test_duplicate_yaml_is_rejected(self):
         with self.assertRaises(ValueError):policy.load_workflow('jobs:\n  audit:\n    if: guarded\n    if: true\n')
+    def test_native_collector_cannot_receive_credentials_or_write_access(self):
+        source=policy.load_workflow((ROOT/'.github/workflows/session-navigation.yml').read_text())
+        for change in ({'environment':'cloudflare-site-production'}, {'permissions':{'contents':'write'}},
+                       {'env':{'TOKEN':'${{ secrets.EXAMPLE_TOKEN }}'}}, {'runs-on':'self-hosted'}):
+            altered=copy.deepcopy(source);altered['jobs']['collector-build'].update(change)
+            self.assertTrue(policy.validate(altered,'session-navigation.yml'))
     def test_azure_verification_rejects_wrong_scope_and_extra_credentials(self):
         source = policy.load_workflow((ROOT / '.github/workflows/verify-azure-ai.yml').read_text())
         mutations = [

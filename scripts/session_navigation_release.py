@@ -154,6 +154,10 @@ def readiness():
 
 
 if __name__ == "__main__":
+    if os.environ.get("CVEHARBOR_SITE_RELEASE") == "windows-collector-app":
+        import windows_collector_app_release
+        windows_collector_app_release.run(sys.argv[1],Path(sys.argv[2]).resolve() if len(sys.argv)>2 else None)
+        sys.exit(0)
     if os.environ.get("CVEHARBOR_SITE_RELEASE") == "inventory-experience":
         import inventory_experience_release
         inventory_experience_release.run(sys.argv[1],Path(sys.argv[2]).resolve() if len(sys.argv)>2 else None)
