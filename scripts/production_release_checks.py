@@ -90,7 +90,7 @@ def main():
     deadline = time.monotonic() + 900
     while time.monotonic() < deadline:
         ai_release = any(inputs.get(key) == 'organization-ai' for key in ('team_release', 'site_release', 'schema'))
-        inventory_release = any(inputs.get(key) in ('windows-inventory','dotnet-mapping') for key in ('team_release', 'site_release'))
+        inventory_release = any(inputs.get(key) in ('windows-inventory','dotnet-mapping','server-security') for key in ('team_release', 'site_release'))
         inventory_jobs = ('collector','workflow','mapping') if inputs.get('team_release') == 'dotnet-mapping' else ('collector','workflow')
         if check_commit(sha) and (not ai_release or check_ai_commit(sha)) and (not inventory_release or check_inventory_commit(sha, required_jobs=inventory_jobs)):
             print(f"Verified production CI for {sha}.")
