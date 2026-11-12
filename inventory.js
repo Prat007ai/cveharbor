@@ -343,6 +343,7 @@ function setupBulkAssetImport(){
   scope:()=>{const environment=$('inventoryEnvironmentSelect').value;return {environment,customer:data.environments.find(e=>e.id===environment)?.customer_id||''};},
   readAssets:async()=>{if(!signedIn||!ready)throw Error('Sign in before importing.');return (await call()).assets;},
   saveAsset:item=>call('/assets','POST',item),
+  saveNetwork:item=>call('/server-network','POST',item),
   afterImport:async()=>{inventoryChanges?.postMessage({changed:true});}
  });
 }

@@ -11,6 +11,7 @@ try{for(const org of [false,true])for(const width of [1440,768,390]){
  f.inventory.assets[0].notes='Server role: Web; Fictional';f.inventory.assets[1].name='WEB01';f.inventory.assets[1].notes='Server role: Application; Fictional';
  f.inventory.assets.push({...f.inventory.assets[0],id:'a5',version:'8.4.0'}, {id:'a6',name:'DB01',environment_id:'e1',technology:'Unmapped Fictional Database',version:'1.0',asset_type:'Database'});
  const context=await browser.newContext({viewport:{width,height:950}}),page=await context.newPage(),errors=[],calls=[];let revoked=false;
+ const network={environment_id:'e1',server_key:'web01',revision:'r1',primary_adapter:'',primary_ip:'',snapshot:{version:1,collected_at:'2026-01-01T00:00:00Z',adapters:[{id:'lan',name:'Production LAN',status:'Up',addresses:[{ip:'192.0.2.10',family:'IPv4',prefix:24,state:'Preferred'},{ip:'2001:db8::10',family:'IPv6',prefix:64,state:'Preferred'}]},{id:'backup',name:'Backup LAN',status:'Up',addresses:[{ip:'198.51.100.20',family:'IPv4',prefix:24,state:'Preferred'}]}],suggested:{adapter_id:'lan',ip:'192.0.2.10'}}};
  page.on('pageerror',e=>errors.push(e.message));
  await page.route('**/*',async route=>{
   const req=route.request(),url=new URL(req.url());
@@ -18,7 +19,10 @@ try{for(const org of [false,true])for(const width of [1440,768,390]){
    calls.push(url.pathname);assert.ok(!url.pathname.includes('/ai/')||(url.pathname==='/v1/ai/capabilities'&&req.method()==='GET'),'No AI inference or administration');
    if(req.method()==='OPTIONS')return route.fulfill({status:204,headers:{'Access-Control-Allow-Origin':'https://cveharbor.com','Access-Control-Allow-Credentials':'true','Access-Control-Allow-Headers':'Content-Type','Access-Control-Allow-Methods':'GET,POST,PUT,DELETE'}});
    let data,status=200;
-   if(org&&url.pathname.startsWith('/v1/team/')){
+   if(url.pathname.includes('/server-network')&&!revoked){
+    if(req.method()==='PUT'){assert.equal(org,false,'Viewer must not submit');const d=JSON.parse(req.postData());assert.equal(d.adapter_id,'backup');assert.equal(d.ip,'198.51.100.20');assert.equal(d.environment_id,'e1');assert.equal(d.revision,'r1');Object.assign(network,{primary_adapter:d.adapter_id,primary_ip:d.ip,revision:'r2'});data={...network,saved:true};}
+    else data={networks:[network]};
+   }else if(org&&url.pathname.startsWith('/v1/team/')){
     if(revoked){status=403;data={error:'Access removed'};}
     else if(url.pathname.endsWith('/customers'))data={name:'Northstar',role:'Viewer',customers:[f.inventory.customers[0]]};
     else data={customer:{...f.inventory.customers[0],role:'Viewer'},environments:f.inventory.environments.filter(e=>e.customer_id==='c1'),assets:f.inventory.assets.filter(a=>a.environment_id!=='e3'),findings:[],remediations:[],activity:[]};
@@ -34,6 +38,12 @@ try{for(const org of [false,true])for(const width of [1440,768,390]){
  });
  await page.goto('https://cveharbor.com/customer-dashboard/?customer=c1'+(org?'&org=north':''));
  const panel=page.locator('.server-security');await panel.locator('.server-card').first().waitFor();
+ await panel.getByText('Suggested primary IP: 192.0.2.10 · Production LAN',{exact:true}).waitFor();
+ const networkDetails=panel.locator('.server-network');assert.equal(await networkDetails.count(),1);assert.equal(await networkDetails.getAttribute('open'),null);
+ await networkDetails.locator('summary').click();assert.match(await networkDetails.innerText(),/2001:db8::10/);assert.match(await networkDetails.innerText(),/Backup LAN/);
+ if(org)assert.equal(await networkDetails.getByRole('radio').count(),0);
+ else{await networkDetails.getByRole('radio',{name:'Backup LAN 198.51.100.20',exact:true}).check();await networkDetails.getByRole('button',{name:'Save primary adapter & IP'}).click();await networkDetails.getByText('Primary adapter and IP saved for this server.',{exact:true}).waitFor();assert.match(await panel.innerText(),/Primary IP: 198.51.100.20/);}
+ await panel.getByLabel('Find a hostname or asset').fill('2001:db8::10');assert.equal(await panel.locator('.server-card').count(),1);await panel.getByLabel('Find a hostname or asset').fill('');
  assert.equal(await panel.locator('.server-card').count(),3);assert.doesNotMatch(await panel.innerText(),/OTHER01|Other Customer/);
  await panel.getByLabel('Server role',{exact:true}).selectOption('Web');assert.equal(await panel.locator('.server-card').count(),1);
  assert.match(await panel.innerText(),/8\.4\.0/);assert.match(await panel.innerText(),/8\.4\.1/);assert.match(await panel.innerText(),/CVE-2026-12345/);

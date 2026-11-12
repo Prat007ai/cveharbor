@@ -1,5 +1,6 @@
 import {integrityError} from './remediation-integrity.js';
 import {customerRecordsReady} from './customer-remediation-context.js';
+import {networkRows,unpack,saveNetwork} from './server-network.js';
 // Private, account-owned customer and environment inventory. All mutations
 // require an authenticated session, and every read is scoped by user ID.
 const json=(body,status=200)=>new Response(JSON.stringify(body),{status,headers:{
@@ -39,6 +40,10 @@ export async function inventoryRoute(req,env,user,path,data={},write=statement=>
   if(path==='/v1/inventory/status'&&req.method==='GET')
     return json({storage:'d1',ready:await ready(env),max_customers:100,max_environments:500,max_assets:3000});
   await ensureReady(env);
+  if(path==='/v1/inventory/server-network'){
+    if(req.method==='GET')return json({networks:unpack((await networkRows(env.DB,user.id).all()).results||[])});
+    if(['POST','PUT'].includes(req.method))return json(await saveNetwork(env.DB,user.id,data,req.method));
+  }
   if(path==='/v1/inventory/software-history'&&req.method==='GET'){
     const params=new URL(req.url).searchParams,customer=id(params.get('customer_id'));
     const rawEnvironment=params.get('environment_id'),environment=rawEnvironment?id(rawEnvironment):null;

@@ -6,6 +6,14 @@ const context=vm.createContext({TextEncoder,URL});context.window=context;
 for(const f of ['asset-import.js','inventory-matching.js','inventory-assessment.js'])vm.runInContext(fs.readFileSync(f,'utf8'),context);
 const {parse,key}=context.CVEHARBOR_ASSET_IMPORT,match=context.CVEHARBOR_INVENTORY_MATCH;
 const head='Asset Name,Asset Type,Technology,Version,Notes\r\n';
+test('network CSV retains multiple adapters, preserves legacy import and rejects conflicting snapshots',()=>{
+ const network={version:1,collected_at:'2026-01-01T00:00:00Z',adapters:[{id:'lan',name:'LAN',status:'Up',addresses:[{ip:'192.0.2.10',prefix:24,state:'Preferred'},{ip:'2001:db8::10',prefix:64,state:'Preferred'}]},{id:'backup',name:'Backup',status:'Disconnected',addresses:[]}],suggested:{adapter_id:'lan',ip:'192.0.2.10'}};
+ const row=(n,version='1')=>'DEMO,Server,Product,'+version+',,"'+JSON.stringify(n).replaceAll('"','""')+'"\r\n';
+ const header=head.trim()+',Server Network\r\n';const parsed=parse(header+row(network)+row(network,'2'));
+ assert.equal(parsed.entries.length,2);assert.equal(parsed.networks.length,1);assert.equal(parsed.networks[0].snapshot.adapters.length,2);
+ assert.throws(()=>parse(header+row(network)+row({...network,collected_at:'2026-01-02T00:00:00Z'},'2')),/Conflicting/);
+ assert.throws(()=>parse(header+row({...network,suggested:{adapter_id:'lan',ip:'invalid'}})),/Invalid/);
+});
 test('UTF8 BOM, quotes, versions, missing version and exact duplicate handling',()=>{
  const result=parse('\uFEFF'+head+'DEMO,Server,.NET Runtime,8.0.1,"Publisher: Example, Inc"\r\nDEMO,Server,.NET Runtime,8.0.2,\r\nDEMO,Server,.NET Runtime,8.0.1,duplicate\r\nDEMO,Server,Unknown,,Review\r\n');
  assert.equal(result.entries.length,3);assert.equal(result.duplicates,1);assert.equal(result.warnings.length,1);

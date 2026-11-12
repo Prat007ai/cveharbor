@@ -2,6 +2,7 @@ import {WorkflowError,requireWorkflow,workflowWriteStatements,runWorkflowWrite} 
 import {normalizeRecord} from './remediation.js';
 import {inventoryRoute} from './inventory.js';
 import {saveCustomerRemediation} from './customer-remediation.js';
+import {networkRows,unpack,saveNetwork} from './server-network.js';
 
 const visible='team_visible_customers v';
 const environment=' JOIN inventory_environments e ON e.customer_id=v.customer_id AND e.user_id=v.data_owner';
@@ -16,6 +17,19 @@ export async function teamDataRoute(req,env,user,org,action,id,data,response,aud
     return response({name:org.name,role:org.role,scope:org.scope,customers:list.results});
   }
   const canEdit=" AND v.role IN ('Owner','Editor')";
+  if(action==='server-network'&&id){
+    const allowed='EXISTS(SELECT 1 FROM '+visible+where+')';
+    if(!(await db.prepare('SELECT '+allowed+' AS ok').bind(...args).first()).ok)throw missing();
+    if(method==='GET')return response({networks:unpack((await networkRows(db,org.data_owner,'',{org:org.id,actor:user.id,customer:id}).all()).results||[])});
+    if(['POST','PUT'].includes(method)){
+      if(org.role==='Viewer')throw new WorkflowError('Editor access required.',403);
+      const guard='EXISTS(SELECT 1 FROM '+visible+environment+where+canEdit+' AND e.id=?)';
+      const params=[...args,data.environment_id||''];
+      if(!(await db.prepare('SELECT '+guard+' AS ok').bind(...params).first()).ok)throw missing();
+      return response(await saveNetwork(db,org.data_owner,data,method,[auditGuard(db,org.id,user,'update server network',id,id,guard,...params)]));
+    }
+    throw missing();
+  }
   if(method==='POST'&&['customers','environments','assets','remediation'].includes(action)){
     if(org.role==='Viewer')throw new WorkflowError('Editor access required.',403);
     let guard,params;
