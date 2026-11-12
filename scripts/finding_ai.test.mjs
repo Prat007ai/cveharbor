@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
+import {cnaRanges} from '../account-backend/src/cvie-records.js';
 const context=vm.createContext({TextEncoder,URL});context.window=context;
 for(const name of ['inventory-matching.js','inventory-assessment.js','finding-ai.js'])vm.runInContext(fs.readFileSync(new URL('../'+name,import.meta.url),'utf8'),context);
 test('Windows Server release exclusions apply before broad product fallback',()=>{
@@ -16,6 +17,8 @@ test('Windows Server release exclusions apply before broad product fallback',()=
  for(const row of [{defaultStatus:'affected'},{versions:[{status:'affected',version:'*'}]},{versions:[{status:'affected',version:'2008',lessThan:'2025'}]}])assert.ok(engine.candidate(asset,{...record,cna_affected:[row]}));
  assert.equal(engine.candidate(asset,{...record,cna_affected:[{product:'Windows Server',versions:[{status:'affected',version:'2008 R2 for x64-based Systems Service Pack 1 (Core installation)'}]}]}),null);
  assert.ok(engine.candidate(asset,{...record,affected_cpes:[{criteria:'cpe:2.3:o:microsoft:windows_server_2022:*:*:*:*:*:*:*:*'}]}));
+ const cna=[{product:'Windows Server',versions:[{status:'affected',version:'2008 R2 for Itanium-Based Systems Service Pack 1'},{status:'affected',version:'2008 for 32-bit Systems Service Pack 2 (Core installation)'}]}];
+ assert.equal(engine.candidate(asset,{...record,cna_affected:cna,affected_cpes:cnaRanges(cna,'cpe:2.3:o:microsoft:windows_server_2022:*:*:*:*:*:*:*:*','Windows Server')}),null,'A synthetic monitored-product CPE must not override the original CNA families');
  assert.equal(engine.candidate({...asset,version:'2012 R2'},{...record,affected:'Windows Server 2012'}),null);
  assert.ok(engine.candidate({...asset,version:'2012 R2'},{...record,affected:'Windows Server 2012 R2'}));
  const result=engine.evaluate([asset,{...asset,id:'legacy',version:'2008 R2'}],[record]);assert.equal(result.total,1);assert.equal(result.items[0].asset_id,'legacy');

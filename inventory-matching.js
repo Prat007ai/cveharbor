@@ -29,7 +29,7 @@ function windowsServerApplicability(asset,record){
  const installed=serverFamily(asset.version);if(!installed)return 'unknown';
  const text=String(record.affected||'').trim();
  // The source display is capped at 4,000 characters. Partial/qualified lists
-// cannot prove absence. A stale update pending verification also stays reviewable.
+ // cannot prove absence. A stale update pending verification also stays reviewable.
  if(!text||text.length>=4000||record.verification_pending)return 'unknown';
  const entries=text.split(/[;\n]/).map(x=>x.trim());
  if(!/^Windows Server\b/i.test(entries[0]))return 'unknown';
@@ -39,6 +39,9 @@ function windowsServerApplicability(asset,record){
  // Merged records may carry additional structured evidence not present in the
 // display text. Never discard a candidate when that evidence is contradictory.
  for(const range of record.affected_cpes||[]){
+  // CNA ranges are synthesized using the monitored product's CPE, which can
+  // represent a different Server release. Check their original CNA rows below.
+  if(record.cna_affected?.length&&range.cvie_product_key)continue;
   const p=String(range.criteria||'').split(':');
   if(p[3]!=='microsoft')continue;
   const named=/^windows_server_(2003|2008|2012|2016|2019|2022|2025)(_r2)?$/.exec(p[4]||'');
