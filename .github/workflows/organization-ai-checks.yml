@@ -7,6 +7,11 @@ on:
       - 'account-backend/tests/ai-*.test.mjs'
       - 'account-backend/tests/helpers/ai-db.mjs'
       - 'deployment/proposals/organization-ai/**'
+      - 'deployment/proposals/personal-ai/**'
+      - 'scripts/personal_ai*'
+      - 'scripts/finding_ai*'
+      - 'release/finding-ai*'
+      - 'account-backend/tests/personal-ai.test.mjs'
       - 'scripts/organization_ai*'
       - 'scripts/test_ai_runtime.mjs'
       - 'scripts/ai_usage_browser.mjs'
@@ -36,18 +41,20 @@ jobs:
         env:
           CUSTOMER_SCHEMA: organization-ai
         run: |
-          node --test account-backend/tests/ai-*.test.mjs
-          node --test scripts/organization_ai_health.test.mjs
+          node --test account-backend/tests/ai-*.test.mjs account-backend/tests/personal-ai.test.mjs
+          node --test scripts/organization_ai_health.test.mjs scripts/finding_ai.test.mjs
           node scripts/activate_customer_assignment_schema.mjs --rehearse
+          node scripts/personal_ai_schema.mjs --rehearse
       - name: Verify concurrent requests in the native Cloudflare runtime
         run: |
           npm install --prefix "$RUNNER_TEMP/ai-runtime-tools" --no-save --ignore-scripts wrangler@4.156.0
           node scripts/test_ai_runtime.mjs "$RUNNER_TEMP/ai-runtime-tools"
+          node scripts/test_ai_runtime.mjs "$RUNNER_TEMP/ai-runtime-tools" --personal
       - name: Check the exact isolated backend package
         run: |
-          python scripts/organization_ai_package.py "$RUNNER_TEMP/ai-worker"
+          python scripts/finding_ai_release.py backend "$RUNNER_TEMP/ai-worker"
           rsync --archive --delete "$RUNNER_TEMP/ai-worker/account-backend/src/" account-backend/src/
           cp "$RUNNER_TEMP/ai-worker/account-backend/wrangler.toml" account-backend/wrangler.toml
-          node --test account-backend/tests/ai-*.test.mjs account-backend/tests/azure-connection.test.mjs account-backend/tests/team-access.test.mjs account-backend/tests/workspace-history.test.mjs
+          node --test account-backend/tests/ai-*.test.mjs account-backend/tests/personal-ai.test.mjs account-backend/tests/azure-connection.test.mjs account-backend/tests/team-access.test.mjs account-backend/tests/workspace-history.test.mjs
           cd account-backend
           npx --yes wrangler@4.156.0 deploy --dry-run --outdir "$RUNNER_TEMP/ai-bundle"

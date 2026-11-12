@@ -7,10 +7,11 @@ import {fixture} from '../account-backend/tests/helpers/ai-db.mjs';
 import {ALLOWANCE,RESERVATION,period} from '../account-backend/src/ai-pricing.js';
 const require=createRequire(path.resolve(process.argv[2],'node_modules/wrangler/package.json'));
 const {Miniflare,convertV4MiniflareOptions}=require('miniflare'),{build}=require('esbuild');
-const root=fileURLToPath(new URL('..',import.meta.url)),f=fixture();
+const personal=process.argv.includes('--personal');
+const root=fileURLToPath(new URL('..',import.meta.url)),f=fixture({personal});
 const script=`import {assist} from './account-backend/src/ai-allowance.js';
 Date.now=()=>Date.parse('2026-11-11T18:00:00Z');
-export default {async fetch(req,env){try{return Response.json(await assist(env,{id:'owner'},'north',await req.json()));}catch(e){return Response.json({error:e.message},{status:500});}}};`;
+export default {async fetch(req,env){try{return Response.json(await assist(env,{id:'owner'},${JSON.stringify(personal?'owner':'north')},await req.json(),fetch,${personal}));}catch(e){return Response.json({error:e.message},{status:500});}}};`;
 const bundled=await build({stdin:{contents:script,resolveDir:root},bundle:true,format:'esm',write:false});
 const provider=`let calls=0;export default {async fetch(req){if(new URL(req.url).hostname==='counts.test')return Response.json({calls});calls++;
  if(req.url.includes('login.microsoftonline.com'))return Response.json({access_token:'fictional',token_type:'Bearer',expires_in:3600});
@@ -26,14 +27,14 @@ try{
  while(remaining){const match=remaining.match(remaining.startsWith('CREATE TRIGGER')?/^[\s\S]*?\bEND;/:/^[^;]+;/);assert.ok(match,'Incomplete fixture SQL');statements.push(match[0]);remaining=remaining.slice(match[0].length).trim();}
  // Separate setup from trigger definitions; SQL parser must see CREATE at start.
  for(const statement of statements)await db.prepare(statement).run();
- await db.prepare("INSERT INTO ai_organizations VALUES('north',1)").run();
- await db.prepare('INSERT INTO ai_months(org,month,spent) VALUES(?,?,?)').bind('north',period(Date.parse('2026-11-11T18:00:00Z')),ALLOWANCE-RESERVATION).run();
- const call=key=>mf.dispatchFetch('https://fixture.test/',{method:'POST',body:JSON.stringify({customer:'customer-a',request_key:key,question:'Fictional test'})}).then(r=>r.json());
+ await db.prepare(personal?"INSERT INTO ai_personal_accounts VALUES('owner',1)":"INSERT INTO ai_organizations VALUES('north',1)").run();
+ await db.prepare('INSERT INTO '+(personal?'ai_personal_months':'ai_months')+'(org,month,spent) VALUES(?,?,?)').bind(personal?'owner':'north',period(Date.parse('2026-11-11T18:00:00Z')),ALLOWANCE-RESERVATION).run();
+ const call=key=>mf.dispatchFetch('https://fixture.test/',{method:'POST',body:JSON.stringify({customer:personal?'private-a':'customer-a',request_key:key,question:'Fictional test'})}).then(r=>r.json());
  const results=await Promise.all(Array.from({length:20},(_,i)=>call('fictional-concurrent-'+i)));
  assert.equal(results.filter(r=>r.state==='settled').length,1,JSON.stringify(results));
  assert.equal(results.filter(r=>r.state==='blocked').length,19);
  const service=await mf.getWorker('provider');assert.equal((await (await service.fetch('https://counts.test/')).json()).calls,2);
  const repeat=await call('fictional-concurrent-0');assert.equal(repeat.replayed,true);
- const balance=await db.prepare('SELECT spent,reserved FROM ai_months').first();assert.ok(balance.spent+balance.reserved<=ALLOWANCE);
+ const balance=await db.prepare('SELECT spent,reserved FROM '+(personal?'ai_personal_months':'ai_months')).first();assert.ok(balance.spent+balance.reserved<=ALLOWANCE);
  console.log('PASS: 20 concurrent native Worker/D1 requests; one Azure inference, 19 hard stops, duplicate suppressed.');
 }finally{await mf.dispose();f.store.close();}

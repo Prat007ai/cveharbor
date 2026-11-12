@@ -53,8 +53,11 @@ export async function organizationDashboard(id,preferredCustomer=''){
       const records=[...window.CVEHARBOR_DATA.advisories,...(window.CVEHARBOR_CATALOG?.advisories||[])];
       const result=window.CVEHARBOR_INVENTORY_MATCH.evaluate(data.assets,records,100);
       const names=new Map(data.assets.map(a=>[a.id,a.name]));
+      const byCve=new Map(records.map(r=>[r.id,r]));
+      const findingLink=f=>window.CVEHARBOR_FINDING_AI.detailButton({finding:f,advisory:byCve.get(f.id)||f,customer:chooser.value,org:id});
       container.replaceChildren(element('h3','Potential findings'),element('p',countLabel(result.total,'advisory match','advisory matches')+' · Verify applicability against installed versions.'),
-        ...(result.items.length?[table(['Asset','CVE','Severity','Evidence'],result.items.map(f=>[names.get(f.asset_id),f.id,f.severity,f.evidence]))]:[]));
+        window.CVEHARBOR_FINDING_AI.priorities({findings:result.items,onOpen:findingLink}),
+        ...(result.items.length?[table(['Asset','CVE','Severity','Evidence'],result.items.map(f=>[names.get(f.asset_id),findingLink(f),f.severity,f.evidence]))]:[]));
       if(result.limited)container.append(element('p','Showing the first 100 matches.'));
     }catch{sources=null;container.textContent='Advisory matching is temporarily unavailable.';}
   }
