@@ -37,7 +37,9 @@ try{for(const width of [1440,768,390]){
  await page.getByText('2 distinct entries; 0 duplicate rows removed.').waitFor();
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true,'Import overflow '+width);
  await page.screenshot({path:path.join(screens,'import-'+width+'.png'),fullPage:true});
- await page.locator('input[type=checkbox]').check();await page.getByRole('button',{name:'Import and assess vulnerabilities',exact:true}).click();
+ await page.locator('input[type=checkbox]').check();await page.getByRole('button',{name:'Import reviewed inventory',exact:true}).click();
+ await page.getByText(/2 entries imported; 0 existing entries skipped/).waitFor();assert.equal(new URL(page.url()).pathname,'/import-test/');assert.equal(await page.getByLabel('Environment',{exact:true}).inputValue(),'prod');
+ await page.getByRole('link',{name:'Assess in Customer Security Dashboard'}).click();
  await page.waitForURL('**/customer-dashboard/**');await page.getByText('Vulnerability findings',{exact:true}).waitFor();
  assert.equal(assets.length,2);assert.match(await page.locator('.organization-security').innerText(),/CVE-2099-12345/);
  assert.equal(await page.locator('.organization-security > section > div:not(.server-security) tbody tr').count(),4);
@@ -45,4 +47,4 @@ try{for(const width of [1440,768,390]){
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true,'Dashboard overflow '+width);
  await page.screenshot({path:path.join(screens,'findings-'+width+'.png'),fullPage:true});
  assert.deepEqual(errors,[]);await context.close();
-}console.log('PASS: real browser CSV review, saved import, automatic dashboard assessment and responsive layouts at 1440, 768 and 390px; fictional data, no AI.');}finally{await browser.close();}
+}console.log('PASS: real browser CSV review, saved import, retained environment, explicit dashboard assessment and responsive layouts at 1440, 768 and 390px; fictional data, no AI.');}finally{await browser.close();}

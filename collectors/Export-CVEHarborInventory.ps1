@@ -179,25 +179,21 @@ if ($network) {
         $networkJson = ''
     }
 }
-foreach ($row in $ordered) { $row | Add-Member -NotePropertyName 'Server Network' -NotePropertyValue $networkJson }
+# One snapshot per server; the importer associates it with every row by asset name.
+foreach ($row in $ordered) { $row | Add-Member -NotePropertyName 'Server Network' -NotePropertyValue '' }
+if ($ordered.Count) { $ordered[0].'Server Network' = $networkJson }
+if ($ordered.Count -gt 10000) { throw 'Inventory exceeds 10,000 entries. No CSV was written; review the collection scope.' }
+$csv = if ($ordered.Count) { (@($ordered | ConvertTo-Csv -NoTypeInformation) -join "`r`n")+"`r`n" } else { '' }
+if ([Text.Encoding]::UTF8.GetByteCount($csv)+3 -gt 10485760) { throw 'Inventory exceeds the 10 MB upload limit. No CSV was written; review the collection scope.' }
 $null=New-Item -ItemType Directory -Path $OutputDirectory
 $utf8=New-Object System.Text.UTF8Encoding($true)
-$part=1;$batch=New-Object 'System.Collections.Generic.List[object]';$files=New-Object 'System.Collections.Generic.List[string]'
-function Save-Batch {
-    if(!$batch.Count){return}
-    $name='cveharbor-assets-{0:D3}.csv' -f $script:part
-    $csv=(@($batch.ToArray() | ConvertTo-Csv -NoTypeInformation) -join "`r`n")+"`r`n"
+$files=New-Object 'System.Collections.Generic.List[string]'
+if ($ordered.Count) {
+    $name='cveharbor-assets.csv'
     [IO.File]::WriteAllText((Join-Path $OutputDirectory $name),$csv,$utf8)
-    $files.Add($name);$script:part++;$batch.Clear()
+    $files.Add($name)
 }
-foreach($row in $ordered){
-    $trial=@($batch.ToArray())+@($row)
-    $size=[Text.Encoding]::UTF8.GetByteCount((@($trial | ConvertTo-Csv -NoTypeInformation) -join "`r`n")+"`r`n")+3
-    if($batch.Count -ge 200 -or $size -gt 131072){Save-Batch}
-    $batch.Add($row)
-}
-Save-Batch
-$report=[ordered]@{collector_version='1.2';network=$network;server_roles=@($ServerRole);collected_utc=$collected;asset_name=(Safe-Cell $AssetName);entries=$ordered.Count;files=@($files.ToArray());warnings=@($warnings.ToArray());coverage=@('Read-only local inventory; no vulnerability or network scan.','Network data is a point-in-time snapshot. Recollect after address changes. Default-route primary is a suggestion; customer choices are preserved.','Programs and Features records: machine 32/64-bit views and the executing user only. Other user profiles and Microsoft Store packages are not enumerated.','Portable software, containers, application-bundled runtimes and nonstandard paths may be missing.','Directory discovery does not prove that a runtime is actively used.','Windows and .NET Framework patch applicability needs vendor/build evidence.','Import is additive. Removed software and superseded versions must be reviewed manually.');fixture_mode=[bool]$FixturePath}
+$report=[ordered]@{collector_version='1.3';network=$network;server_roles=@($ServerRole);collected_utc=$collected;asset_name=(Safe-Cell $AssetName);entries=$ordered.Count;files=@($files.ToArray());warnings=@($warnings.ToArray());coverage=@('Read-only local inventory; no vulnerability or network scan.','Network data is a point-in-time snapshot. Recollect after address changes. Default-route primary is a suggestion; customer choices are preserved.','Programs and Features records: machine 32/64-bit views and the executing user only. Other user profiles and Microsoft Store packages are not enumerated.','Portable software, containers, application-bundled runtimes and nonstandard paths may be missing.','Directory discovery does not prove that a runtime is actively used.','Windows and .NET Framework patch applicability needs vendor/build evidence.','Import is additive. Removed software and superseded versions must be reviewed manually.');fixture_mode=[bool]$FixturePath}
 [IO.File]::WriteAllText((Join-Path $OutputDirectory 'collection-report.json'),($report | ConvertTo-Json -Depth 10),$utf8)
 Write-Output ('Saved '+$ordered.Count+' inventory entries in '+$files.Count+' CSV file(s) to '+$OutputDirectory)
-Write-Output 'Review collection-report.json, then upload each CSV to the selected CVEHarbor customer environment.'
+Write-Output 'Review collection-report.json, then upload cveharbor-assets.csv once to the selected CVEHarbor customer environment. Keep the import page open until complete.'

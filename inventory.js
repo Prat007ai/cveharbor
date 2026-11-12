@@ -344,7 +344,7 @@ function setupBulkAssetImport(){
   readAssets:async()=>{if(!signedIn||!ready)throw Error('Sign in before importing.');return (await call()).assets;},
   saveAsset:item=>call('/assets','POST',item),
   saveNetwork:item=>call('/server-network','POST',item),
-  afterImport:async()=>{inventoryChanges?.postMessage({changed:true});}
+  afterImport:async target=>{newCustomerSetup=false;setupCustomerId=target.customer;setupEnvironmentId=target.environment;expandedCustomers.add(target.customer);await load();inventoryChanges?.postMessage({changed:true});}
  });
 }
 setupBulkAssetImport();
@@ -566,6 +566,7 @@ function setupCustomerCompletion(){
  host.after(panel);
 }
 setupCustomerCompletion();
+const expandedCustomers=new Set();
 function render(){
  selects();
  updateInventorySteps();
@@ -575,10 +576,19 @@ function render(){
  const root=$('inventoryRecords');root.replaceChildren();
  for(const customer of data.customers){
   const card=make('article','inventory-customer');
-  const header=make('div','ops-result-top');header.append(make('h4','',customer.name));
+  const header=make('div','ops-result-top inventory-customer-header');
+  const envs=data.environments.filter(x=>x.customer_id===customer.id),envIds=new Set(envs.map(e=>e.id));
+  const count=data.assets.filter(a=>envIds.has(a.environment_id)).length;
+  const heading=make('h4'),toggle=make('button','inventory-customer-toggle');toggle.type='button';
+  const arrow=make('span','inventory-customer-arrow','›');arrow.setAttribute('aria-hidden','true');
+  const title=make('span','inventory-customer-label');title.append(make('span','',customer.name),make('small','ops-note',envs.length+' environments · '+count+' technology entries'));
+  toggle.append(arrow,title);heading.append(toggle);header.append(heading);
+  const body=make('div','inventory-customer-body');body.id='inventory-customer-'+customer.id;body.hidden=!expandedCustomers.has(customer.id);
+  toggle.setAttribute('aria-controls',body.id);toggle.setAttribute('aria-expanded',String(!body.hidden));
+  toggle.addEventListener('click',()=>{body.hidden=!body.hidden;toggle.setAttribute('aria-expanded',String(!body.hidden));if(body.hidden)expandedCustomers.delete(customer.id);else expandedCustomers.add(customer.id);});
   const editCustomer=make('button','ops-remove inventory-edit-customer','Edit customer');editCustomer.type='button';
   editCustomer.addEventListener('click',()=>{
-   newCustomerSetup=false;setupCustomerId=customer.id;
+   newCustomerSetup=false;setupCustomerId=customer.id;expandedCustomers.add(customer.id);
    const environments=data.environments.filter(e=>e.customer_id===customer.id);
    setupEnvironmentId=environments[0]?.id||'';
    for(const id of ['inventoryStepCustomer','inventoryStepEnvironment','inventoryStepAsset']){
@@ -599,11 +609,11 @@ function render(){
   const deleteCustomer=make('button','ops-remove','Remove customer');deleteCustomer.type='button';
   deleteCustomer.addEventListener('click',()=>remove('customers',customer.id,customer.name));
   customerActions.append(deleteCustomer);header.append(customerActions);card.append(header);
-  const envs=data.environments.filter(x=>x.customer_id===customer.id);
-  if(!envs.length)card.append(make('p','ops-note','No environments added yet.'));
+  card.append(body);
+  if(!envs.length)body.append(make('p','ops-note','No environments added yet.'));
   for(const env of envs){
    const group=make('section','inventory-environment');
-   const h=make('div','ops-result-top');h.append(make('strong','',env.name+' · '+env.kind));
+   const h=make('div','ops-result-top inventory-environment-header');h.append(make('strong','',env.name+' · '+env.kind));
    const editEnv=make('button','ops-remove','Edit environment');editEnv.type='button';
    editEnv.addEventListener('click',()=>{
     const overlay=make('div','inventory-confirm-overlay'),dialog=make('section','inventory-confirm-dialog');
@@ -689,7 +699,7 @@ function render(){
     }
     group.append(groupCard);
    }
-   card.append(group);
+   body.append(group);
   }
   root.append(card);
  }

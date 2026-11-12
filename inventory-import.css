@@ -6,6 +6,10 @@
 .inventory-bulk-import input[type=file]{display:block;max-width:100%;margin-top:.5rem}
 .inventory-bulk-import input[type=checkbox]{width:auto;margin-right:.5rem}
 .inventory-bulk-import .ops-download{justify-self:start;max-width:100%;white-space:normal}
+.inventory-bulk-import progress{width:100%;height:.65rem;accent-color:#54d8cc}
+.inventory-preview-pages{display:flex;align-items:center;justify-content:space-between;gap:.6rem;flex-wrap:wrap;padding:.75rem 0}
+.inventory-preview-pages button{padding:.5rem .8rem;border:1px solid #507080;border-radius:6px;background:#122e40;color:#ecf8f8;cursor:pointer}
+.inventory-preview-pages button:disabled{opacity:.5;cursor:default}
 .organization-security{min-width:0;max-width:100%}
 .organization-security .inventory-actions{display:flex;gap:1rem;flex-wrap:wrap;align-items:end;margin-bottom:1.5rem}
 .organization-security .team-field{display:grid;gap:.4rem;min-width:0;max-width:100%}

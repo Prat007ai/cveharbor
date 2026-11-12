@@ -2561,3 +2561,28 @@ dialog:has(.advisory-dossier){max-width:min(1040px,96vw);width:calc(100% - 28px)
 .advisory-timeline{border-left:2px solid #649689;padding-left:14px}.advisory-timeline .spec{margin:9px 0;color:#ecf6f0}.advisory-timeline small{color:#c2e1db}
 .advisory-assessment .remediation-detail-assign{width:100%;background:#9ae6d1;color:#153e35;margin-top:16px}
 @media(max-width:720px){.advisory-dossier{grid-template-columns:1fr}.advisory-assessment{padding-top:20px}}
+
+/* Compact, keyboard-accessible customer rows and aligned responsive actions. */
+#inventoryWorkspace .inventory-customer>.inventory-customer-header,
+#inventoryWorkspace .inventory-environment>.inventory-environment-header{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center}
+#inventoryWorkspace .inventory-customer>.inventory-customer-header{padding-inline:13px}
+#inventoryWorkspace .inventory-customer-header h4{margin:0;min-width:0}
+#inventoryWorkspace .inventory-customer-toggle{display:flex;gap:12px;align-items:center;width:100%;padding:8px 0;border:0;background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer}
+#inventoryWorkspace .inventory-customer-toggle:focus-visible{outline:2px solid #54d8cc;outline-offset:4px;border-radius:4px}
+#inventoryWorkspace .inventory-customer-label{display:grid;gap:5px;min-width:0;overflow-wrap:anywhere}
+#inventoryWorkspace .inventory-customer-label small{font-size:12px;font-weight:400;margin:0}
+#inventoryWorkspace .inventory-customer-arrow{font-size:26px;color:#54d8cc;flex:none;transition:transform .15s}
+#inventoryWorkspace .inventory-customer-toggle[aria-expanded=true] .inventory-customer-arrow{transform:rotate(90deg)}
+#inventoryWorkspace .inventory-customer-body[hidden]{display:none}
+#inventoryWorkspace .inventory-customer-body{margin-top:12px}
+#inventoryWorkspace .inventory-customer-actions,
+#inventoryWorkspace .inventory-environment>.inventory-environment-header>.inventory-record-actions{display:grid;grid-template-columns:repeat(2,10rem);align-items:stretch;gap:8px;margin:0;min-width:0;max-width:100%}
+#inventoryWorkspace .inventory-customer-actions button,
+#inventoryWorkspace .inventory-environment>.inventory-environment-header>.inventory-record-actions button{width:100%;min-height:38px;margin:0;padding:8px 10px;white-space:normal;text-align:center}
+#inventoryWorkspace .inventory-customer-actions a{grid-column:1/-1;grid-row:2;text-align:right}
+#inventoryWorkspace .inventory-environment-header>strong{min-width:0;overflow-wrap:anywhere}
+@media(max-width:800px){
+ #inventoryWorkspace .inventory-customer>.inventory-customer-header,#inventoryWorkspace .inventory-environment>.inventory-environment-header{grid-template-columns:minmax(0,1fr)}
+ #inventoryWorkspace .inventory-customer-actions,#inventoryWorkspace .inventory-environment>.inventory-environment-header>.inventory-record-actions{grid-template-columns:repeat(2,minmax(0,1fr));width:100%}
+}
+@media(prefers-reduced-motion:reduce){#inventoryWorkspace .inventory-customer-arrow{transition:none}}

@@ -21,6 +21,11 @@ on:
       - 'scripts/organization_ai_site.py'
       - 'scripts/windows_inventory_release.py'
       - 'scripts/server_security_release.py'
+      - 'scripts/inventory_experience*'
+      - 'inventory.js'
+      - 'asset-import.js'
+      - 'inventory-import.css'
+      - 'styles.css'
       - 'scripts/server_security*'
       - 'server-security.*'
       - 'customer-security.js'
@@ -57,7 +62,7 @@ on:
       site_release:
         description: Reviewed production package
         type: choice
-        options: [followed-topics, assignment-291, customer-investigation, manual-customer, intelligence, version-picker, firewall-digest, installed-releases, team-access, sql-esu-coverage, card-source-coverage, team-harbor-design, public-advisory-scopes, account-harbor-views, account-responsive, workspace-overview, workspace-history, organization-ai, windows-inventory, server-security, server-network]
+        options: [followed-topics, assignment-291, customer-investigation, manual-customer, intelligence, version-picker, firewall-digest, installed-releases, team-access, sql-esu-coverage, card-source-coverage, team-harbor-design, public-advisory-scopes, account-harbor-views, account-responsive, workspace-overview, workspace-history, organization-ai, windows-inventory, server-security, server-network, inventory-experience]
         default: followed-topics
       feed_run_id:
         description: Data run containing the verified intelligence receipt (intelligence release only)
@@ -74,9 +79,9 @@ jobs:
     env:
       FEED_RUN_ID: ${{ inputs.feed_run_id }}
       FEED_RECEIPT: ${{ github.workspace }}/.feed-receipt/feed-receipt.json
-      CVEHARBOR_SITE_RELEASE: ${{ inputs.site_release || (github.head_ref == 'feature/server-network-inventory' && 'server-network') || (github.head_ref == 'feature/server-security-dashboard' && 'server-security') || (github.head_ref == 'feature/windows-inventory-assessment' && 'windows-inventory') || (github.head_ref == 'feature/organization-ai-allowance' && 'organization-ai') || (github.head_ref == 'feature/workspace-daily-history' && 'workspace-history') || (github.head_ref == 'feature/workspace-dark-redesign' && 'workspace-overview') || (github.head_ref == 'fix/account-responsive' && 'account-responsive') || (github.head_ref == 'feature/account-harbor-views' && 'account-harbor-views') || (github.head_ref == 'fix/public-advisory-scopes' && 'public-advisory-scopes') || (github.head_ref == 'feature/team-harbor-design' && 'team-harbor-design') || (github.head_ref == 'fix/card-source-coverage' && 'card-source-coverage') || (github.head_ref == 'fix/sql-esu-release-baseline' && 'sql-esu-coverage') || (github.head_ref == 'release/organization-team-access' && 'team-access') || (github.head_ref == 'fix/vendor-zero-scan-audit' && 'installed-releases') || (github.head_ref == 'feat/daily-firewall-digest' && 'firewall-digest') || (github.head_ref == 'fix/version-picker-cloudflare' && 'version-picker') || (github.head_ref == 'feature/assignment-manual-customer' && 'manual-customer') || (github.head_ref == 'feature/customer-advisory-review' && 'customer-investigation') || 'followed-topics' }}
+      CVEHARBOR_SITE_RELEASE: ${{ inputs.site_release || (github.head_ref == 'feature/inventory-upload-experience' && 'inventory-experience') || (github.head_ref == 'feature/server-network-inventory' && 'server-network') || (github.head_ref == 'feature/server-security-dashboard' && 'server-security') || (github.head_ref == 'feature/windows-inventory-assessment' && 'windows-inventory') || (github.head_ref == 'feature/organization-ai-allowance' && 'organization-ai') || (github.head_ref == 'feature/workspace-daily-history' && 'workspace-history') || (github.head_ref == 'feature/workspace-dark-redesign' && 'workspace-overview') || (github.head_ref == 'fix/account-responsive' && 'account-responsive') || (github.head_ref == 'feature/account-harbor-views' && 'account-harbor-views') || (github.head_ref == 'fix/public-advisory-scopes' && 'public-advisory-scopes') || (github.head_ref == 'feature/team-harbor-design' && 'team-harbor-design') || (github.head_ref == 'fix/card-source-coverage' && 'card-source-coverage') || (github.head_ref == 'fix/sql-esu-release-baseline' && 'sql-esu-coverage') || (github.head_ref == 'release/organization-team-access' && 'team-access') || (github.head_ref == 'fix/vendor-zero-scan-audit' && 'installed-releases') || (github.head_ref == 'feat/daily-firewall-digest' && 'firewall-digest') || (github.head_ref == 'fix/version-picker-cloudflare' && 'version-picker') || (github.head_ref == 'feature/assignment-manual-customer' && 'manual-customer') || (github.head_ref == 'feature/customer-advisory-review' && 'customer-investigation') || 'followed-topics' }}
     name: Test followed topics in the production package
-    if: (github.event_name == 'pull_request' && (github.head_ref == 'feature/server-network-inventory' || github.head_ref == 'feature/server-security-dashboard' || github.head_ref == 'feature/windows-inventory-assessment' || github.head_ref == 'feature/organization-ai-allowance' || github.head_ref == 'feature/workspace-daily-history' || github.head_ref == 'feature/workspace-dark-redesign' || github.head_ref == 'fix/account-responsive' || github.head_ref == 'feature/account-harbor-views' || github.head_ref == 'fix/public-advisory-scopes' || github.head_ref == 'feature/team-harbor-design' || github.head_ref == 'fix/card-source-coverage' || github.head_ref == 'fix/sql-esu-release-baseline' || github.head_ref == 'release/organization-team-access' || github.head_ref == 'fix/vendor-zero-scan-audit' || github.head_ref == 'feat/daily-firewall-digest' || github.head_ref == 'fix/version-picker-cloudflare' || github.head_ref == 'feature/cvie-topic-delivery' || github.head_ref == 'feature/customer-advisory-review' || github.head_ref == 'feature/assignment-manual-customer') && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'workflow_dispatch' && inputs.reviewed_commit != '')
+    if: (github.event_name == 'pull_request' && (github.head_ref == 'feature/inventory-upload-experience' || github.head_ref == 'feature/server-network-inventory' || github.head_ref == 'feature/server-security-dashboard' || github.head_ref == 'feature/windows-inventory-assessment' || github.head_ref == 'feature/organization-ai-allowance' || github.head_ref == 'feature/workspace-daily-history' || github.head_ref == 'feature/workspace-dark-redesign' || github.head_ref == 'fix/account-responsive' || github.head_ref == 'feature/account-harbor-views' || github.head_ref == 'fix/public-advisory-scopes' || github.head_ref == 'feature/team-harbor-design' || github.head_ref == 'fix/card-source-coverage' || github.head_ref == 'fix/sql-esu-release-baseline' || github.head_ref == 'release/organization-team-access' || github.head_ref == 'fix/vendor-zero-scan-audit' || github.head_ref == 'feat/daily-firewall-digest' || github.head_ref == 'fix/version-picker-cloudflare' || github.head_ref == 'feature/cvie-topic-delivery' || github.head_ref == 'feature/customer-advisory-review' || github.head_ref == 'feature/assignment-manual-customer') && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'workflow_dispatch' && inputs.reviewed_commit != '')
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -125,12 +130,16 @@ jobs:
             WORKSPACE_SITE="$RUNNER_TEMP/catalogue/after" WORKSPACE_BEFORE="$RUNNER_TEMP/catalogue/before" WORKSPACE_SCREENSHOTS="$RUNNER_TEMP/workspace-screens" node scripts/workspace_overview_browser.mjs
           fi
           if [ "$CVEHARBOR_SITE_RELEASE" = server-security ] || [ "$CVEHARBOR_SITE_RELEASE" = server-network ]; then SERVER_TEST_SITE="$RUNNER_TEMP/catalogue/after" SERVER_SCREENSHOTS="$RUNNER_TEMP/server-screens" node scripts/server_security_browser.mjs; fi
+          if [ "$CVEHARBOR_SITE_RELEASE" = inventory-experience ]; then
+            INVENTORY_TEST_SITE="$RUNNER_TEMP/catalogue/after" INVENTORY_SCREENSHOTS="$RUNNER_TEMP/inventory-screens" node scripts/inventory_browser.mjs
+            INVENTORY_TEST_SITE="$RUNNER_TEMP/catalogue/after" INVENTORY_SCREENSHOTS="$RUNNER_TEMP/inventory-screens" node scripts/inventory_experience_browser.mjs
+          fi
           if [ "$CVEHARBOR_SITE_RELEASE" = windows-inventory ]; then INVENTORY_TEST_SITE="$RUNNER_TEMP/catalogue/after" INVENTORY_SCREENSHOTS="$RUNNER_TEMP/inventory-screens" node scripts/inventory_browser.mjs; fi
           if [ "$CVEHARBOR_SITE_RELEASE" = organization-ai ]; then AI_TEST_SITE="$RUNNER_TEMP/catalogue/after" node scripts/ai_usage_browser.mjs; fi
           node scripts/catalogue_scope_browser_smoke.mjs
           if [ "$CVEHARBOR_SITE_RELEASE" != "followed-topics" ]; then node scripts/remediation_workflow_browser.mjs; fi
       - name: Require production application and security tests for the team design
-        if: github.event_name == 'workflow_dispatch' && ((inputs.site_release == 'server-security' || inputs.site_release == 'server-network' || inputs.site_release == 'windows-inventory' || inputs.site_release == 'workspace-overview' || inputs.site_release == 'workspace-history' || inputs.site_release == 'organization-ai') || inputs.site_release == 'team-harbor-design' || (inputs.site_release == 'account-harbor-views' || inputs.site_release == 'account-responsive'))
+        if: github.event_name == 'workflow_dispatch' && ((inputs.site_release == 'inventory-experience' || inputs.site_release == 'server-security' || inputs.site_release == 'server-network' || inputs.site_release == 'windows-inventory' || inputs.site_release == 'workspace-overview' || inputs.site_release == 'workspace-history' || inputs.site_release == 'organization-ai') || inputs.site_release == 'team-harbor-design' || (inputs.site_release == 'account-harbor-views' || inputs.site_release == 'account-responsive'))
         env:
           GH_TOKEN: ${{ github.token }}
         run: python scripts/production_release_checks.py
@@ -265,3 +274,20 @@ jobs:
         run: |
           npm install --prefix staging --ignore-scripts --no-package-lock
           node scripts/server_security_browser.mjs
+
+      - name: Verify served inventory experience with fictional accounts
+        if: inputs.site_release == 'inventory-experience'
+        env:
+          INVENTORY_TEST_SITE: ${{ runner.temp }}/catalogue/verified-origin
+          INVENTORY_SCREENSHOTS: ${{ runner.temp }}/inventory-live-screens
+        run: |
+          npm install --prefix staging --ignore-scripts --no-package-lock
+          node scripts/inventory_browser.mjs
+          node scripts/inventory_experience_browser.mjs
+      - name: Save inventory production screenshots
+        if: inputs.site_release == 'inventory-experience'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: inventory-production-screens
+          path: ${{ runner.temp }}/inventory-live-screens
+          if-no-files-found: error
