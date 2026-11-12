@@ -27,10 +27,10 @@ function serverFamily(value){
 function windowsServerApplicability(asset,record){
  if(norm(asset.technology)!=='windows server')return 'unknown';
  const installed=serverFamily(asset.version);if(!installed)return 'unknown';
- const text=String(record.affected||'').trim();
+ const raw=String(record.affected||''),text=raw.trim();
  // The source display is capped at 4,000 characters. Partial/qualified lists
  // cannot prove absence. A stale update pending verification also stays reviewable.
- if(!text||text.length>=4000||record.verification_pending)return 'unknown';
+ if(!text||raw.length>=4000||record.verification_pending)return 'unknown';
  const entries=text.split(/[;\n]/).map(x=>x.trim());
  if(!/^Windows Server\b/i.test(entries[0]))return 'unknown';
  const families=entries.map(serverFamily);
