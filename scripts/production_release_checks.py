@@ -61,7 +61,7 @@ def check_ai_commit(sha, get=github):
     return any(j['name'] == 'accounting' and j['status'] == 'completed' and j['conclusion'] == 'success' for j in jobs)
 
 
-def check_inventory_commit(sha, get=github):
+def check_inventory_commit(sha, get=github, required_jobs=('collector','workflow')):
     workflow = '.github/workflows/windows-inventory-checks.yml'
     runs = get('/actions/workflows/windows-inventory-checks.yml/runs?branch=main&event=push&head_sha='+sha+'&per_page=1')['workflow_runs']
     if not runs:
@@ -74,7 +74,7 @@ def check_inventory_commit(sha, get=github):
     if run['conclusion'] != 'success':
         raise ValueError('Inventory workflow checks failed: '+run['html_url'])
     jobs = get(f"/actions/runs/{run['id']}/jobs?filter=latest&per_page=100")['jobs']
-    return {'collector','workflow'} <= {j['name'] for j in jobs if j['status']=='completed' and j['conclusion']=='success'}
+    return set(required_jobs) <= {j['name'] for j in jobs if j['status']=='completed' and j['conclusion']=='success'}
 
 
 def main():
@@ -90,8 +90,9 @@ def main():
     deadline = time.monotonic() + 900
     while time.monotonic() < deadline:
         ai_release = any(inputs.get(key) == 'organization-ai' for key in ('team_release', 'site_release', 'schema'))
-        inventory_release = any(inputs.get(key) == 'windows-inventory' for key in ('team_release', 'site_release'))
-        if check_commit(sha) and (not ai_release or check_ai_commit(sha)) and (not inventory_release or check_inventory_commit(sha)):
+        inventory_release = any(inputs.get(key) in ('windows-inventory','dotnet-mapping') for key in ('team_release', 'site_release'))
+        inventory_jobs = ('collector','workflow','mapping') if inputs.get('team_release') == 'dotnet-mapping' else ('collector','workflow')
+        if check_commit(sha) and (not ai_release or check_ai_commit(sha)) and (not inventory_release or check_inventory_commit(sha, required_jobs=inventory_jobs)):
             print(f"Verified production CI for {sha}.")
             return
         time.sleep(10)

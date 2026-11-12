@@ -16,6 +16,13 @@ class InventoryReleaseChecks(unittest.TestCase):
         def get(path):
             return {'jobs':jobs} if '/jobs?' in path else {'workflow_runs':[run]}
         self.assertTrue(check_inventory_commit(sha, get))
+        mapping_jobs=('collector','workflow','mapping')
+        self.assertFalse(check_inventory_commit(sha, get, mapping_jobs))
+        jobs.append(dict(name='mapping',status='completed',conclusion='success'))
+        self.assertTrue(check_inventory_commit(sha, get, mapping_jobs))
+        jobs[-1]['conclusion']='failure'
+        self.assertFalse(check_inventory_commit(sha, get, mapping_jobs))
+        jobs.pop()
         jobs[0]['conclusion']='failure'
         self.assertFalse(check_inventory_commit(sha, get))
         jobs[0]['conclusion']='success'

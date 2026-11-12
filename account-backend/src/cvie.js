@@ -4,7 +4,7 @@ import {bindProductIdentities,fastEvidenceEnabled,immediateEvidence} from './cvi
 import {catalogueProducts,activeSubscription} from './catalogue-selection.js';
 // CVIE: durable, account-scoped product identity resolution and NVD history.
 // Every external URL is fixed here. Customer hosts/versions are never scanned or sent.
-import {normalizeName,productCpe,cpeFamily,knownIdentity,logoFor,identityCandidates,vendorKey,directorySearch} from './product-identity.js';
+import {normalizeName,productCpe,cpeFamily,knownIdentity,logoFor,identityCandidates,vendorKey,directorySearch,dotnetInventoryIdentity} from './product-identity.js';
 import {queueRelevantKev} from './cvie-evidence.js';
 import {combinedPage,combinedCounts,evidenceContext,sourceHealth,withdrawnIds,excludedProductCves} from './cvie-records.js';
 import {isHyperV,hyperVHosts,hyperVHost,hyperVHelp,hyperVStatement} from './hyperv.js';
@@ -103,9 +103,29 @@ export async function subscribeProducts(env,userId,products,origin='catalogue',e
 }
 export async function repairAccountCoverage(env,userId,scope='all'){
  const repairRows=(await query(env.DB,`SELECT p.* FROM cvie_products p WHERE p.user_id=? AND ${activeSubscription('p',scope)}`,userId).all()).results||[];
+ const identityRepair=await repairInventoryIdentities(env,userId,scope,repairRows);
  const hostRepair=await prepareHyperVHosts(env,userId,repairRows);
  const coverageRepair=await prepareProductCoverage(env,userId,repairRows);
- return hostRepair||coverageRepair;
+ return identityRepair||hostRepair||coverageRepair;
+}
+// Upgrade only unresolved exact collector aliases. Explicit selections and
+// concurrent edits win; private inventory rows/installed versions never change.
+async function repairInventoryIdentities(env,userId,scope,products){
+ const repairs=products.flatMap(p=>{
+  const identity=!p.cpe&&dotnetInventoryIdentity(p.name,p.vendor);
+  return identity?[{id:p.id,name:p.name,vendor:p.vendor,cursor:p.cursor_json,cpe:identity.cpe}]:[];
+ });
+ if(!repairs.length)return false;
+ const payload=JSON.stringify(repairs);
+ const result=await query(env.DB,`UPDATE cvie_products SET
+  cpe=(SELECT json_extract(r.value,'$.cpe') FROM json_each(?) r WHERE json_extract(r.value,'$.id')=cvie_products.id),
+  status='queued',candidates_json='[]',cursor_json='{}',recent_complete_at=NULL,history_complete_at=NULL,
+  last_success_at=NULL,next_attempt_at=0,lease_until=0,error=''
+  WHERE user_id=? AND cpe='' AND ${activeSubscription('cvie_products',scope)} AND EXISTS(
+   SELECT 1 FROM json_each(?) r WHERE json_extract(r.value,'$.id')=cvie_products.id
+    AND json_extract(r.value,'$.name')=cvie_products.name AND json_extract(r.value,'$.vendor')=cvie_products.vendor
+    AND json_extract(r.value,'$.cursor')=cvie_products.cursor_json)`,payload,userId,payload).run();
+ return result.meta.changes>0;
 }
 export async function syncAccountProducts(env,userId,scope='all'){
  const results=[];
@@ -442,8 +462,12 @@ export async function cvieRoute(req,env,user,ctx,data={}){
  }
  const options=/^\/v1\/cvie\/products\/([a-f0-9-]{36})\/identity-options$/.exec(path);
  if(options&&['GET','POST'].includes(req.method)){
-  const product=await query(env.DB,`SELECT p.* FROM cvie_products p WHERE p.id=? AND p.user_id=? AND ${activeSubscription('p',scope)}`,options[1],user.id).first();
+  let product=await query(env.DB,`SELECT p.* FROM cvie_products p WHERE p.id=? AND p.user_id=? AND ${activeSubscription('p',scope)}`,options[1],user.id).first();
   if(!product)throw new CvieError('Product not found',404);
+  if(req.method==='POST'&&await repairInventoryIdentities(env,user.id,scope,[product])){
+   await reconcileSharedScopes(env,user.id);
+   product=await query(env.DB,'SELECT * FROM cvie_products WHERE id=? AND user_id=?',product.id,user.id).first();
+  }
   const snapshot=()=>({id:product.id,status:product.status,cpe:product.cpe,error:product.error,candidates:product.cpe?[]:JSON.parse(product.candidates_json||'[]'),
    directory_complete:JSON.parse(product.cursor_json||'{}').directory_complete===true,directory_limited:JSON.parse(product.cursor_json||'{}').directory_limited===true,
    retry_at:product.next_attempt_at,lease_until:product.lease_until});

@@ -16,7 +16,22 @@ export function cpeFamily(value){
  const parts=String(value||'').split(':');
  return parts.length===13?productCpe([...parts.slice(0,5),...Array(8).fill('*')].join(':')):null;
 }
+// Exact collector/component aliases only. Never infer Microsoft from a product
+// merely mentioning .NET (for example Crystal Reports or Entity Framework).
+const dotnetInventory=[
+ [/^(?:microsoft\s+)?(?:\.net|dotnet)\s+(?:desktop\s+|windows desktop\s+)?runtime$/,'a','microsoft','.net','dotnet'],
+ [/^(?:microsoft\s+)?(?:\.net|dotnet)\s+core runtime$/,'a','microsoft','.net_core','dotnet'],
+ [/^(?:microsoft\s+)?asp\.net core(?: runtime)?$/,'a','microsoft','asp.net_core','dotnet'],
+ [/^(?:microsoft\s+)?(?:\.net|dotnet)\s+(?:core\s+)?sdk$/,'a','microsoft','.net_core_sdk','dotnet'],
+ [/^(?:microsoft\s+)?(?:\.net|dotnet)\s+framework$/,'a','microsoft','.net_framework','dotnet'],
+];
+export function dotnetInventoryIdentity(name,vendor=''){
+ const found=dotnetInventory.find(([pattern])=>pattern.test(normalizeName(name)));
+ if(!found||vendor&&vendorKey(vendor)!=='microsoft')return null;
+ return {cpe:['cpe','2.3',...found.slice(1,4),...Array(8).fill('*')].join(':'),icon:'dotnet'};
+}
 const known=[
+ ...dotnetInventory,
  [/^(?:microsoft\s+)?(?:\.net|dotnet)\s+core$/,'a','microsoft','.net','dotnet'],
  [/^apache tomcat$|^tomcat$/,'a','apache','tomcat','apachetomcat'],
  [/^apache http server$|^apache httpd$/,'a','apache','http_server','apache'],
@@ -54,15 +69,19 @@ export function logoFor(name,cpe=''){
 }
 export const windowsServerGroup=product=>/^(?:microsoft )?windows server(?: os)?$/.test(normalizeName(product.name));
 export function directorySearch(product){
+ const dotnet=dotnetInventoryIdentity(product.name,product.vendor);
+ if(dotnet)return 'Microsoft '+dotnet.cpe.split(':')[4].replaceAll('_',' ');
  const name=windowsServerGroup(product)?'Windows Server':normalizeName(product.name)==='maria db'?'MariaDB':product.name;
  return [product.vendor||(windowsServerGroup(product)?'Microsoft':''),name].filter(Boolean).join(' ');
 }
 export function identityCandidates(data,product={}){
  const options=new Map();
+ const dotnet=dotnetInventoryIdentity(product.name,product.vendor);
  for(const item of data.products||[]){
   if(item.cpe?.deprecated)continue;
   const cpe=cpeFamily(item.cpe?.cpeName);if(!cpe)continue;
   if(product.vendor&&vendorKey(cpe.split(':')[3])!==vendorKey(product.vendor))continue;
+  if(dotnet&&cpe!==dotnet.cpe)continue;
   if(windowsServerGroup(product)&&!(cpe.startsWith('cpe:2.3:o:microsoft:')&&/^windows_server(?:_|$)/.test(cpe.split(':')[4])))continue;
   if(!options.has(cpe))options.set(cpe,{cpe,label:windowsServerGroup(product)?'Microsoft '+cpe.split(':')[4].replace(/^windows_server/,'Windows Server').replaceAll('_',' ').replace(/\br2\b/ig,'R2'):cpe.split(':').slice(3,5).join(' / ').replaceAll('_',' ')});
  }
