@@ -750,10 +750,13 @@ async function remove(type,id,name){
  if(removalPending)return;
  removalPending=true;
  try{
-  if(!await confirmInventoryRemoval(type,name,()=>call('/'+type+'/'+id,'DELETE')))return;
-  status(name+' removed. Refreshing inventory…');
-  try{await load();status(name+' removed from your private inventory.')}
-  catch(e){status(name+' was removed, but inventory could not refresh: '+e.message+'. Refresh the page to update the list.')}
+  let message='';
+  if(!await confirmInventoryRemoval(type,name,async()=>{
+   await call('/'+type+'/'+id,'DELETE');
+   try{await load();message=name+' removed from your private inventory.'}
+   catch(e){message=name+' was removed, but inventory could not refresh: '+e.message+'. Refresh the page to update the list.'}
+  }))return;
+  status(message);
  }finally{removalPending=false}
 }
 async function onAccount(event){
