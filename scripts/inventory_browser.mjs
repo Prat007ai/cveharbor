@@ -40,7 +40,7 @@ try{for(const width of [1440,768,390]){
  await page.locator('input[type=checkbox]').check();await page.getByRole('button',{name:'Import and assess vulnerabilities',exact:true}).click();
  await page.waitForURL('**/customer-dashboard/**');await page.getByText('Vulnerability findings',{exact:true}).waitFor();
  assert.equal(assets.length,2);assert.match(await page.locator('.organization-security').innerText(),/CVE-2099-12345/);
- assert.equal(await page.locator('.organization-security tbody tr').count(),4);
+ assert.equal(await page.locator('.organization-security > section > div:not(.server-security) tbody tr').count(),4);
  assert.ok(!calls.some(x=>x.startsWith('/v1/cvie')||x.startsWith('/v1/inventory')),'No private personal inventory in organization flow');
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true,'Dashboard overflow '+width);
  await page.screenshot({path:path.join(screens,'findings-'+width+'.png'),fullPage:true});

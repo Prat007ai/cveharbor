@@ -28,7 +28,7 @@ jobs:
           node-version: '24'
       - run: npm install --no-save --no-package-lock --ignore-scripts jsdom@26
       - run: npm install --prefix staging --ignore-scripts --no-package-lock
-      - run: node --test scripts/asset_import.test.mjs account-backend/tests/inventory-import.test.mjs
+      - run: node --test scripts/asset_import.test.mjs scripts/server_security.test.mjs account-backend/tests/inventory-import.test.mjs
       - run: node scripts/import_workflow_smoke.mjs
       - name: Verify the exact backend package and unchanged AI behavior
         run: |
@@ -38,7 +38,8 @@ jobs:
           node --test account-backend/tests/inventory-import.test.mjs account-backend/tests/team-access.test.mjs account-backend/tests/ai-*.test.mjs account-backend/tests/azure-connection.test.mjs
       - name: Verify the isolated website using fictional inventory
         run: |
-          python scripts/windows_inventory_release.py prepare "$RUNNER_TEMP/inventory-site"
+          python scripts/server_security_release.py prepare "$RUNNER_TEMP/inventory-site"
+          SERVER_TEST_SITE="$RUNNER_TEMP/inventory-site/after" SERVER_SCREENSHOTS="$RUNNER_TEMP/inventory-screens" node scripts/server_security_browser.mjs
           INVENTORY_TEST_SITE="$RUNNER_TEMP/inventory-site/after" INVENTORY_SCREENSHOTS="$RUNNER_TEMP/inventory-screens" node scripts/inventory_browser.mjs
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:

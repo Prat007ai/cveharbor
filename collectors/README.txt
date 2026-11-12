@@ -3,7 +3,9 @@ CVEHarbor Windows inventory collector
 1. Download Export-CVEHarborInventory.ps1 into a local folder on the target server.
 2. Review the script under your organization's normal script approval policy.
 3. Open Windows PowerShell 5.1 or PowerShell 7 and run:
-   .\Export-CVEHarborInventory.ps1 -AssetName 'DEMO-WEB01'
+   .\Export-CVEHarborInventory.ps1 -ServerRole 'Web'
+   This uses the computer hostname automatically. To override the displayed asset name:
+   .\Export-CVEHarborInventory.ps1 -AssetName 'DEMO-WEB01' -ServerRole 'Web'
    Replace DEMO-WEB01 with the server's inventory name. Omit -AssetName to use the computer name.
 4. Read collection-report.json and review the generated CSV files.
 5. In CVEHarbor select the customer environment, upload one numbered CSV at a time,
@@ -37,3 +39,17 @@ Detection references:
 https://learn.microsoft.com/en-us/powershell/scripting/samples/working-with-software-installations
 https://learn.microsoft.com/en-us/dotnet/framework/migration-guide/how-to-determine-which-versions-are-installed
 https://learn.microsoft.com/en-us/dotnet/core/install/how-to-detect-installed-versions
+
+Server names and roles in the Customer Security Dashboard:
+- Each server is grouped separately within its customer and environment.
+- Optional -ServerRole accepts Web, Database, Application, Active Directory, File,
+  Print, Remote Desktop or Other. Use -ServerRole 'Web','Application' for two roles.
+- The role is supplied by you, not guessed from the hostname or installed software.
+- The role is written at the start of Notes, for example: Server role: Database;
+  The five-column CSV format stays compatible with existing templates.
+- Existing WEB, Database and Application asset types also supply a role. A generic
+  Server entry without role information displays Not recorded.
+- To correct an existing role, edit the Notes on all software entries for that server.
+  Reimporting identical products does not update Notes. Conflicting roles are flagged.
+- Expand a server card to see its installed versions and candidate CVEs. Software
+  on another server or environment remains a separate assessment.

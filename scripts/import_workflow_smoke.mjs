@@ -31,7 +31,7 @@ const fixture=securityFixture();fixture.inventory.assets.push({id:'dotnet-demo',
 fixture.advisories.push({id:'CVE-2099-12345',title:'Fictional .NET advisory',affected:'.NET Runtime before 8.0.3',severity:'high',sources:[{url:'https://example.test/advisory'}]});
 const personal=dom(source('customer-dashboard/index.html'),'https://cveharbor.com/customer-dashboard/?customer=c1&environment=e1');
 personal.window.fetch=fixture.request;personal.window.CVEHARBOR_DATA={advisories:fixture.advisories};
-for(const name of ['inventory-matching.js','inventory-assessment.js','customer-score.js','advisory-details.js','customer-security.js'])personal.window.eval(source(name));
+for(const name of ['inventory-matching.js','inventory-assessment.js','customer-score.js','advisory-details.js','server-security.js','customer-security.js'])personal.window.eval(source(name));
 await tick();assert.match(personal.window.document.getElementById('customerDashboardAssessment').textContent,/3 software entries assessed/);
 assert.doesNotMatch(personal.window.document.getElementById('customerDashboardAssessment').textContent,/OTHER01|STAGE01/);
 assert.match(personal.window.document.getElementById('customerDashboardCves').textContent,/CVE-2099-12345/);
@@ -44,7 +44,7 @@ async function organization(query,role='Viewer'){
  w.fetch=async url=>{requests.push(url);assert.ok(url.includes('/v1/team/'),'organization page made a personal API request');
   const result=revoked?{error:'Access removed'}:url.endsWith('/customers')?{name:'Northstar Demo',customers:[{id:'c1',name:'Demo Customer'}]}:{customer:{name:'Demo Customer',role},environments:[{id:'e1',name:'Demo Production'}],assets:fixture.inventory.assets.filter(a=>a.environment_id==='e1'),remediations:[]};
   return {ok:!revoked,status:revoked?404:200,json:async()=>result};};
- for(const name of ['cvie.js','inventory-matching.js','inventory-assessment.js','customer-security.js'])w.eval(source(name));
+ for(const name of ['cvie.js','inventory-matching.js','inventory-assessment.js','server-security.js','customer-security.js'])w.eval(source(name));
  w.eval('(async()=>{'+source('team-ui.js').replaceAll('export ','')+'\n'+source('organization-security.js').replace(/^import .*?;\r?\n/m,'')+'})()');
  await tick();return {d,w,requests,revoke:()=>{revoked=true;w.dispatchEvent(new w.Event('focus'));}};
 }

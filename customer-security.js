@@ -144,7 +144,7 @@ function findingDetailButton(i){
   context.setAttribute('aria-label','Selected customer finding');
   context.append(text('h3','Selected customer finding'),text('p','Potential match — requires verification.'));
   const customer=inventory.customers.find(c=>c.id===i.environment?.customer_id);
-  const facts=[['Customer',customer?.name],['Environment',i.environment?.name],['Asset',i.asset?.name],
+  const facts=[['Customer',customer?.name],['Environment',i.environment?.name],['Hostname / asset',i.asset?.name],['Server role',window.CVEHARBOR_SERVER_SECURITY?.role(i.asset)],
    ['Installed software',i.technology+' '+(i.version||'(version unknown)')],
    ['Matching evidence',i.evidence],['Version comparison',i.comparison_detail],
    ['Saved fix status',findingStatusReady?statusFor(i):'Unavailable'],
@@ -232,7 +232,7 @@ function invalidateSession(){
  findingStatusDrafts.clear();findingTicketDrafts.clear();
  pluginFindings=[];pluginMonitorRows={};pluginSources.clear();pluginInstallationStatuses.clear();
  $('customerDashAccess').hidden=true;$('customerDashLogin').hidden=false;
- for(const id of ['customerReportBody','customerReportAssessment','customerDashboardCves','customerSoftwareVisual','customerDashboardPlugins','customerDashRows','customerDashFindings','customerDashboardAssessment','customerDashboardUpgradeHistory'])$(id)?.replaceChildren();
+ for(const id of ['customerReportBody','customerReportAssessment','customerDashboardCves','customerSoftwareVisual','customerDashboardPlugins','customerDashRows','customerDashFindings','customerDashboardAssessment','customerDashboardServers','customerDashboardUpgradeHistory'])$(id)?.replaceChildren();
  for(const id of ['customerReportPrint','customerReportEmail','customerReportCsv'])if($(id))$(id).disabled=true;
  document.querySelectorAll('.customer-email-overlay').forEach(el=>el.remove());
  delete $('customerDashStatus').dataset.ready;
@@ -501,6 +501,7 @@ function drawDashboard(){
  const assessment=$('customerDashboardAssessment');assessment.replaceChildren();
  if(window.CVEHARBOR_ASSESSMENT)assessment.append(window.CVEHARBOR_ASSESSMENT.summary(scopedStats.assets,records));
  if(chosen&&all[0])renderScorePanel(assessment,all[0].customer,env,all[0].stats);
+ const servers=$('customerDashboardServers');if(servers&&window.CVEHARBOR_SERVER_SECURITY)window.CVEHARBOR_SERVER_SECURITY.render(servers,{...scopedStats,customers,limited:all.some(x=>x.stats.limited)},{findingLink:findingDetailButton});
  const historyRoot=$('customerDashboardUpgradeHistory');if(historyRoot){historyRoot.replaceChildren();renderUpgradeHistory(historyRoot,chosen,env)}
  const root=$('customerDashRows');root.replaceChildren();
  for(const {customer,stats} of all){

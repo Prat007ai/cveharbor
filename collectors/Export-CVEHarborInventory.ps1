@@ -10,6 +10,8 @@ Use a separate run per server. See README.txt for coverage and import limitation
 [CmdletBinding()]
 param(
     [string]$AssetName = $env:COMPUTERNAME,
+    [ValidateSet('Web','Database','Application','Active Directory','File','Print','Remote Desktop','Other')]
+    [string[]]$ServerRole = @(),
     [string]$OutputDirectory = (Join-Path (Get-Location) ('CVEHarbor-Inventory-' + (Get-Date -Format 'yyyyMMdd-HHmmss') + '-' + [guid]::NewGuid().ToString('N').Substring(0,8))),
     [string[]]$DotNetRoot = @(),
     # Offline fixture mode for testing the exporter; never inventories this machine.
@@ -31,6 +33,7 @@ function Add-Product([string]$Name, [string]$Version, [string]$Details) {
     if (!$Name) { return }
     if ($Name.Length -gt 120 -or $Version.Length -gt 80) { $warnings.Add('Skipped an overlong product name or version. Review source inventory manually.'); return }
     if (!$Version) { $warnings.Add('Version unavailable: ' + $Name) }
+    if ($ServerRole.Count) { $Details = 'Server role: ' + (($ServerRole | Select-Object -Unique) -join ' / ') + '; ' + $Details }
     if ($Details.Length -gt 500) { $Details = $Details.Substring(0,500) }
     $rows.Add([pscustomobject][ordered]@{'Asset Name'=(Safe-Cell $AssetName); 'Asset Type'='Server'; Technology=$Name; Version=$Version; Notes=$Details})
 }
@@ -146,7 +149,7 @@ foreach($row in $ordered){
     $batch.Add($row)
 }
 Save-Batch
-$report=[ordered]@{collector_version='1.0';collected_utc=$collected;asset_name=(Safe-Cell $AssetName);entries=$ordered.Count;files=@($files.ToArray());warnings=@($warnings.ToArray());coverage=@('Read-only local inventory; no vulnerability or network scan.','Programs and Features records: machine 32/64-bit views and the executing user only. Other user profiles and Microsoft Store packages are not enumerated.','Portable software, containers, application-bundled runtimes and nonstandard paths may be missing.','Directory discovery does not prove that a runtime is actively used.','Windows and .NET Framework patch applicability needs vendor/build evidence.','Import is additive. Removed software and superseded versions must be reviewed manually.');fixture_mode=[bool]$FixturePath}
+$report=[ordered]@{collector_version='1.1';server_roles=@($ServerRole);collected_utc=$collected;asset_name=(Safe-Cell $AssetName);entries=$ordered.Count;files=@($files.ToArray());warnings=@($warnings.ToArray());coverage=@('Read-only local inventory; no vulnerability or network scan.','Programs and Features records: machine 32/64-bit views and the executing user only. Other user profiles and Microsoft Store packages are not enumerated.','Portable software, containers, application-bundled runtimes and nonstandard paths may be missing.','Directory discovery does not prove that a runtime is actively used.','Windows and .NET Framework patch applicability needs vendor/build evidence.','Import is additive. Removed software and superseded versions must be reviewed manually.');fixture_mode=[bool]$FixturePath}
 [IO.File]::WriteAllText((Join-Path $OutputDirectory 'collection-report.json'),($report | ConvertTo-Json -Depth 5),$utf8)
 Write-Output ('Saved '+$ordered.Count+' inventory entries in '+$files.Count+' CSV file(s) to '+$OutputDirectory)
 Write-Output 'Review collection-report.json, then upload each CSV to the selected CVEHarbor customer environment.'
