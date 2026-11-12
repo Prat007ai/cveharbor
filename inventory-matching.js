@@ -12,6 +12,52 @@ const categories={
 };
 const norm=x=>String(x||'').normalize('NFKC').trim().toLowerCase().replace(/\s+/g,' ');
 const numeric=x=>/^\d+(?:\.\d+){1,3}$/.test(x);
+// Release identity is separate from patch applicability. Never compare a Windows
+// build number numerically with a marketing year. Source: Microsoft Server release info.
+const serverBuildFamilies={'6.0.6001':'2008','6.0.6002':'2008','6.1.7600':'2008 R2','6.1.7601':'2008 R2','6.2.9200':'2012','6.3.9600':'2012 R2','10.0.14393':'2016','10.0.17763':'2019','10.0.20348':'2022','10.0.26100':'2025'};
+function serverFamily(value){
+ const text=String(value||'').trim();
+ const build=/^(\d+\.\d+\.\d+)(?:\.\d+)?$/.exec(text);
+ if(build)return serverBuildFamilies[build[1]]||null;
+ // Accept only complete product labels, not prose, ranges or future releases.
+ const label=/^(?:Microsoft\s+)?(?:Windows Server\s*:?\s*)?(2003|2008|2012|2016|2019|2022|2025)(\s+R2)?((?:\s+(?:for\s+(?:x64-based|32-bit|Itanium-based)\s+Systems|Service Pack\s+[12]|Standard|Datacenter|Essentials|Enterprise|Web|Foundation|\(Core installation\)|\(Server Core installation\)))*)$/i.exec(text);
+ if(!label||label[2]&&!['2003','2008','2012'].includes(label[1]))return null;
+ return label[1]+(label[2]?' R2':'');
+}
+function windowsServerApplicability(asset,record){
+ if(norm(asset.technology)!=='windows server')return 'unknown';
+ const installed=serverFamily(asset.version);if(!installed)return 'unknown';
+ const text=String(record.affected||'').trim();
+ // The source display is capped at 4,000 characters. Partial/qualified lists
+// cannot prove absence. A stale update pending verification also stays reviewable.
+ if(!text||text.length>=4000||record.verification_pending)return 'unknown';
+ const entries=text.split(/[;\n]/).map(x=>x.trim());
+ if(!/^Windows Server\b/i.test(entries[0]))return 'unknown';
+ const families=entries.map(serverFamily);
+ if(families.includes(installed))return 'possible';
+ if(families.some(x=>!x))return 'unknown';
+ // Merged records may carry additional structured evidence not present in the
+// display text. Never discard a candidate when that evidence is contradictory.
+ for(const range of record.affected_cpes||[]){
+  const p=String(range.criteria||'').split(':');
+  if(p[3]!=='microsoft')continue;
+  const named=/^windows_server_(2003|2008|2012|2016|2019|2022|2025)(_r2)?$/.exec(p[4]||'');
+  if(named&&named[1]+(named[2]?' R2':'')===installed)return 'possible';
+ }
+ for(const row of record.cna_affected||[]){
+  if(row.defaultStatus==='affected')return 'unknown';
+  const productFamily=serverFamily(row.product);
+  if(productFamily===installed)return 'possible';
+  for(const v of row.versions||[]){
+   if(v.status==='unaffected')continue;
+   if(v.status!=='affected'||v.lessThan||v.lessThanOrEqual||v.changes?.length)return 'unknown';
+   const family=serverFamily(v.version)||((v.version==='*'||v.version==='-')&&productFamily);
+   if(!family)return 'unknown';
+   if(family===installed)return 'possible';
+  }
+ }
+ return 'outside';
+}
 function compare(a,b){
  if(!numeric(a)||!numeric(b))return null;
  const x=a.split('.').map(Number),y=b.split('.').map(Number);
@@ -78,6 +124,7 @@ function preciseProductMatch(asset,cve){
 }
 function candidate(asset,cve){
  const product=norm(asset.technology);
+ if(windowsServerApplicability(asset,cve)==='outside')return null;
  if(!product||!/^(CVE-\d{4}-\d{4,}|GHSA-[a-z0-9-]+)$/i.test(String(cve.id||'')))return null;
  if((cve.cvie_excluded_products||[]).some(name=>norm(name)===product))return null;
  if(/rejected|withdrawn/i.test(String(cve.status||'')))return null;
@@ -181,5 +228,5 @@ function evaluate(assets,advisories,limit=150){
   Number(b.level==='version_review')-Number(a.level==='version_review')||a.id.localeCompare(b.id));
  return {items:items.slice(0,limit),total:items.length,limited:items.length>limit};
 }
-root.CVEHARBOR_INVENTORY_MATCH={candidate,evaluate,compare,cvieVersionAssessment};
+root.CVEHARBOR_INVENTORY_MATCH={candidate,evaluate,compare,cvieVersionAssessment,windowsServerApplicability};
 })(window);

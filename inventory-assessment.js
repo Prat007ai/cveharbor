@@ -31,6 +31,8 @@ function patterns(technology){
 }
 function candidate(asset,record,base){
  const product=norm(asset.technology),special=Object.hasOwn(names,product);
+ // Respect exclusions before the broad affected-product fallback can recreate them.
+ if(base.windowsServerApplicability(asset,record)==='outside')return null;
  const original=base.candidate(asset,record);
  if(!special&&(legacy.has(product)||product.startsWith('wordpress plugin:')))return original;
  if(!special&&original)return original;
