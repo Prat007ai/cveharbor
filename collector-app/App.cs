@@ -62,7 +62,7 @@ namespace CVEHarbor.Collector
         TextBox search;
         public CollectorForm(bool demoMode)
         {
-            demo=demoMode;Text="CVEHarbor Windows Collector"+(demo?" â€” FICTIONAL DEMO":"");
+            demo=demoMode;Text="CVEHarbor Windows Collector"+(demo?" — FICTIONAL DEMO":"");
             Size=new Size(1280,940);MinimumSize=new Size(1000,800);StartPosition=FormStartPosition.CenterScreen;
             SuspendLayout();Font=new Font("Segoe UI",10);BackColor=Background;ForeColor=Ink;AutoScaleMode=AutoScaleMode.None;
             Icon=SystemIcons.Shield;
@@ -82,7 +82,7 @@ namespace CVEHarbor.Collector
             right.Controls.Add(Note("02   REVIEW\r\nChoose a primary IP. Inspect versions and any collection warnings.",16));
             right.Controls.Add(Note("03   EXPORT\r\nSave one CSV, then upload it to your selected CVEHarbor customer environment.",16));
             right.Controls.Add(Note("Local collection only. No installation, background service, automatic upload or AI requests.",12));
-            right.Controls.Add(Note(demo?"FICTIONAL DEMO â€” this mode never inventories this computer.":"Version 1.0.0 â€¢ Unsigned evaluation build\r\nWindows Desktop Experience with .NET Framework 4.8 or later.",12));
+            right.Controls.Add(Note(demo?"FICTIONAL DEMO — this mode never inventories this computer.":"Version 1.0.0 • Unsigned evaluation build\r\nWindows Desktop Experience with .NET Framework 4.8 or later.",12));
             var networkLayout=new TableLayoutPanel{Dock=DockStyle.Fill,RowCount=5,ColumnCount=1};networkLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent,100));
             networkLayout.RowStyles.Add(new RowStyle(SizeType.Absolute,40));networkLayout.RowStyles.Add(new RowStyle(SizeType.Absolute,45));networkLayout.RowStyles.Add(new RowStyle(SizeType.Absolute,52));networkLayout.RowStyles.Add(new RowStyle(SizeType.Percent,100));networkLayout.RowStyles.Add(new RowStyle(SizeType.Absolute,43));network.Controls.Add(networkLayout);
             networkLayout.Controls.Add(Heading("Choose the address your team recognizes"),0,0);
@@ -121,11 +121,11 @@ namespace CVEHarbor.Collector
             try{
                 var progress=new Progress<string>(message=>status.Text=message);
                 snapshot=await Task.Run(()=>demo?Inventory.Fictional():Inventory.Collect(message=>((IProgress<string>)progress).Report(message)));
-                primary.Items.Add(new AddressChoice("No primary selected â€” choose later in CVEHarbor",null));
-                foreach(var adapter in snapshot.Adapters){if(adapter.addresses.Count==0)networks.Rows.Add(adapter.name,adapter.status,"No address assigned","â€”","â€”");foreach(var ip in adapter.addresses){networks.Rows.Add(adapter.name,adapter.status,ip.ip,"/"+ip.prefix,ip.state);primary.Items.Add(new AddressChoice(adapter.name+"  Â·  "+ip.ip+"  ("+adapter.status+")",new Primary{adapter_id=adapter.id,ip=ip.ip}));}}
+                primary.Items.Add(new AddressChoice("No primary selected — choose later in CVEHarbor",null));
+                foreach(var adapter in snapshot.Adapters){if(adapter.addresses.Count==0)networks.Rows.Add(adapter.name,adapter.status,"No address assigned","—","—");foreach(var ip in adapter.addresses){networks.Rows.Add(adapter.name,adapter.status,ip.ip,"/"+ip.prefix,ip.state);primary.Items.Add(new AddressChoice(adapter.name+"  ·  "+ip.ip+"  ("+adapter.status+")",new Primary{adapter_id=adapter.id,ip=ip.ip}));}}
                 primary.SelectedIndex=0;primary.Enabled=true;search.Enabled=true;reviewed.Enabled=snapshot.Products.Count>0;search.Text="";ShowProducts();
-                summary.Text=snapshot.Products.Count+" software entries  â€¢  "+snapshot.Warnings.Count+" warnings  â€¢  Filter by product or version below";
-                networkSummary.Text=snapshot.Adapters.Count+" adapters  â€¢  "+snapshot.Adapters.Sum(a=>a.addresses.Count)+" addresses  â€¢  Collected "+snapshot.CollectedUtc;
+                summary.Text=snapshot.Products.Count+" software entries  •  "+snapshot.Warnings.Count+" warnings  •  Filter by product or version below";
+                networkSummary.Text=snapshot.Adapters.Count+" adapters  •  "+snapshot.Adapters.Sum(a=>a.addresses.Count)+" addresses  •  Collected "+snapshot.CollectedUtc;
                 status.Text=snapshot.Products.Count==0?"No software collected. Review Coverage & warnings before trying again.":"Collection complete. Choose a primary IP, then open Review & export.";
                 collect.Text="Collect again";tabs.SelectedIndex=1;
             }catch(Exception ex){status.Text="Collection failed. No CSV was exported.";MessageBox.Show(this,ex.Message,"Collection could not finish",MessageBoxButtons.OK,MessageBoxIcon.Warning);}
