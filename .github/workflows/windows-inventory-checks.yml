@@ -38,9 +38,10 @@ jobs:
           node --test account-backend/tests/inventory-import.test.mjs account-backend/tests/team-access.test.mjs account-backend/tests/ai-*.test.mjs account-backend/tests/azure-connection.test.mjs
       - name: Verify the isolated website using fictional inventory
         run: |
-          python scripts/server_network_release.py prepare "$RUNNER_TEMP/inventory-site"
+          python scripts/inventory_experience_release.py prepare "$RUNNER_TEMP/inventory-site"
           SERVER_TEST_SITE="$RUNNER_TEMP/inventory-site/after" SERVER_SCREENSHOTS="$RUNNER_TEMP/inventory-screens" node scripts/server_security_browser.mjs
           INVENTORY_TEST_SITE="$RUNNER_TEMP/inventory-site/after" INVENTORY_SCREENSHOTS="$RUNNER_TEMP/inventory-screens" node scripts/inventory_browser.mjs
+          INVENTORY_TEST_SITE="$RUNNER_TEMP/inventory-site/after" INVENTORY_SCREENSHOTS="$RUNNER_TEMP/inventory-screens" node scripts/inventory_experience_browser.mjs
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: inventory-review-screens

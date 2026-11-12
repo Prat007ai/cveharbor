@@ -7,9 +7,15 @@ CVEHarbor Windows inventory collector
    This uses the computer hostname automatically. To override the displayed asset name:
    .\Export-CVEHarborInventory.ps1 -AssetName 'DEMO-WEB01' -ServerRole 'Web'
    Replace DEMO-WEB01 with the server's inventory name. Omit -AssetName to use the computer name.
-4. Read collection-report.json and review the generated CSV files.
-5. In CVEHarbor select the customer environment, upload one numbered CSV at a time,
-   review all rows, then select Import and assess vulnerabilities.
+4. Read collection-report.json and review cveharbor-assets.csv.
+5. In CVEHarbor select the customer environment, upload cveharbor-assets.csv once,
+   review the rows (use Next rows for larger inventories), and select Import reviewed inventory.
+   Keep the page open while the progress indicator advances. The importer saves in
+   small batches. You stay on the selected customer/environment after completion.
+   Select Assess in Customer Security Dashboard when ready to view the findings.
+   If interrupted, check the review confirmation and select Retry remaining inventory.
+   After closing/reloading the page, select the same customer/environment and re-upload
+   the same CSV. Saved identical rows are skipped. Older numbered files still work.
 
 The script reads local inventory and only writes a new output folder. It does not
 upload, call AI, install software, change execution policy, repair MSI packages,
@@ -26,7 +32,10 @@ Optional -DotNetRoot accepts additional local .NET installation directories.
 Each collector CSV has: Asset Name,Asset Type,Technology,Version,Notes,Server Network.
 The optional Server Network column contains structured adapter/IP metadata. Existing
 five-column templates still import unchanged.
-Files are UTF-8 and split at 200 rows / 128 KB. No secret values, license keys,
+One UTF-8 CSV is produced per collection, up to 10,000 rows / 10 MB. Network metadata
+is included once per server, not repeated on every software row. Collection stops
+with a clear error if this export limit is exceeded; rows are never silently dropped.
+No secret values, license keys,
 connection strings, installed-software command lines or environment dumps are collected.
 Names and publisher metadata may still be confidential: review before uploading.
 Exact duplicate product/version entries are consolidated. Distinct versions remain

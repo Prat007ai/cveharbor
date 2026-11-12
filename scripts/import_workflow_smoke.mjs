@@ -14,11 +14,11 @@ for(const organization of [false,true]){
  let scope={customer:'demo',environment:'prod',...(organization?{org:'north'}:{})},saved=[],fail=true;
  w.CVEHARBOR_ASSET_IMPORT.mount(host,{scope:()=>scope,readAssets:async()=>saved,
   saveAsset:async a=>{if(fail&&saved.length===1)throw Error('Fictional network interruption');saved.push({...a,id:'a'+saved.length});}});
- const file=host.querySelector('[type=file]'),check=host.querySelector('[type=checkbox]'),submit=[...host.querySelectorAll('button')].find(x=>x.textContent==='Import and assess vulnerabilities');
+ const file=host.querySelector('[type=file]'),check=host.querySelector('[type=checkbox]'),submit=[...host.querySelectorAll('button')].find(x=>x.textContent==='Import reviewed inventory');
  async function upload(text=csv){Object.defineProperty(file,'files',{configurable:true,value:[{name:'demo.csv',size:Buffer.byteLength(text),text:async()=>text}]});await file.onchange();}
  await upload();assert.match(host.textContent,/2 distinct entries; 1 duplicate/);assert.equal(submit.disabled,true);
  check.checked=true;check.onchange();await submit.onclick();assert.equal(saved.length,1);assert.match(host.textContent,/Imported 1; skipped 0.*interruption/);
- fail=false;await upload();check.checked=true;check.onchange();await submit.onclick();assert.equal(saved.length,2);assert.match(host.textContent,/1 entries imported; 1 existing entries skipped/);
+ fail=false;check.checked=true;check.onchange();await submit.onclick();assert.equal(saved.length,2);assert.match(host.textContent,/1 entries imported; 1 existing entries skipped/);assert.equal(w.location.href,'https://cveharbor.com/');
  const target=new URL(host.querySelector('a[href^="/customer-dashboard/"]').href);
  assert.equal(target.searchParams.get('org'),organization?'north':null);assert.equal(target.searchParams.get('environment'),'prod');
  await upload();scope={...scope,environment:'another'};check.checked=true;await submit.onclick();assert.equal(saved.length,2);assert.match(host.textContent,/context changed|environment changed/);

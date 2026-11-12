@@ -20,8 +20,12 @@ test('UTF8 BOM, quotes, versions, missing version and exact duplicate handling',
  assert.notEqual(key(result.entries[0]),key(result.entries[1]));assert.equal(result.entries[0].notes,'Publisher: Example, Inc');
 });
 test('malformed or unsafe files reject before any writes',()=>{
- for(const csv of ['wrong\n',head,head+'x,Server,Product,1,"unterminated',head+'x,Server,"Product"junk,1,n',head+'x,wrong,Product,1,n',head+'=cmd,Server,Product,1,n',head+'x,Server,Product,1,"two\nlines"',head+Array(201).fill('x,Server,Product,1,n').join('\n'),head+'x,Server,'+'X'.repeat(132000)+',1,n'])assert.throws(()=>parse(csv));
+ for(const csv of ['wrong\n',head,head+'x,Server,Product,1,"unterminated',head+'x,Server,"Product"junk,1,n',head+'x,wrong,Product,1,n',head+'=cmd,Server,Product,1,n',head+'x,Server,Product,1,"two\nlines"',head+Array(10001).fill('x,Server,Product,1,n').join('\n'),head+'x,Server,'+'X'.repeat(10485761)+',1,n'])assert.throws(()=>parse(csv));
  assert.equal(parse(head+"'=cmd,Server,Product,1,n").entries.length,1);
+});
+test('one large CSV keeps every software version and accepts a single server snapshot',()=>{
+ const csv=head+Array.from({length:10000},(_,i)=>'DEMO,Server,Product '+i+',1,'+'F'.repeat(200)).join('\n');
+ assert.ok(Buffer.byteLength(csv)>131072);assert.equal(parse(csv).entries.length,10000);
 });
 const advisory=(product,extra={})=>({id:'CVE-2026-12345',categories:['Windows','.NET Core'],title:'Fictional advisory',affected:product+' before 9.0.0',sources:[{url:'https://example.test/advisory',label:'Fictional source'}],...extra});
 test('Windows and Framework builds do not produce false version conclusions',()=>{
