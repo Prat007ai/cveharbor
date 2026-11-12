@@ -49,15 +49,22 @@ function install(){
  base.evaluate=(assets,records,limit=150)=>{
   const items=[],seen=new Set();
   const advisoryRecords=records||[];
-  let byProduct=assessments.get(advisoryRecords);
-  if(!byProduct){byProduct=new Map();assessments.set(advisoryRecords,byProduct);}
+  let cached=assessments.get(advisoryRecords);
+  if(!cached||cached.length!==advisoryRecords.length){
+   cached={products:new Map(),findings:0,length:advisoryRecords.length};
+   assessments.set(advisoryRecords,cached);
+  }
+  const byProduct=cached.products;
   for(const asset of assets||[]){
    const key=JSON.stringify([asset.technology,asset.version]);
    let matches=byProduct.get(key);
    if(!matches){
     matches=[];
     for(const record of advisoryRecords){const finding=base.candidate(asset,record);if(finding)matches.push(finding);}
-    byProduct.set(key,matches);
+    // Bound retained results even for unusually broad advisory matches.
+    if(byProduct.size<1000&&cached.findings+matches.length<=10000){
+     byProduct.set(key,matches);cached.findings+=matches.length;
+    }
    }
    for(const finding of matches){
     const identity=asset.id+'|'+finding.id;
