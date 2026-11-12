@@ -1,0 +1,48 @@
+name: Windows inventory workflow checks
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  collector:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Test the collector using fictional data in Windows PowerShell 5.1
+        shell: powershell
+        run: ./scripts/test_windows_collector.ps1
+  workflow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - run: npm install --no-save --no-package-lock --ignore-scripts jsdom@26
+      - run: npm install --prefix staging --ignore-scripts --no-package-lock
+      - run: node --test scripts/asset_import.test.mjs account-backend/tests/inventory-import.test.mjs
+      - run: node scripts/import_workflow_smoke.mjs
+      - name: Verify the exact backend package and unchanged AI behavior
+        run: |
+          python scripts/windows_inventory_release.py backend "$RUNNER_TEMP/inventory-worker"
+          rsync --archive --delete "$RUNNER_TEMP/inventory-worker/account-backend/src/" account-backend/src/
+          cp "$RUNNER_TEMP/inventory-worker/account-backend/wrangler.toml" account-backend/wrangler.toml
+          node --test account-backend/tests/inventory-import.test.mjs account-backend/tests/team-access.test.mjs account-backend/tests/ai-*.test.mjs account-backend/tests/azure-connection.test.mjs
+      - name: Verify the isolated website using fictional inventory
+        run: |
+          python scripts/windows_inventory_release.py prepare "$RUNNER_TEMP/inventory-site"
+          INVENTORY_TEST_SITE="$RUNNER_TEMP/inventory-site/after" INVENTORY_SCREENSHOTS="$RUNNER_TEMP/inventory-screens" node scripts/inventory_browser.mjs
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: inventory-review-screens
+          path: ${{ runner.temp }}/inventory-screens
+          if-no-files-found: error

@@ -830,10 +830,10 @@ assert.ok(html.includes('Vulnerability intelligence')&&html.includes('Know the r
 assert.equal(html.includes('>REMEDIATE</text>'),false,'network badge overlap label removed');
 
 assert.ok(html.includes('<option>WEB</option>'),'WEB asset type appears in inventory form');
-assert.ok(fs.readFileSync('inventory.js','utf8').includes("'Server','WEB','Application'"),'CSV importer accepts WEB asset type');
+assert.ok(fs.readFileSync('asset-import.js','utf8').includes("'Server','WEB','Application'"),'CSV importer accepts WEB asset type');
 
-assert.ok(fs.readFileSync('inventory.js','utf8').includes(String.raw`Version,Notes\\r\\nWEB01`) === false,'CSV template does not emit escaped newline literals');
-assert.ok(fs.readFileSync('inventory.js','utf8').includes('Production Web Stack,WEB,PHP'),'CSV template includes shared stack rows');
+assert.ok(fs.readFileSync('asset-import.js','utf8').includes(String.raw`Version,Notes\\r\\nWEB01`) === false,'CSV template does not emit escaped newline literals');
+assert.ok(fs.readFileSync('asset-import.js','utf8').includes('Production Web Stack,WEB,PHP'),'CSV template includes shared stack rows');
 
 assert.ok(fs.readFileSync('inventory.js','utf8').includes("const displayName=plugin?asset.technology.slice(pluginPrefix.length):asset.technology"),'inventory uses short plugin labels');
 
@@ -847,7 +847,7 @@ assert.ok(fs.readFileSync('inventory.js','utf8').includes('inventory-step-collap
 
 assert.ok(fs.readFileSync('inventory.js','utf8').includes("form.hidden=panel.classList.contains('inventory-step-collapsed')"),'completed setup forms are hidden directly');
 
-const bulkSource=fs.readFileSync('inventory.js','utf8');
+const bulkSource=fs.readFileSync('asset-import.js','utf8');
 assert.ok(bulkSource.includes('Production Web Stack,WEB,NGINX'),'CSV sample includes a logical web software stack');
 assert.ok(bulkSource.includes('Production Web Stack,WEB,Ubuntu Linux'),'CSV sample includes an OS');
 
@@ -857,7 +857,7 @@ assert.ok(fs.readFileSync('inventory.js','utf8').includes('setupCustomerId=saved
 assert.ok(fs.readFileSync('inventory.js','utf8').includes('customerNameField.value=selectedCustomer.name'),'saved customer name restored');
 assert.ok(fs.readFileSync('inventory.js','utf8').includes('environmentNameField.value=selectedEnvironment.name'),'saved environment name restored');
 
-const csvGenerator=fs.readFileSync('inventory.js','utf8');
+const csvGenerator=fs.readFileSync('asset-import.js','utf8');
 assert.ok(csvGenerator.includes("'Production Web Stack,WEB,PHP,8.4.26,Example only'"),'shared stack CSV sample is published');
 assert.ok(csvGenerator.includes("'Production Web Stack,WEB,NGINX,1.26.3,Example only'"),'shared stack contains web server technology');
 assert.ok(csvGenerator.includes("'Production Web Stack,WEB,Ubuntu Linux,24.04,Example only'"),'shared stack contains operating system');

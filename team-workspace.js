@@ -1,3 +1,4 @@
+import './asset-import.js';
 import {api,orgPath,workspaceLink,display,element,field,button,select,table,link,notice,actions,accountIdentity,switchAccount} from './team-ui.js';
 
 const countLabel=(count,singular,plural=singular+'s')=>count+' '+(count===1?singular:plural);
@@ -45,7 +46,7 @@ export async function organizationDashboard(id,preferredCustomer=''){
   let sources;
   async function potentialFindings(container,data){
     try{
-      sources??=Promise.all([import('/data.js'),import('/catalog.js'),import('/inventory-matching.js')]);
+      sources??=Promise.all([import('/data.js'),import('/catalog.js'),import('/inventory-matching.js').then(()=>import('/inventory-assessment.js'))]);
       await sources;
       if(!container.isConnected)return;
       if(!Array.isArray(window.CVEHARBOR_DATA?.advisories))throw Error();
@@ -120,6 +121,16 @@ export async function organizationDashboard(id,preferredCustomer=''){
           button('Save environment',async()=>{await api(base+'/environments/'+customer,'POST',{name:name.value,kind:kind.value});await load();},true));
       }));
       if(data.environments.length)tools.prepend(button('Add asset',()=>editAsset(customer,data),true));
+      if(data.environments.length)tools.append(button('Import server inventory',()=>{
+        const targetEnv=select([['','Choose environment'],...data.environments.map(e=>[e.id,e.name])],'');
+        targetEnv.setAttribute('aria-label','Environment');
+        const slot=element('div');detail.replaceChildren(element('h2','3. Register asset and technology stack'),field('Environment',targetEnv),button('Back',load),slot);
+        window.CVEHARBOR_ASSET_IMPORT.mount(slot,{
+          scope:()=>({org:id,customer,environment:targetEnv.value}),
+          readAssets:async()=>{const latest=await api(base+'/customers/'+encodeURIComponent(customer));if(latest.customer.role==='Viewer')throw Error('Editor access required.');return latest.assets;},
+          saveAsset:item=>api(base+'/assets/'+encodeURIComponent(customer),'POST',item)
+        });
+      }));
       tools.append(button('Track a CVE',()=>{
         const cve=textInput('',28),owner=textInput('',100),notes=element('textarea');notes.maxLength=1200;
         detail.replaceChildren(element('h2','Track a CVE for '+data.customer.name),field('CVE ID',cve),field('Assigned owner',owner),field('Notes',notes),button('Cancel',load),
@@ -139,6 +150,7 @@ export async function organizationDashboard(id,preferredCustomer=''){
     }
     const potential=element('section','Checking advisories for these assets…','harbor-records');
     detail.replaceChildren(element('h2',data.customer.name),metrics,
+      link('Customer Security Dashboard','/customer-dashboard/?'+new URLSearchParams({org:id,customer})),
       group('Environments',['Environment','Environment type'],data.environments.map(e=>[e.name,e.kind])),
       group('Assets',['Asset','Environment','Technology','Version','Notes',...(canEdit?['Actions']:[])],assetRows,tools),
       potential,group('Reviewed findings',['Asset','CVE','Status','Notes'],data.findings.map(f=>[f.asset,f.cve_id,f.status,f.notes])),
