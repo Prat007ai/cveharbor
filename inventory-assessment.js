@@ -10,6 +10,17 @@ function source(record){
  return sourceCache.get(record);
 }
 const productPatterns=new Map();
+// Marketing releases mapped from Microsoft's Windows Server release information.
+// This is a family mismatch warning, never a claim about installed KBs or exposure.
+const serverBuilds={'14393':'2016','17763':'2019','20348':'2022','26100':'2025'};
+function familyWarning(asset,record){
+ if(norm(asset.technology)!=='windows server')return '';
+ const build=/^10\.0\.(\d+)(?:\.\d+)?$/.exec(String(asset.version||'').trim()),release=build&&serverBuilds[build[1]];
+ if(!release)return '';
+ const affected=String(record.affected||''),families=[...affected.matchAll(/\bWindows Server\s+(2003|2008|2012|2016|2019|2022|2025)\b/gi)].map(m=>m[1]);
+ if(!families.length||families.includes(release))return '';
+ return 'Version family mismatch: installed build '+asset.version+' identifies Windows Server '+release+', while the indexed affected text names Windows Server '+[...new Set(families)].join(', ')+'. Verify the complete vendor affected-product list before treating this as a vulnerability or recommending a patch. Build mapping: https://learn.microsoft.com/en-us/windows-server/get-started/windows-server-release-info';
+}
 function patterns(technology){
  if(!productPatterns.has(technology)){
   if(productPatterns.size>=1000)productPatterns.clear();
@@ -36,7 +47,7 @@ function candidate(asset,record,base){
  return {id:record.id,title:record.title||record.summary||record.id,severity:record.severity||'unknown',known_exploited:!!record.known_exploited,
   asset_id:asset.id,technology:asset.technology,version:asset.version||'',level:'category',
   evidence:'Potential product match in advisory affected-product text. Installed-version and patch applicability need verification.',
-  affected,comparison_detail:'No automatic affected-version conclusion was made for this installed-product entry.',
+  affected,comparison_detail:familyWarning(asset,record)||'No automatic affected-version conclusion was made for this installed-product entry.',
   summary:record.summary||'',remediation:record.remediation||'',published:record.published||'',updated:record.updated||'',sources:record.sources||[],source_url:reference.url,source_label:reference.label||'Advisory source'};
 }
 function install(){

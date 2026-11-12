@@ -157,7 +157,8 @@ function findingDetailButton(i){
   if(!advisory.categories?.length)advisory.categories=[i.technology];
   advisory.sources=[...(source?.sources||i.sources||[])];
   if(i.source_url)advisory.sources.push({label:i.source_label,url:i.source_url});
-  window.CVEHARBOR_ADVISORY_DETAILS.render(root,advisory,{context});
+  const guidance=window.CVEHARBOR_FINDING_AI?.panel({finding:i,advisory,customer:customer?.id});
+  window.CVEHARBOR_ADVISORY_DETAILS.render(root,advisory,{context,guidance});
   root.querySelector('h2').id='customerFindingTitle';
   layout.append(close,root);dialog.append(layout);document.body.append(dialog);findingDialog=dialog;
   const dismiss=()=>{closeFindingDetail();if(button.isConnected)button.focus({preventScroll:true})};
@@ -499,6 +500,7 @@ function drawDashboard(){
  for(const id of ['customerSoftwareAttention','customerFindingsAttention'])$(id).replaceChildren(attentionBadge(scopedStats.issues));
  const plugins=$('customerDashboardPlugins');plugins.replaceChildren();renderPluginMonitoring(plugins,scopedStats);
  const assessment=$('customerDashboardAssessment');assessment.replaceChildren();
+ if(window.CVEHARBOR_FINDING_AI)assessment.append(window.CVEHARBOR_FINDING_AI.priorities({findings:scopedStats.issues.filter(i=>!closedStatus(statusFor(i))),onOpen:findingDetailButton}));
  if(window.CVEHARBOR_ASSESSMENT)assessment.append(window.CVEHARBOR_ASSESSMENT.summary(scopedStats.assets,records));
  if(chosen&&all[0])renderScorePanel(assessment,all[0].customer,env,all[0].stats);
  const servers=$('customerDashboardServers');if(servers&&window.CVEHARBOR_SERVER_SECURITY)window.CVEHARBOR_SERVER_SECURITY.render(servers,{...scopedStats,customers,limited:all.some(x=>x.stats.limited)},{findingLink:findingDetailButton,loadNetworks:()=>api('inventory/server-network'),savePrimary:async payload=>{const result=await api('inventory/server-network','PUT',payload);if(!result.saved)throw Error('Sign in again to save server details.');return result;}});
@@ -559,6 +561,7 @@ function collapseReportSections(root){
 }
 function setReportPrintMode(printing){
  if(printing&&reportPrinting)return;
+ if(printing)ensurePrintDocument();
  reportPrinting=printing;
  const score=document.querySelector('#customerReportAssessment details.customer-security-score-panel');
  if(printing&&score){printScoreState=[score,score.open];score.open=true;const method=score.querySelector('details.customer-score-methodology');if(method){score.dataset.methodWasOpen=String(method.open);method.open=true}}
@@ -1020,6 +1023,16 @@ function reportIcon(name){
  const path=document.createElementNS(svg.namespaceURI,'path');path.setAttribute('d',paths[name]||paths.total);svg.append(path);wrap.append(svg);return wrap;
 }
 
+// Printing is expensive and the document is hidden during normal browsing.
+// Build it once for the current selection, including browser-menu printing.
+function ensurePrintDocument(){
+ const root=$('customerReportBody');
+ if(!root||root.querySelector('.customer-print-document'))return;
+ const customer=inventory.customers.find(c=>c.id===$('customerDashFilter').value);
+ if(!customer)return;
+ const env=$('customerDashEnvironment').value,stats=compute(customer.id,env);
+ root.prepend(buildCustomerPrintDocument(customer,stats,env?(stats.environments[0]?.name||'Selected environment'):'All recorded environments',new Date().toLocaleString(undefined,{timeZoneName:'short'})));
+}
 function drawReport(){
  if(reportPrinting){reportRedrawPending=true;return}
  const id=$('customerDashFilter').value,env=$('customerDashEnvironment').value;
@@ -1032,7 +1045,6 @@ function drawReport(){
  if(!customer){root.append(text('p','Select a customer to generate their security review.','ops-note'));return}
  const stats=compute(customer.id,env),date=new Date().toLocaleString(undefined,{timeZoneName:'short'});
  const scope=env?(stats.environments[0]?.name||'Selected environment'):'All recorded environments';
- root.append(buildCustomerPrintDocument(customer,stats,scope,date));
  renderScorePanel(assessment,customer,env,stats);
  root.append(reportSection('Executive Summary'));
  const summary=text('div','','customer-report-summary');

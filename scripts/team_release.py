@@ -131,7 +131,10 @@ def site(action,out):
 if __name__=='__main__':
     action=sys.argv[1]
     output=Path(sys.argv[2]).resolve() if len(sys.argv)>2 else None
-    if action == 'server-network':
+    if action == 'finding-ai':
+        from finding_ai_release import backend
+        backend(output)
+    elif action == 'server-network':
         from server_network_release import backend
         backend(output)
     elif action == 'dotnet-mapping':

@@ -50,7 +50,7 @@ on:
       team_release:
         description: Select the reviewed backend package
         type: choice
-        options: [none, disabled, enabled, cvie-refresh, workspace-history, organization-ai, windows-inventory, dotnet-mapping, server-network]
+        options: [none, disabled, enabled, cvie-refresh, workspace-history, organization-ai, windows-inventory, dotnet-mapping, server-network, finding-ai]
         default: none
       team_commit:
         description: Exact reviewed main commit for Team & Access
@@ -227,7 +227,7 @@ jobs:
           node --input-type=module -e "import {backendIdentity} from './scripts/build_release_identity.mjs'; import fs from 'node:fs'; import assert from 'node:assert/strict'; assert.equal(backendIdentity(),fs.readFileSync('release/firewall-backend-identity.txt','utf8').trim())"
           node --test account-backend/tests/firewall-digest.test.mjs
       - name: Assemble the reviewed Team & Access backend
-        if: inputs.team_release == 'enabled' || inputs.team_release == 'disabled' || inputs.team_release == 'cvie-refresh' || inputs.team_release == 'workspace-history' || inputs.team_release == 'organization-ai' || inputs.team_release == 'windows-inventory' || inputs.team_release == 'dotnet-mapping' || inputs.team_release == 'server-network'
+        if: inputs.team_release == 'enabled' || inputs.team_release == 'disabled' || inputs.team_release == 'cvie-refresh' || inputs.team_release == 'workspace-history' || inputs.team_release == 'organization-ai' || inputs.team_release == 'windows-inventory' || inputs.team_release == 'dotnet-mapping' || (inputs.team_release == 'server-network' || inputs.team_release == 'finding-ai')
         env:
           TEAM_STATE: ${{ inputs.team_release }}
           TEAM_COMMIT: ${{ inputs.team_commit }}
@@ -239,7 +239,9 @@ jobs:
           test "$TEAM_COMMIT" = "$GITHUB_SHA"
           test "$MODE" = code-only
           test "$OTHER_PACKAGE" != true
-          if [ "$TEAM_STATE" = server-network ]; then
+          if [ "$TEAM_STATE" = finding-ai ]; then
+            python -c "import sys;sys.path.insert(0,'scripts');import team_release as t;t.reviewed('feature/finding-ai-guidance')"
+          elif [ "$TEAM_STATE" = server-network ]; then
             python -c "import sys;sys.path.insert(0,'scripts');import team_release as t;t.reviewed('feature/server-network-inventory')"
           elif [ "$TEAM_STATE" = dotnet-mapping ]; then
             python -c "import sys;sys.path.insert(0,'scripts');import team_release as t;t.reviewed('fix/dotnet-inventory-mapping')"
@@ -257,7 +259,8 @@ jobs:
           python scripts/team_release.py "$TEAM_STATE" "$RUNNER_TEMP/team-worker"
           rsync --archive --delete "$RUNNER_TEMP/team-worker/account-backend/src/" account-backend/src/
           cp "$RUNNER_TEMP/team-worker/account-backend/wrangler.toml" account-backend/wrangler.toml
-          node --input-type=module -e "import {backendIdentity} from './scripts/build_release_identity.mjs';import fs from 'node:fs';import assert from 'node:assert/strict';assert.equal(backendIdentity(),fs.readFileSync(process.env.TEAM_STATE==='server-network'?'release/server-network-backend.txt':process.env.TEAM_STATE==='dotnet-mapping'?'release/dotnet-mapping-backend.txt':process.env.TEAM_STATE==='windows-inventory'?'release/windows-inventory-backend.txt':process.env.TEAM_STATE==='organization-ai'?'release/organization-ai-backend.txt':process.env.TEAM_STATE==='workspace-history'?'release/workspace-history-backend.txt':process.env.TEAM_STATE==='cvie-refresh'?'release/cvie-refresh-backend.txt':'release/team-backend-'+process.env.TEAM_STATE+'.txt','utf8').trim())"
+          node --input-type=module -e "import {backendIdentity} from './scripts/build_release_identity.mjs';import fs from 'node:fs';import assert from 'node:assert/strict';assert.equal(backendIdentity(),fs.readFileSync(process.env.TEAM_STATE==='finding-ai'?'release/finding-ai-backend.txt':process.env.TEAM_STATE==='server-network'?'release/server-network-backend.txt':process.env.TEAM_STATE==='dotnet-mapping'?'release/dotnet-mapping-backend.txt':process.env.TEAM_STATE==='windows-inventory'?'release/windows-inventory-backend.txt':process.env.TEAM_STATE==='organization-ai'?'release/organization-ai-backend.txt':process.env.TEAM_STATE==='workspace-history'?'release/workspace-history-backend.txt':process.env.TEAM_STATE==='cvie-refresh'?'release/cvie-refresh-backend.txt':'release/team-backend-'+process.env.TEAM_STATE+'.txt','utf8').trim())"
+          if [ "$TEAM_STATE" = finding-ai ]; then node --test account-backend/tests/ai-*.test.mjs account-backend/tests/personal-ai.test.mjs account-backend/tests/azure-connection.test.mjs; fi
           node --test account-backend/tests/team-access.test.mjs
           if [ "$TEAM_STATE" = server-network ]; then node --test account-backend/tests/server-network.test.mjs account-backend/tests/inventory-import.test.mjs account-backend/tests/ai-*.test.mjs; fi
           if [ "$TEAM_STATE" = dotnet-mapping ]; then node --test account-backend/tests/dotnet-inventory-mapping.test.mjs account-backend/tests/cvie.test.mjs account-backend/tests/cvie-dotnet.test.mjs account-backend/tests/cvie-evidence.test.mjs account-backend/tests/cvie-shared.test.mjs account-backend/tests/product-chooser.test.mjs account-backend/tests/inventory-import.test.mjs account-backend/tests/ai-*.test.mjs; fi
@@ -266,7 +269,7 @@ jobs:
           if [ "$TEAM_STATE" = cvie-refresh ]; then node --test account-backend/tests/cvie-evidence.test.mjs account-backend/tests/cvie-shared.test.mjs; fi
           if [ "$TEAM_STATE" = workspace-history ]; then node --test account-backend/tests/azure-connection.test.mjs account-backend/tests/workspace-history.test.mjs account-backend/tests/workspace-summary.test.mjs account-backend/tests/cvie-evidence.test.mjs account-backend/tests/cvie-shared.test.mjs; fi
       - name: Verify the Team & Access predecessor and database
-        if: inputs.team_release == 'enabled' || inputs.team_release == 'disabled' || inputs.team_release == 'cvie-refresh' || inputs.team_release == 'workspace-history' || inputs.team_release == 'organization-ai' || inputs.team_release == 'windows-inventory' || inputs.team_release == 'dotnet-mapping' || inputs.team_release == 'server-network'
+        if: inputs.team_release == 'enabled' || inputs.team_release == 'disabled' || inputs.team_release == 'cvie-refresh' || inputs.team_release == 'workspace-history' || inputs.team_release == 'organization-ai' || inputs.team_release == 'windows-inventory' || inputs.team_release == 'dotnet-mapping' || (inputs.team_release == 'server-network' || inputs.team_release == 'finding-ai')
         env:
           TEAM_STATE: ${{ inputs.team_release }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
@@ -467,7 +470,7 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
         run: npx --yes wrangler@4.156.0 deploy --config wrangler.toml
       - name: Verify the live Team & Access setting and authentication boundary
-        if: inputs.team_release == 'enabled' || inputs.team_release == 'disabled' || inputs.team_release == 'cvie-refresh' || inputs.team_release == 'workspace-history' || inputs.team_release == 'organization-ai' || inputs.team_release == 'windows-inventory' || inputs.team_release == 'dotnet-mapping' || inputs.team_release == 'server-network'
+        if: inputs.team_release == 'enabled' || inputs.team_release == 'disabled' || inputs.team_release == 'cvie-refresh' || inputs.team_release == 'workspace-history' || inputs.team_release == 'organization-ai' || inputs.team_release == 'windows-inventory' || inputs.team_release == 'dotnet-mapping' || (inputs.team_release == 'server-network' || inputs.team_release == 'finding-ai')
         env:
           TEAM_STATE: ${{ inputs.team_release }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
@@ -681,4 +684,12 @@ jobs:
         with:
           name: server-network-backend-${{ github.run_id }}
           path: server-network-backend-recovery.json
+          if-no-files-found: warn
+
+      - name: Retain finding AI backend recovery receipt
+        if: always() && inputs.team_release == 'finding-ai'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: finding-ai-backend-${{ github.run_id }}
+          path: finding-ai-backend-recovery.json
           if-no-files-found: warn

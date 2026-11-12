@@ -22,6 +22,7 @@
     if(firstPublished)detailMarkers.append(firstPublished);
     detailMarkers.append(text('span','severity-badge '+x.severity,severityText(x.severity)));sheet.append(detailMarkers);
     if(options.context)reading.append(options.context);
+    if(options.guidance)reading.append(options.guidance);
     function metric(label,value,max,display){
       const field=rowSpec(label,display),n=Number(value);
       if(value!==''&&value!=null&&Number.isFinite(n)&&n>=0&&n<=max){

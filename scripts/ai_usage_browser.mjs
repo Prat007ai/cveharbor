@@ -8,7 +8,7 @@ import {aiRoute} from '../account-backend/src/ai-routes.js';
 const require=createRequire(new URL('../staging/package.json',import.meta.url)),{chromium}=require('playwright-core');
 const root=path.resolve(process.env.AI_TEST_SITE||'.'),screens=path.resolve(process.env.AI_TEST_SCREENSHOTS||'../evidence/organization-ai-screens');
 await fs.mkdir(screens,{recursive:true});
-const f=fixture();Date.now=()=>Date.parse('2026-11-11T18:00:00Z');
+const personal=process.env.FINDING_AI_TEST==='true',f=fixture({personal});Date.now=()=>Date.parse('2026-11-11T18:00:00Z');
 await assist(f.env,user('owner'),'north',question(),provider().fetcher);
 await assist(f.env,user('staff'),'north',question('fictional-held-0001','customer-b'),provider({failInference:true}).fetcher);
 const browser=await chromium.launch({headless:true,executablePath:process.env.CVEHARBOR_CHROMIUM_PATH||(process.platform==='win32'?'C:/Program Files/Google/Chrome/Application/chrome.exe':'/usr/bin/google-chrome')});
@@ -19,7 +19,8 @@ try{
   await page.route('https://api.cveharbor.com/**',async route=>{
    const incoming=route.request(),url=new URL(incoming.url());
    let payload,status=200;
-   if(url.pathname==='/v1/team/organizations')payload={organizations:[{id:'north',name:'Northstar Demo',role:'Owner'}]};
+   if(personal&&url.pathname==='/v1/inventory')payload={customers:[{id:'private-a',name:'Personal fixture customer'}]};
+   else if(url.pathname==='/v1/team/organizations')payload={organizations:[{id:'north',name:'Northstar Demo',role:'Owner'}]};
    else if(url.pathname==='/v1/team/organizations/north/customers')payload={customers:[{id:'customer-a',name:'Fictional Customer A'},{id:'customer-b',name:'Fictional Customer B'}]};
    else try{
     const req=new Request(url,{method:incoming.method(),...(incoming.postData()?{body:incoming.postData()}:{})});
@@ -36,6 +37,13 @@ try{
   await page.getByRole('tab',{name:'Staff consumption'}).click();await page.waitForFunction(()=>document.querySelector('#reportTitle').textContent==='Staff consumption');assert.match(await page.locator('#table').innerText(),/staff@example.test/);
   await page.getByRole('tab',{name:'Requests & holds'}).click();await page.waitForFunction(()=>document.querySelector('#reportTitle').textContent==='Requests & holds');assert.match(await page.locator('#table').innerText(),/held/);
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true,'Dashboard overflow '+size.width);
+  if(personal){
+   await page.locator('#workspaceType').selectOption('personal');await page.waitForFunction(()=>document.querySelector('#status').textContent==='Usage refreshed.');
+   await page.getByRole('tab',{name:'Personal workspaces'}).click();await page.waitForFunction(()=>document.querySelector('#reportTitle').textContent==='Personal workspaces');
+   const row=page.locator('#table tr').filter({hasText:'owner@example.test'}),enable=row.getByRole('button',{name:'Enable',exact:true});
+   if(await enable.count()){page.once('dialog',d=>d.accept());await enable.click();await page.waitForFunction(()=>document.querySelector('#status').textContent==='Change saved.');}
+   assert.match(await row.innerText(),/Pause/);await page.screenshot({path:path.join(screens,'personal-admin-'+size.width+'.png'),fullPage:true});
+  }
   actor='owner';await page.goto('https://cveharbor.com/admin/ai-usage/');await page.waitForFunction(()=>document.querySelector('#status').textContent.includes('only to CVEHarbor'));
   assert.equal(await page.locator('#dashboard').isVisible(),false);
   await page.goto('https://cveharbor.com/ai/?org=north');await page.waitForSelector('#assistance:not([hidden])');await page.waitForFunction(()=>document.querySelector('#status').textContent.startsWith('Ready.'));
@@ -43,6 +51,7 @@ try{
   assert.match(await page.locator('#metrics').innerText(),/20.00/);
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true,'Assistance overflow '+size.width);
   await page.screenshot({path:path.join(screens,'assistance-'+size.width+'.png'),fullPage:true});
+  if(personal){await page.locator('#organization').selectOption('personal:');await page.waitForFunction(()=>document.querySelector('#status').textContent.startsWith('Ready.'));assert.equal(await page.locator('#customer option').count(),1);assert.match(await page.locator('#metrics').innerText(),/Your personal workspace/);}
   assert.deepEqual(errors,[]);await context.close();
  }
  console.log('PASS: dashboard reports, unauthorized access, assistance and responsive layouts at 1440, 768 and 390px. Fictional data only.');

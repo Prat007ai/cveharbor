@@ -16,6 +16,16 @@ function audit(db,user,action,target,detail){return sql(db,'INSERT INTO ai_audit
 export async function adminRoute(req,env,user,path,data){
  const db=env.DB;
  if(!await administrator(env,user))throw denied();
+ const personal=path.startsWith('/personal/');
+ if(personal){
+  if(env.CVEHARBOR_AI_PERSONAL_ENABLED!=='true')throw new WorkflowError('Personal AI accounting is unavailable.',404);
+  path=path.slice('/personal'.length);
+  if(!['/accounts','/usage','/reconcile'].includes(path))throw new WorkflowError('Not found.',404);
+  if(path==='/accounts')path='/organizations';
+ }
+ const requests=personal?'ai_personal_requests':'ai_requests',months=personal?'ai_personal_months':'ai_months',accounts=personal?'ai_personal_accounts':'ai_organizations';
+ const identities=personal?'(SELECT id,email name FROM users)':'team_organizations';
+
  if(path==='/access'){
   ownerOnly(env,user);
   if(req.method==='GET')return {admins:(await sql(db,'SELECT a.user_id,u.email,a.granted_at FROM ai_admins a JOIN users u ON u.id=a.user_id ORDER BY u.email').all()).results};
@@ -30,20 +40,21 @@ export async function adminRoute(req,env,user,path,data){
   ownerOnly(env,user);
   if(typeof data.org!=='string'||typeof data.enabled!=='boolean')throw new WorkflowError('Choose an organization and activation state.');
   if(data.enabled&&(!priceCurrent()||env.CVEHARBOR_AI_ENABLED!=='true'))throw new WorkflowError('The reviewed AI release and price card must be active first.',409);
-  await db.batch([audit(db,user,data.enabled?'enable organization AI':'pause organization AI',data.org,'Shared USD 20 per UTC calendar month'),
-   sql(db,'INSERT INTO ai_organizations(org,enabled) VALUES(?,?) ON CONFLICT(org) DO UPDATE SET enabled=excluded.enabled',data.org,Number(data.enabled))]);
+  if(personal&&!await sql(db,'SELECT u.id FROM users u JOIN user_totp t ON t.user_id=u.id AND t.enabled=1 WHERE u.id=?',data.org).first())throw new WorkflowError('Choose an existing account with authenticator access.',409);
+  await db.batch([audit(db,user,(data.enabled?'enable ':'pause ')+(personal?'personal AI':'organization AI'),data.org,(personal?'Personal':'Shared')+' USD 20 per UTC calendar month'),
+   sql(db,`INSERT INTO ${accounts}(org,enabled) VALUES(?,?) ON CONFLICT(org) DO UPDATE SET enabled=excluded.enabled`,data.org,Number(data.enabled))]);
   return {saved:true};
  }
  if(path==='/reconcile'&&req.method==='POST'){
   ownerOnly(env,user);
   if(typeof data.request_id!=='string'||typeof data.evidence!=='string'||data.evidence.trim().length<10||data.evidence.length>500)throw new WorkflowError('Supply the request identifier and a verified delivery/usage evidence reference.');
-  const row=await sql(db,"SELECT * FROM ai_requests WHERE id=? AND (state='held' OR (state IN ('reserved','dispatched') AND updated_at<unixepoch()-300))",data.request_id).first();
+  const row=await sql(db,`SELECT * FROM ${requests} WHERE id=? AND (state='held' OR (state IN ('reserved','dispatched') AND updated_at<unixepoch()-300))`,data.request_id).first();
   if(!row||row.price_id!==PRICE.id)throw new WorkflowError('This hold requires review of its original price card or is already reconciled.',409);
   let cost;try{cost=charge(data.usage,{input:row.input_rate,cached:row.cached_rate,output:row.output_rate});}catch{throw new WorkflowError('Verified usage must fit the original reservation.');}
   if(row.state==='reserved'&&cost!==0)throw new WorkflowError('An undispatched request cannot have inference charges.');
   const u=data.usage;
-  await db.batch([sql(db,`INSERT INTO ai_audit(actor,action,target,detail,authorized) VALUES(?,'reconcile usage',?,?,EXISTS(SELECT 1 FROM ai_requests WHERE id=? AND state=?))`,user.id,row.id,JSON.stringify({evidence:data.evidence,usage:u,charged:cost,previous_state:row.state}),row.id,row.state),
-   sql(db,"UPDATE ai_requests SET state=?,charged=?,input_tokens=?,output_tokens=?,cached_tokens=?,reasoning_tokens=?,reason='verified_reconciliation',updated_at=unixepoch() WHERE id=? AND state=?",row.state==='reserved'?'released':'settled',cost,u.input_tokens,u.output_tokens,u.cached_input_tokens||0,u.reasoning_tokens||0,row.id,row.state)]);
+  await db.batch([sql(db,`INSERT INTO ai_audit(actor,action,target,detail,authorized) VALUES(?,'reconcile usage',?,?,EXISTS(SELECT 1 FROM ${requests} WHERE id=? AND state=?))`,user.id,row.id,JSON.stringify({evidence:data.evidence,usage:u,charged:cost,previous_state:row.state}),row.id,row.state),
+   sql(db,`UPDATE ${requests} SET state=?,charged=?,input_tokens=?,output_tokens=?,cached_tokens=?,reasoning_tokens=?,reason='verified_reconciliation',updated_at=unixepoch() WHERE id=? AND state=?`,row.state==='reserved'?'released':'settled',cost,u.input_tokens,u.output_tokens,u.cached_input_tokens||0,u.reasoning_tokens||0,row.id,row.state)]);
   return {saved:true};
  }
  if(path!=='/usage'||req.method!=='GET')throw new WorkflowError('Not found.',404);
@@ -56,26 +67,26 @@ export async function adminRoute(req,env,user,path,data){
  const args=[Number(owner(env,user)),user.id];
  const result=await db.batch([
   sql(db,`SELECT count(*) organizations,COALESCE(SUM(m.spent),0) spent,COALESCE(SUM(m.reserved),0) reserved
-   FROM team_organizations o LEFT JOIN ai_months m ON m.org=o.id AND m.month=? WHERE (?='' OR o.id=?) AND ${grant}`,month,org,org,...args),
+   FROM ${identities} o LEFT JOIN ${months} m ON m.org=o.id AND m.month=? WHERE (?='' OR o.id=?) AND ${grant}`,month,org,org,...args),
   sql(db,`SELECT r.state,COUNT(*) requests,COALESCE(SUM(r.input_tokens),0) input_tokens,COALESCE(SUM(r.output_tokens),0) output_tokens,
    COALESCE(SUM(r.cached_tokens),0) cached_tokens,COALESCE(SUM(r.reasoning_tokens),0) reasoning_tokens
-   FROM ai_requests r WHERE r.month=? AND (?='' OR r.org=?) AND ${grant} GROUP BY r.state`,month,org,org,...args),
+   FROM ${requests} r WHERE r.month=? AND (?='' OR r.org=?) AND ${grant} GROUP BY r.state`,month,org,org,...args),
   sql(db,`SELECT o.id,o.name,COALESCE(a.enabled,0) enabled,COALESCE(m.spent,0) spent,COALESCE(m.reserved,0) reserved,
-   (SELECT COUNT(*) FROM ai_requests r WHERE r.org=o.id AND r.month=?) requests
-   FROM team_organizations o LEFT JOIN ai_months m ON m.org=o.id AND m.month=? LEFT JOIN ai_organizations a ON a.org=o.id
+   (SELECT COUNT(*) FROM ${requests} r WHERE r.org=o.id AND r.month=?) requests
+   FROM ${identities} o LEFT JOIN ${months} m ON m.org=o.id AND m.month=? LEFT JOIN ${accounts} a ON a.org=o.id
    WHERE (?='' OR o.id=?) AND ${grant} ORDER BY o.name,o.id LIMIT 50 OFFSET ?`,month,month,org,org,...args,offset),
   sql(db,`SELECT r.actor,u.email,r.org,o.name organization,COUNT(*) requests,SUM(r.charged) spent,
    SUM(CASE WHEN r.state IN ('reserved','dispatched','held') THEN r.reservation ELSE 0 END) reserved,
    SUM(COALESCE(r.input_tokens,0)) input_tokens,SUM(COALESCE(r.output_tokens,0)) output_tokens
-   FROM ai_requests r LEFT JOIN users u ON u.id=r.actor JOIN team_organizations o ON o.id=r.org
+   FROM ${requests} r LEFT JOIN users u ON u.id=r.actor JOIN ${identities} o ON o.id=r.org
    WHERE r.month=? AND (?='' OR r.org=?) AND ${grant} GROUP BY r.actor,r.org ORDER BY spent DESC,r.actor,r.org LIMIT 50 OFFSET ?`,month,org,org,...args,offset),
   sql(db,`SELECT r.id,r.org,o.name organization,u.email,r.feature,r.model,r.price_id,r.state,r.charged,r.reservation,r.reason,r.input_tokens,r.output_tokens,r.cached_tokens,r.reasoning_tokens,r.created_at
-   FROM ai_requests r LEFT JOIN users u ON u.id=r.actor JOIN team_organizations o ON o.id=r.org
+   FROM ${requests} r LEFT JOIN users u ON u.id=r.actor JOIN ${identities} o ON o.id=r.org
    WHERE r.month=? AND (?='' OR r.org=?) AND ${grant} ORDER BY r.created_at DESC,r.id DESC LIMIT 50 OFFSET ?`,month,org,org,...args,offset),
-  sql(db,`SELECT substr(datetime(created_at,'unixepoch'),1,10) day,SUM(charged) spent,COUNT(*) requests FROM ai_requests
+  sql(db,`SELECT substr(datetime(created_at,'unixepoch'),1,10) day,SUM(charged) spent,COUNT(*) requests FROM ${requests}
    WHERE month=? AND (?='' OR org=?) AND ${grant} GROUP BY day ORDER BY day`,month,org,org,...args)
  ]);
- return {month,currency:'USD',units_per_usd:USD,allowance_per_organization_usd:20,offset,page_size:50,
+ return {scope:personal?'personal':'organization',month,currency:'USD',units_per_usd:USD,allowance_per_organization_usd:20,offset,page_size:50,
   platform_owner:owner(env,user),inference_enabled:env.CVEHARBOR_AI_ENABLED==='true',price_current:priceCurrent(),
   price:PRICE,totals:result[0].results[0],states:result[1].results,organizations:result[2].results,
   users:result[3].results,requests:result[4].results,daily:result[5].results};

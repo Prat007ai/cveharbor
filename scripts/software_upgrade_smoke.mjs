@@ -45,7 +45,10 @@ try{
  w.Blob=class{constructor(parts){csv=parts.join('')}};w.URL.createObjectURL=()=> 'blob:test';w.URL.revokeObjectURL=()=>{};w.HTMLAnchorElement.prototype.click=()=>{};
  w.document.getElementById('customerReportCsv').click();await until(()=>csv.length>0);
  assert.doesNotMatch(csv,/70001|70002|70003|80001/);assert.match(csv,/70004/);
+ assert.equal(w.document.querySelector('.customer-print-document'),null,'CSV export does not construct the hidden PDF document');
+ w.dispatchEvent(new w.Event('beforeprint'));
  assert.match(w.document.querySelector('.customer-print-document').textContent,/Software Upgrade History.*6\.6\.2.*6\.8\.0/);
+ w.dispatchEvent(new w.Event('afterprint'));
  const env=w.document.getElementById('customerDashEnvironment');env.value='e2';env.dispatchEvent(new w.Event('change'));
  await until(()=>w.document.querySelector('.customer-upgrade-history').textContent.includes('No software version changes'));
  assert.doesNotMatch(w.document.querySelector('.customer-upgrade-history').textContent,/6\.8\.0|3\.2\.0/);
