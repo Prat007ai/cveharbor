@@ -84,7 +84,7 @@ function summary(assets,records){
  const panel=el('section','','data-panel ops-panel');panel.append(el('h2','Imported inventory assessment'),el('p',assets.length+' software entries assessed against '+records.length+' indexed advisory records. '+result.total+' potential asset/advisory matches. Checked '+new Date().toLocaleString()+'.','ops-note'),el('p','Inventory-based assessment only; no endpoint scan or AI request. No indexed match does not mean secure. Windows, IIS and .NET Framework require patch/build verification.','ops-note'));
  const review=assets.filter(a=>!a.version||!matched.has(a.id));
  if(review.length){const details=el('details'),title=el('summary',review.length+' entries need version or coverage review');details.append(title);
-  for(const a of review)details.append(el('p',a.name+' Â· '+a.technology+' '+(a.version||'Unknown version')+' â€” '+(!a.version?'Installed version required.':'No indexed match; product mapping and source coverage remain unverified.')));panel.append(details);}
+  for(const a of review)details.append(el('p',a.name+' · '+a.technology+' '+(a.version||'Unknown version')+' — '+(!a.version?'Installed version required.':'No indexed match; product mapping and source coverage remain unverified.')));panel.append(details);}
  if(result.limited)panel.append(el('p','Results exceed the 5,000 finding limit. Narrow the environment scope.','ops-note'));
  return panel;
 }
