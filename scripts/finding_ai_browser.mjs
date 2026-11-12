@@ -4,12 +4,13 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import {createRequire} from 'node:module';
 import {securityFixture} from './customer_security_fixture.mjs';
+import {workspaceFixture} from './workspace_fixture.mjs';
 const require=createRequire(new URL('../staging/package.json',import.meta.url));
 const {chromium}=require('playwright-core');
 const root=path.resolve(process.env.INVENTORY_TEST_SITE||'.'),screens=path.resolve(process.env.INVENTORY_SCREENSHOTS||'../evidence/finding-ai-screens');await fs.mkdir(screens,{recursive:true});
 const browser=await chromium.launch({headless:true,executablePath:process.env.CVEHARBOR_CHROMIUM_PATH||(process.platform==='win32'?'C:/Program Files/Google/Chrome/Application/chrome.exe':'/usr/bin/google-chrome')});
 try{for(const width of [1440,390]){
- const f=securityFixture(),page=await browser.newPage({viewport:{width,height:1000}}),errors=[];let posts=0,enabled=true;
+ const f=securityFixture(),workspace=workspaceFixture(),page=await browser.newPage({viewport:{width,height:1000}}),errors=[];let posts=0,enabled=true;
  f.inventory.assets=Array.from({length:152},(_,i)=>({id:'a'+i,environment_id:'e1',name:'PRIVATE-HOST',technology:'PHP',version:'8.4.1',notes:'PRIVATE-NOTES'}));
  page.on('pageerror',e=>errors.push(e.message));
  await page.route('**/*',async route=>{
@@ -20,7 +21,8 @@ try{for(const width of [1440,390]){
    else if(url.pathname.endsWith('/assistance')){
     posts++;const body=request.postDataJSON();assert.ok(Buffer.byteLength(body.question)<6000);assert.equal(body.customer,'c1');assert.doesNotMatch(body.question,/PRIVATE-HOST|PRIVATE-NOTES|Fixture Harbor/);assert.match(body.question,/8\.4\.1/);assert.match(body.question,/example\.test/);
     payload={answer:'Applicability\nFictional evidence. <img src=x onerror=alert(1)>\nRecommended fix\nReview vendor instructions.\nVerify the result\nRecheck the installed version.',request_id:'fictional-receipt',state:'settled',allowance:{available_usd:19.99}};
-   }else if(url.pathname==='/v1/team/organizations/north/customers')payload={name:'Fixture Organization',customers:f.inventory.customers};
+   }else if(url.pathname.startsWith('/v1/workspace/')){const result=await workspace.request(url.href);payload=result.body;status=result.status;}
+   else if(url.pathname==='/v1/team/organizations/north/customers')payload={name:'Fixture Organization',customers:f.inventory.customers};
    else if(url.pathname==='/v1/team/organizations/north/customers/c1')payload={customer:{name:'Fixture Harbor',role:'Viewer'},assets:f.inventory.assets,environments:f.inventory.environments.filter(e=>e.customer_id==='c1')};
    else{const result=await f.request(url.href,{method:request.method(),body:request.postData()});payload=await result.json();status=result.status;}
    return route.fulfill({status,headers:{'Access-Control-Allow-Origin':'https://cveharbor.com','Access-Control-Allow-Credentials':'true'},json:payload});
@@ -46,5 +48,10 @@ try{for(const width of [1440,390]){
  await page.evaluate(()=>window.dispatchEvent(new Event('beforeprint')));assert.equal(await page.locator('.customer-print-document').count(),1);assert.match(await page.locator('.customer-print-document').textContent(),/Fixture Harbor/);
  await page.evaluate(()=>window.dispatchEvent(new Event('afterprint')));await page.selectOption('#customerDashFilter','c2');await page.evaluate(()=>window.dispatchEvent(new Event('beforeprint')));assert.doesNotMatch(await page.locator('.customer-print-document').textContent(),/PRIVATE-HOST/);await page.evaluate(()=>window.dispatchEvent(new Event('afterprint')));
  enabled=true;await page.goto('https://cveharbor.com/customer-dashboard/?org=north&customer=c1');await page.locator('.finding-ai-priority').first().click();await page.locator('dialog[open] .finding-ai-generate').click();await page.locator('dialog[open] .finding-ai-answer:not([hidden])').waitFor();assert.equal(posts,2);
+ await page.goto('https://cveharbor.com/workspace/');await page.waitForSelector('body.workspace-authenticated');
+ await page.getByRole('button',{name:'Review customer priorities',exact:true}).click();await page.locator('#workspaceAccess > .finding-ai select').selectOption('c1');
+ assert.equal(posts,2,'workspace assessment must not send paid requests');assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true);
+ await page.screenshot({path:path.join(screens,'workspace-'+width+'.png'),fullPage:true});
+ await page.locator('#workspaceAccess .finding-ai-priority').first().click();await page.locator('dialog[open] .finding-ai-generate').click();await page.locator('dialog[open] .finding-ai-answer:not([hidden])').waitFor();assert.equal(posts,3);
  assert.deepEqual(errors,[]);console.log(JSON.stringify({width,reportSelectionMs:selectionMs,aiRequests:posts,privacy:true,printScope:true}));await page.close();
 }}finally{await browser.close();}
