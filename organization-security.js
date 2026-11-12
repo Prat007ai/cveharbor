@@ -22,12 +22,12 @@ if(org){
    env.onchange=()=>{params.set('environment',env.value);draw();};
    const records=[...new Map([...(window.CVEHARBOR_DATA?.advisories||[]),...(window.CVEHARBOR_CATALOG?.advisories||[])].map(r=>[r.id,r])).values()];
    const byCve=new Map(records.map(r=>[r.id,r]));
-   const findingLink=f=>window.CVEHARBOR_FINDING_AI.detailButton({finding:f,advisory:byCve.get(f.id)||f,customer,org});
+   const findingLink=f=>window.CVEHARBOR_FINDING_AI?.detailButton({finding:f,advisory:byCve.get(f.id)||f,customer,org})||link(f.id,'/vulnerabilities/?cve='+encodeURIComponent(f.id));
    function draw(){
     const assets=data.assets.filter(a=>!env.value||a.environment_id===env.value);
     results.replaceChildren(window.CVEHARBOR_ASSESSMENT.summary(assets,records));
     const result=window.CVEHARBOR_INVENTORY_MATCH.evaluate(assets,records,5000),byId=new Map(assets.map(a=>[a.id,a]));
-    results.prepend(window.CVEHARBOR_FINDING_AI.priorities({findings:result.items,onOpen:findingLink}));
+    if(window.CVEHARBOR_FINDING_AI)results.prepend(window.CVEHARBOR_FINDING_AI.priorities({findings:result.items,onOpen:findingLink}));
     const servers=element('section');servers.setAttribute('aria-label','Security by server');results.append(servers);
     window.CVEHARBOR_SERVER_SECURITY.render(servers,{assets,issues:result.items,limited:result.limited,environments:data.environments.map(e=>({...e,customer_id:customer})),customers:[{id:customer,name:data.customer.name}]},{findingLink,loadNetworks:()=>api(base+'/server-network/'+encodeURIComponent(customer)),savePrimary:data.customer.role==='Viewer'?null:payload=>api(base+'/server-network/'+encodeURIComponent(customer),'PUT',payload)});
     const findingRows=result.items.slice(0,250).map(f=>{const a=byId.get(f.asset_id);let reference='Source unavailable';try{if(new URL(f.source_url).protocol==='https:')reference=link('Advisory',f.source_url);}catch{}return [a.name,window.CVEHARBOR_SERVER_SECURITY.role(a),a.technology,a.version||'Unknown',findingLink(f),f.severity,f.level==='version_review'?'Affected-version candidate':'Needs verification',f.evidence,reference];});

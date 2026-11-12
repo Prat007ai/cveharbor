@@ -189,7 +189,7 @@ jobs:
           if [ "$CVEHARBOR_SITE_RELEASE" = dashboard-responsiveness ] || [ "$CVEHARBOR_SITE_RELEASE" = finding-ai ]; then INVENTORY_TEST_SITE="$RUNNER_TEMP/catalogue/after" INVENTORY_SCREENSHOTS="$RUNNER_TEMP/inventory-screens" node scripts/dashboard_responsiveness_browser.mjs; fi
           if [ "$CVEHARBOR_SITE_RELEASE" = windows-inventory ]; then INVENTORY_TEST_SITE="$RUNNER_TEMP/catalogue/after" INVENTORY_SCREENSHOTS="$RUNNER_TEMP/inventory-screens" node scripts/inventory_browser.mjs; fi
           if [ "$CVEHARBOR_SITE_RELEASE" = organization-ai ]; then AI_TEST_SITE="$RUNNER_TEMP/catalogue/after" node scripts/ai_usage_browser.mjs; fi
-          if [ "$CVEHARBOR_SITE_RELEASE" = finding-ai ]; then INVENTORY_TEST_SITE="$RUNNER_TEMP/catalogue/after" INVENTORY_SCREENSHOTS="$RUNNER_TEMP/inventory-screens" node scripts/finding_ai_browser.mjs; fi
+          if [ "$CVEHARBOR_SITE_RELEASE" = finding-ai ]; then INVENTORY_TEST_SITE="$RUNNER_TEMP/catalogue/after" INVENTORY_SCREENSHOTS="$RUNNER_TEMP/inventory-screens" node scripts/finding_ai_browser.mjs; FINDING_AI_TEST=true AI_TEST_SITE="${INVENTORY_TEST_SITE:-$RUNNER_TEMP/catalogue/after}" node scripts/ai_usage_browser.mjs; fi
           node scripts/catalogue_scope_browser_smoke.mjs
           if [ "$CVEHARBOR_SITE_RELEASE" != "followed-topics" ]; then node scripts/remediation_workflow_browser.mjs; fi
       - name: Require production application and security tests for the team design
@@ -354,7 +354,7 @@ jobs:
           node scripts/inventory_experience_browser.mjs
           if [ "$CVEHARBOR_SITE_RELEASE" = inventory-actions ] || [ "$CVEHARBOR_SITE_RELEASE" = dashboard-responsiveness ] || [ "$CVEHARBOR_SITE_RELEASE" = finding-ai ]; then node scripts/inventory_actions_browser.mjs; fi
           if [ "$CVEHARBOR_SITE_RELEASE" = dashboard-responsiveness ] || [ "$CVEHARBOR_SITE_RELEASE" = finding-ai ]; then node scripts/dashboard_responsiveness_browser.mjs; fi
-          if [ "$CVEHARBOR_SITE_RELEASE" = finding-ai ]; then node scripts/finding_ai_browser.mjs; fi
+          if [ "$CVEHARBOR_SITE_RELEASE" = finding-ai ]; then node scripts/finding_ai_browser.mjs; FINDING_AI_TEST=true AI_TEST_SITE="${INVENTORY_TEST_SITE:-$RUNNER_TEMP/catalogue/after}" node scripts/ai_usage_browser.mjs; fi
       - name: Save inventory production screenshots
         if: (inputs.site_release == 'inventory-actions' || inputs.site_release == 'dashboard-responsiveness' || inputs.site_release == 'finding-ai') || inputs.site_release == 'inventory-experience' || inputs.site_release == 'windows-collector-app'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
