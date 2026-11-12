@@ -321,8 +321,8 @@ async function saveFindingStatus(i,status,select){
 }
 
 const text=(tag,value,cls)=>{const el=document.createElement(tag);el.textContent=String(value??'');if(cls)el.className=cls;return el};
-const api=async path=>{
- const r=await fetch('https://api.cveharbor.com/v1/'+path,{credentials:'include',headers:{Accept:'application/json'}});
+const api=async (path,method='GET',payload)=>{
+ const r=await fetch('https://api.cveharbor.com/v1/'+path,{method,credentials:'include',cache:'no-store',headers:{Accept:'application/json',...(payload?{'Content-Type':'application/json'}:{})},...(payload?{body:JSON.stringify(payload)}:{})});
  const d=await r.json().catch(()=>({}));if(r.status===401)return {authenticated:false};if(!r.ok){const error=new Error(d.error||'Account service unavailable');error.status=r.status;throw error}return d;
 };
 function option(select,label,id){const el=text('option',label);el.value=id;select.append(el)}
@@ -501,7 +501,7 @@ function drawDashboard(){
  const assessment=$('customerDashboardAssessment');assessment.replaceChildren();
  if(window.CVEHARBOR_ASSESSMENT)assessment.append(window.CVEHARBOR_ASSESSMENT.summary(scopedStats.assets,records));
  if(chosen&&all[0])renderScorePanel(assessment,all[0].customer,env,all[0].stats);
- const servers=$('customerDashboardServers');if(servers&&window.CVEHARBOR_SERVER_SECURITY)window.CVEHARBOR_SERVER_SECURITY.render(servers,{...scopedStats,customers,limited:all.some(x=>x.stats.limited)},{findingLink:findingDetailButton});
+ const servers=$('customerDashboardServers');if(servers&&window.CVEHARBOR_SERVER_SECURITY)window.CVEHARBOR_SERVER_SECURITY.render(servers,{...scopedStats,customers,limited:all.some(x=>x.stats.limited)},{findingLink:findingDetailButton,loadNetworks:()=>api('inventory/server-network'),savePrimary:async payload=>{const result=await api('inventory/server-network','PUT',payload);if(!result.saved)throw Error('Sign in again to save server details.');return result;}});
  const historyRoot=$('customerDashboardUpgradeHistory');if(historyRoot){historyRoot.replaceChildren();renderUpgradeHistory(historyRoot,chosen,env)}
  const root=$('customerDashRows');root.replaceChildren();
  for(const {customer,stats} of all){

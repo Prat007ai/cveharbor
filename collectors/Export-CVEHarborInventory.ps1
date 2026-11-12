@@ -21,6 +21,7 @@ $ErrorActionPreference = 'Stop'
 $rows = New-Object 'System.Collections.Generic.List[object]'
 $warnings = New-Object 'System.Collections.Generic.List[string]'
 $collected = [DateTime]::UtcNow.ToString('o')
+$network = $null
 if ([string]::IsNullOrWhiteSpace($AssetName) -or $AssetName.Length -gt 120 -or $AssetName -match '[\x00-\x1f\x7f]') { throw 'Provide an asset name of 1 to 120 characters without control characters.' }
 if (Test-Path -LiteralPath $OutputDirectory) { throw 'Choose a new output directory. Existing files are never overwritten.' }
 function Safe-Cell([string]$Value) {
@@ -52,10 +53,47 @@ function Add-InstalledProduct($Product, [string]$Source) {
 }
 if ($FixturePath) {
     $fixture = Get-Content -LiteralPath $FixturePath -Raw | ConvertFrom-Json
+    $network = $fixture.network
     foreach ($p in $fixture.products) { Add-InstalledProduct $p 'Fictional fixture' }
     foreach ($p in $fixture.technologies) { Add-Product $p.name $p.version 'Fictional fixture' }
 } else {
     if ($env:OS -ne 'Windows_NT') { throw 'This collector supports Windows only.' }
+    try {
+        # Reads local configuration only. No ping, DNS lookup, external IP lookup or port scan.
+        $adapters = @(Get-NetAdapter -IncludeHidden)
+        $addresses = @(Get-NetIPAddress)
+        $interfaces = @(Get-NetIPInterface)
+        $routes = @(Get-NetRoute | Where-Object { $_.DestinationPrefix -in @('0.0.0.0/0','::/0') })
+        $candidates = @()
+        $adapterRows = @($adapters | ForEach-Object {
+            $a = $_
+            $adapterId = [string]$a.InterfaceGuid
+            if (!$adapterId) { $adapterId = 'index-' + $a.ifIndex }
+            $ips = @($addresses | Where-Object { $_.InterfaceIndex -eq $a.ifIndex } | ForEach-Object {
+                $p = $_
+                $ip = ([string]$p.IPAddress -split '%')[0]
+                $family = if ($ip.Contains(':')) {'IPv6'} else {'IPv4'}
+                if ($a.Status -eq 'Up' -and $p.AddressState -eq 'Preferred' -and !$p.SkipAsSource -and $ip -notmatch '^(127\.|169\.254\.|0\.|fe80:|::1$|::$)') {
+                    foreach ($r in @($routes | Where-Object { $_.InterfaceIndex -eq $a.ifIndex -and [string]$_.AddressFamily -eq $family })) {
+                        $i = $interfaces | Where-Object { $_.InterfaceIndex -eq $a.ifIndex -and [string]$_.AddressFamily -eq $family } | Select-Object -First 1
+                        $script:candidates += [pscustomobject]@{adapter_id=$adapterId;ip=$ip;family=$family;metric=([int]$r.RouteMetric+[int]$i.InterfaceMetric)}
+                    }
+                }
+                [pscustomobject]@{ip=$ip;prefix=[int]$p.PrefixLength;state=[string]$p.AddressState;skip_source=[bool]$p.SkipAsSource}
+            })
+            [pscustomobject]@{id=$adapterId;name=[string]$a.Name;status=[string]$a.Status;addresses=$ips}
+        })
+        # A default route is a suggestion, not proof of the customer's management network.
+        $preferred = @($candidates | Where-Object {$_.family -eq 'IPv4'})
+        if (!$preferred.Count) { $preferred = @($candidates) }
+        $suggested = $null
+        if ($preferred.Count) {
+            $minimum = ($preferred | Measure-Object metric -Minimum).Minimum
+            $best = @($preferred | Where-Object {$_.metric -eq $minimum} | Sort-Object adapter_id,ip -Unique)
+            if ($best.Count -eq 1) { $suggested = @{adapter_id=$best[0].adapter_id;ip=$best[0].ip} }
+        }
+        if ($adapterRows.Count) { $network = [ordered]@{version=1;collected_at=$collected;adapters=$adapterRows;suggested=$suggested} }
+    } catch { $warnings.Add('Network configuration could not be collected: '+$_.Exception.GetType().Name) }
     try {
         $os = Get-CimInstance -ClassName Win32_OperatingSystem
         $cv = Get-ItemProperty -LiteralPath 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion'
@@ -132,6 +170,16 @@ if ($FixturePath) {
 # Preserve side-by-side versions. Merge identical entries from multiple registry views.
 $unique=@{};foreach($row in $rows){$id=($row.'Asset Name',$row.'Asset Type',$row.Technology,$row.Version -join "`0").ToLowerInvariant();if(!$unique.ContainsKey($id)){$unique[$id]=$row}}
 $ordered=@($unique.Values | Sort-Object Technology,Version)
+$networkJson = ''
+if ($network) {
+    $networkJson = $network | ConvertTo-Json -Depth 8 -Compress
+    $addressCount = @($network.adapters | ForEach-Object {$_.addresses}).Count
+    if ($networkJson.Length -gt 14000 -or @($network.adapters).Count -gt 32 -or $addressCount -gt 128 -or @($network.adapters | Where-Object {@($_.addresses).Count -gt 64}).Count) {
+        $warnings.Add('Network inventory exceeds import limits (32 adapters / 128 addresses / 14 KB). Review collection-report.json; network data was not included in the CSV.')
+        $networkJson = ''
+    }
+}
+foreach ($row in $ordered) { $row | Add-Member -NotePropertyName 'Server Network' -NotePropertyValue $networkJson }
 $null=New-Item -ItemType Directory -Path $OutputDirectory
 $utf8=New-Object System.Text.UTF8Encoding($true)
 $part=1;$batch=New-Object 'System.Collections.Generic.List[object]';$files=New-Object 'System.Collections.Generic.List[string]'
@@ -149,7 +197,7 @@ foreach($row in $ordered){
     $batch.Add($row)
 }
 Save-Batch
-$report=[ordered]@{collector_version='1.1';server_roles=@($ServerRole);collected_utc=$collected;asset_name=(Safe-Cell $AssetName);entries=$ordered.Count;files=@($files.ToArray());warnings=@($warnings.ToArray());coverage=@('Read-only local inventory; no vulnerability or network scan.','Programs and Features records: machine 32/64-bit views and the executing user only. Other user profiles and Microsoft Store packages are not enumerated.','Portable software, containers, application-bundled runtimes and nonstandard paths may be missing.','Directory discovery does not prove that a runtime is actively used.','Windows and .NET Framework patch applicability needs vendor/build evidence.','Import is additive. Removed software and superseded versions must be reviewed manually.');fixture_mode=[bool]$FixturePath}
-[IO.File]::WriteAllText((Join-Path $OutputDirectory 'collection-report.json'),($report | ConvertTo-Json -Depth 5),$utf8)
+$report=[ordered]@{collector_version='1.2';network=$network;server_roles=@($ServerRole);collected_utc=$collected;asset_name=(Safe-Cell $AssetName);entries=$ordered.Count;files=@($files.ToArray());warnings=@($warnings.ToArray());coverage=@('Read-only local inventory; no vulnerability or network scan.','Network data is a point-in-time snapshot. Recollect after address changes. Default-route primary is a suggestion; customer choices are preserved.','Programs and Features records: machine 32/64-bit views and the executing user only. Other user profiles and Microsoft Store packages are not enumerated.','Portable software, containers, application-bundled runtimes and nonstandard paths may be missing.','Directory discovery does not prove that a runtime is actively used.','Windows and .NET Framework patch applicability needs vendor/build evidence.','Import is additive. Removed software and superseded versions must be reviewed manually.');fixture_mode=[bool]$FixturePath}
+[IO.File]::WriteAllText((Join-Path $OutputDirectory 'collection-report.json'),($report | ConvertTo-Json -Depth 10),$utf8)
 Write-Output ('Saved '+$ordered.Count+' inventory entries in '+$files.Count+' CSV file(s) to '+$OutputDirectory)
 Write-Output 'Review collection-report.json, then upload each CSV to the selected CVEHarbor customer environment.'

@@ -23,7 +23,9 @@ included; review before importing. Other user profiles, Store apps, containers,
 portable software and application-bundled runtimes are not exhaustively discovered.
 Optional -DotNetRoot accepts additional local .NET installation directories.
 
-Each CSV has exactly: Asset Name,Asset Type,Technology,Version,Notes.
+Each collector CSV has: Asset Name,Asset Type,Technology,Version,Notes,Server Network.
+The optional Server Network column contains structured adapter/IP metadata. Existing
+five-column templates still import unchanged.
 Files are UTF-8 and split at 200 rows / 128 KB. No secret values, license keys,
 connection strings, installed-software command lines or environment dumps are collected.
 Names and publisher metadata may still be confidential: review before uploading.
@@ -46,10 +48,27 @@ Server names and roles in the Customer Security Dashboard:
   Print, Remote Desktop or Other. Use -ServerRole 'Web','Application' for two roles.
 - The role is supplied by you, not guessed from the hostname or installed software.
 - The role is written at the start of Notes, for example: Server role: Database;
-  The five-column CSV format stays compatible with existing templates.
+  Existing five-column CSV files remain compatible.
 - Existing WEB, Database and Application asset types also supply a role. A generic
   Server entry without role information displays Not recorded.
 - To correct an existing role, edit the Notes on all software entries for that server.
   Reimporting identical products does not update Notes. Conflicting roles are flagged.
 - Expand a server card to see its installed versions and candidate CVEs. Software
   on another server or environment remains a separate assessment.
+
+Network identification:
+- All adapters reported by Get-NetAdapter -IncludeHidden are included, with locally
+  assigned IPv4/IPv6 addresses, prefix lengths, connection and address states.
+- No remote scan or DNS lookup is performed. Network addresses are not sent to AI.
+- A unique preferred source on the lowest-metric default route suggests a primary
+  (IPv4 first). Ambiguity leaves it unselected; this is not a management-network guarantee.
+- The dashboard shows the primary IP; expand Network adapters & additional IPs
+  to see each adapter and select an address. Owners/Editors can save the shared choice.
+- Reimport updates network snapshots even when identical software rows are skipped.
+  It preserves your primary choice and flags addresses missing from a newer snapshot.
+- Same hostname in separate customer environments stays separate. Renaming an asset
+  does not migrate its network metadata; recollect/import using its new inventory name.
+- Address data is a snapshot, not live discovery. Recollect after network changes.
+- Review collection-report.json for incomplete collection or export limits.
+https://learn.microsoft.com/en-us/powershell/module/nettcpip/get-netipaddress
+https://learn.microsoft.com/en-us/powershell/module/nettcpip/get-netroute

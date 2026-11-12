@@ -128,7 +128,8 @@ export async function organizationDashboard(id,preferredCustomer=''){
         window.CVEHARBOR_ASSET_IMPORT.mount(slot,{
           scope:()=>({org:id,customer,environment:targetEnv.value}),
           readAssets:async()=>{const latest=await api(base+'/customers/'+encodeURIComponent(customer));if(latest.customer.role==='Viewer')throw Error('Editor access required.');return latest.assets;},
-          saveAsset:item=>api(base+'/assets/'+encodeURIComponent(customer),'POST',item)
+          saveAsset:item=>api(base+'/assets/'+encodeURIComponent(customer),'POST',item),
+          saveNetwork:item=>api(base+'/server-network/'+encodeURIComponent(customer),'POST',item)
         });
       }));
       tools.append(button('Track a CVE',()=>{
