@@ -2576,7 +2576,7 @@ dialog:has(.advisory-dossier){max-width:min(1040px,96vw);width:calc(100% - 28px)
 #inventoryWorkspace .inventory-customer-body[hidden]{display:none}
 #inventoryWorkspace .inventory-customer-body{margin-top:12px}
 #inventoryWorkspace .inventory-customer-actions,
-#inventoryWorkspace .inventory-environment>.inventory-environment-header>.inventory-record-actions{display:grid;grid-template-columns:repeat(2,10rem);gap:8px;margin:0;min-width:0;max-width:100%}
+#inventoryWorkspace .inventory-environment>.inventory-environment-header>.inventory-record-actions{display:grid;grid-template-columns:repeat(2,10rem);align-items:stretch;gap:8px;margin:0;min-width:0;max-width:100%}
 #inventoryWorkspace .inventory-customer-actions button,
 #inventoryWorkspace .inventory-environment>.inventory-environment-header>.inventory-record-actions button{width:100%;min-height:38px;margin:0;padding:8px 10px;white-space:normal;text-align:center}
 #inventoryWorkspace .inventory-customer-actions a{grid-column:1/-1;grid-row:2;text-align:right}

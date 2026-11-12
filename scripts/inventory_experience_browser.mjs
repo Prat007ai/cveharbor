@@ -38,7 +38,7 @@ try{for(const width of [1440,768,390]){
  const first=page.locator('.inventory-customer').first(),toggle=first.locator('.inventory-customer-toggle');
  await toggle.focus();await page.keyboard.press('Enter');assert.equal(await toggle.getAttribute('aria-expanded'),'true');
  const boxes=await first.evaluate(card=>{const box=s=>{const r=card.querySelector(s).getBoundingClientRect();return {right:r.right,top:r.top,width:r.width};};return {ce:box('.inventory-customer-actions button:first-child'),cr:box('.inventory-customer-actions button:last-child'),ee:box('.inventory-record-actions button:first-child'),er:box('.inventory-record-actions button:last-child')};});
- assert.ok(Math.abs(boxes.ce.top-boxes.cr.top)<1&&Math.abs(boxes.ee.top-boxes.er.top)<1,'Paired action buttons align');assert.ok(Math.abs(boxes.cr.right-boxes.er.right)<2,'Customer/environment right edges align');
+ assert.ok(Math.abs(boxes.ce.top-boxes.cr.top)<1&&Math.abs(boxes.ee.top-boxes.er.top)<1,'Paired action buttons align at '+width+': '+JSON.stringify(boxes));assert.ok(Math.abs(boxes.cr.right-boxes.er.right)<2,'Customer/environment right edges align');
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true,'Customer layout overflow '+width);
  await page.locator('#inventoryRecords').screenshot({path:path.join(screens,'customers-'+width+'.png')});
  await first.getByRole('button',{name:'Edit customer',exact:true}).click();await page.locator('#inventoryEnvironmentSelect').selectOption('qa');
