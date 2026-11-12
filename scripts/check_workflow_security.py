@@ -156,7 +156,7 @@ def validate(doc, filename):
                     if SENSITIVE.search(json.dumps(step)):
                         require(step.get('run') == 'node scripts/activate_customer_assignment_schema.mjs --apply', label + ': credentials restricted to customer schema activation')
             if filename == 'session-navigation.yml' and name == 'publish':
-                prefix = MANUAL + " && inputs.reviewed_commit == github.sha && github.run_attempt == 1 && vars.PRODUCTION_DEPLOYMENTS_ENABLED != 'true'"
+                prefix = "always() && !cancelled() && needs.check.result == 'success' && " + MANUAL + " && inputs.reviewed_commit == github.sha && github.run_attempt == 1 && vars.PRODUCTION_DEPLOYMENTS_ENABLED != 'true'"
                 require(condition == prefix and env == 'cloudflare-site-production' and job.get('needs') == 'check',
                         label + ': reviewed SHA, production site environment and package checks required')
                 require(job.get('concurrency') == {'group':'cveharbor-production-release','cancel-in-progress':False},

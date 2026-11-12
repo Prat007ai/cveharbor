@@ -29,6 +29,14 @@ class WorkflowSecurityTests(unittest.TestCase):
                        {'env':{'TOKEN':'${{ secrets.EXAMPLE_TOKEN }}'}}, {'runs-on':'self-hosted'}):
             altered=copy.deepcopy(source);altered['jobs']['collector-build'].update(change)
             self.assertTrue(policy.validate(altered,'session-navigation.yml'))
+    def test_site_publisher_requires_success_even_with_skipped_optional_collector(self):
+        source=policy.load_workflow((ROOT/'.github/workflows/session-navigation.yml').read_text())
+        condition=source['jobs']['publish']['if']
+        self.assertTrue(condition.startswith("always() && !cancelled() && needs.check.result == 'success' && "))
+        for guard in ("always() && ", "!cancelled() && ", "needs.check.result == 'success' && "):
+            altered=copy.deepcopy(source)
+            altered['jobs']['publish']['if']=condition.replace(guard,'',1)
+            self.assertTrue(policy.validate(altered,'session-navigation.yml'))
     def test_azure_verification_rejects_wrong_scope_and_extra_credentials(self):
         source = policy.load_workflow((ROOT / '.github/workflows/verify-azure-ai.yml').read_text())
         mutations = [
