@@ -1,0 +1,74 @@
+name: Inventory capacity regression
+on:
+  pull_request:
+    paths:
+      - 'account-backend/**'
+      - '*inventory*.js'
+      - 'customer-security.js'
+      - 'team-ui.js'
+      - 'scripts/inventory_capacity*'
+      - '.github/workflows/inventory-capacity.yml'
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  capacity:
+    name: Paginated inventory and 50-session local rehearsal
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - name: Verify completeness, revisions, limits and customer isolation
+        run: node --test scripts/inventory_capacity_cloud.test.mjs account-backend/tests/inventory-capacity.test.mjs account-backend/tests/inventory-history.test.mjs account-backend/tests/inventory-import.test.mjs
+      - name: Rehearse 50 concurrent sessions against loopback only
+        env:
+          CAPACITY_OUTPUT: capacity-local.json
+        run: node scripts/inventory_capacity_load.mjs
+      - name: Install pinned browser tooling
+        run: npm install --prefix staging --ignore-scripts --no-package-lock
+      - name: Verify customer selection and complete reports through real pagination
+        run: node scripts/inventory_capacity_browser.mjs
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: inventory-capacity-local
+          path: capacity-local.json
+          retention-days: 14
+  package:
+    name: Reviewed production baseline with capacity delta
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: windows-collector-package
+          path: collector-app/package
+          run-id: 43264633230
+          github-token: ${{ github.token }}
+      - name: Reproduce the serving baseline and verify only the reviewed delta
+        run: |
+          python scripts/inventory_capacity_release.py backend "$RUNNER_TEMP/capacity-backend"
+          python scripts/inventory_capacity_release.py prepare "$RUNNER_TEMP/capacity-site"
+      - run: npm install --prefix staging --ignore-scripts --no-package-lock
+      - name: Test the exact website package with fictional inventory
+        env:
+          INVENTORY_TEST_SITE: ${{ runner.temp }}/capacity-site/after
+        run: node scripts/inventory_capacity_browser.mjs

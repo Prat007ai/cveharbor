@@ -16,6 +16,9 @@ jobs:
       - name: Test the collector exporter using fictional data in PowerShell
         run: pwsh -NoProfile -File scripts/test_windows_collector.ps1
   workflow:
+    permissions:
+      contents: read
+      actions: read
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -36,9 +39,15 @@ jobs:
           rsync --archive --delete "$RUNNER_TEMP/inventory-worker/account-backend/src/" account-backend/src/
           cp "$RUNNER_TEMP/inventory-worker/account-backend/wrangler.toml" account-backend/wrangler.toml
           node --test account-backend/tests/inventory-import.test.mjs account-backend/tests/team-access.test.mjs account-backend/tests/ai-*.test.mjs account-backend/tests/azure-connection.test.mjs
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: windows-collector-package
+          path: collector-app/package
+          run-id: 43264633230
+          github-token: ${{ github.token }}
       - name: Verify the isolated website using fictional inventory
         run: |
-          python scripts/inventory_experience_release.py prepare "$RUNNER_TEMP/inventory-site"
+          python scripts/inventory_capacity_release.py prepare "$RUNNER_TEMP/inventory-site"
           SERVER_TEST_SITE="$RUNNER_TEMP/inventory-site/after" SERVER_SCREENSHOTS="$RUNNER_TEMP/inventory-screens" node scripts/server_security_browser.mjs
           INVENTORY_TEST_SITE="$RUNNER_TEMP/inventory-site/after" INVENTORY_SCREENSHOTS="$RUNNER_TEMP/inventory-screens" node scripts/inventory_browser.mjs
           INVENTORY_TEST_SITE="$RUNNER_TEMP/inventory-site/after" INVENTORY_SCREENSHOTS="$RUNNER_TEMP/inventory-screens" node scripts/inventory_experience_browser.mjs
@@ -79,7 +88,7 @@ jobs:
       - run: node scripts/server_network_schema.mjs --rehearse
       - name: Verify exact network package and paused AI
         run: |
-          python scripts/server_network_release.py backend "$RUNNER_TEMP/network-worker"
+          python scripts/inventory_capacity_release.py backend "$RUNNER_TEMP/network-worker"
           rsync --archive --delete "$RUNNER_TEMP/network-worker/account-backend/src/" account-backend/src/
           cp "$RUNNER_TEMP/network-worker/account-backend/wrangler.toml" account-backend/wrangler.toml
           node --test account-backend/tests/server-network.test.mjs account-backend/tests/inventory-import.test.mjs account-backend/tests/team-access.test.mjs account-backend/tests/ai-*.test.mjs account-backend/tests/azure-connection.test.mjs

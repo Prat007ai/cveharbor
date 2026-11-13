@@ -11,6 +11,7 @@ const settle=async d=>{await new Promise(r=>setTimeout(r,5));const end=Date.now(
 for(const kind of ['customer-dashboard','customer-reports']){
  const dom=new JSDOM(fs.readFileSync(kind+'/index.html','utf8'),{url:'https://cveharbor.com/'+kind+'/?customer=c1',runScripts:'outside-only'});
  const w=dom.window,d=w.document;w.fetch=(url,options)=>new URL(url).pathname==='/v1/plugin-monitor'?Promise.resolve({ok:true,status:200,json:async()=>({ready:true,checks:[{asset_id:'a4',installed_version:'3.1.0',status:'checked',findings:[{id:'CVE-2026-99999',severity:'high',title:'Plugin-only advisory',summary:'Full plugin advisory absent from explorer.',affected:'Autoptimize before 3.1.1',sources:[{label:'Plugin source',url:'https://example.test/plugin'}]}]}]})}):fixture.request(url,options);w.CVEHARBOR_DATA={advisories:fixture.advisories};
+ w.eval(fs.readFileSync('inventory-client.js','utf8').replaceAll('export ',''));
  for(const file of ['advisory-details.js','inventory-matching.js','inventory-assessment.js','customer-score.js','customer-security.js'])w.eval(fs.readFileSync(file,'utf8'));
  await settle(d);const env=d.getElementById('customerDashEnvironment');env.value='e1';env.dispatchEvent(new w.Event('change'));await settle(d);
  const first=d.querySelector('.customer-cve-detail');assert.equal(first.textContent,'CVE-2026-12345');

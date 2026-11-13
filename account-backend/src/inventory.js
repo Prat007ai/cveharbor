@@ -1,3 +1,4 @@
+import {inventoryPage,capacityReady,INVENTORY_CAPACITY} from './inventory-pages.js';
 import {integrityError} from './remediation-integrity.js';
 import {customerRecordsReady} from './customer-remediation-context.js';
 import {networkRows,unpack,saveNetwork} from './server-network.js';
@@ -33,13 +34,16 @@ async function owned(env,table,owner,recordId,parentId){
   if(!row)throw new InventoryError('Record not found in your account',404);
 }
 async function cap(env,table,userId,max){
-  const row=await env.DB.prepare('SELECT COUNT(*) AS total FROM '+table+' WHERE user_id=?').bind(userId).first();
+  const row=table==='inventory_assets'&&max===INVENTORY_CAPACITY?await env.DB.prepare('SELECT software_count AS total FROM inventory_capacity_revisions WHERE user_id=?').bind(userId).first():await env.DB.prepare('SELECT COUNT(*) AS total FROM '+table+' WHERE user_id=?').bind(userId).first();
   if(Number(row?.total||0)>=max)throw new InventoryError('Inventory limit reached',409);
 }
 export async function inventoryRoute(req,env,user,path,data={},write=statement=>statement.run()){
-  if(path==='/v1/inventory/status'&&req.method==='GET')
-    return json({storage:'d1',ready:await ready(env),max_customers:100,max_environments:500,max_assets:3000});
+  if(path==='/v1/inventory/status'&&req.method==='GET'){
+    const pagination=await capacityReady(env.DB);
+    return json({storage:'d1',ready:await ready(env),max_customers:100,max_environments:500,max_assets:pagination?INVENTORY_CAPACITY:3000,pagination});
+  }
   await ensureReady(env);
+  if(path==='/v1/inventory/page'&&req.method==='GET')return json(await inventoryPage(req,env,user));
   if(path==='/v1/inventory/server-network'){
     if(req.method==='GET')return json({networks:unpack((await networkRows(env.DB,user.id).all()).results||[])});
     if(['POST','PUT'].includes(req.method))return json(await saveNetwork(env.DB,user.id,data,req.method));
@@ -65,8 +69,9 @@ export async function inventoryRoute(req,env,user,path,data={},write=statement=>
     const [customers,environments,assets]=await Promise.all([
       env.DB.prepare('SELECT id,name FROM inventory_customers WHERE user_id=? ORDER BY name LIMIT 100').bind(user.id).all(),
       env.DB.prepare('SELECT id,customer_id,name,kind FROM inventory_environments WHERE user_id=? ORDER BY name LIMIT 500').bind(user.id).all(),
-      env.DB.prepare('SELECT id,environment_id,name,asset_type,technology,version,notes FROM inventory_assets WHERE user_id=? ORDER BY name LIMIT 3000').bind(user.id).all()
+      env.DB.prepare('SELECT id,environment_id,name,asset_type,technology,version,notes FROM inventory_assets WHERE user_id=? ORDER BY name LIMIT 3001').bind(user.id).all()
     ]);
+    if((assets.results||[]).length>3000)return json({error:'This inventory requires the updated paginated client. Refresh CVEHarbor.',code:'pagination_required'},409);
     return json({customers:customers.results||[],environments:environments.results||[],assets:assets.results||[]});
   }
   if(path==='/v1/inventory/packages'&&req.method==='GET'){
@@ -141,10 +146,11 @@ export async function inventoryRoute(req,env,user,path,data={},write=statement=>
     const technology=required(data.technology,120,'technology');
     const version=String(data.version||'').trim(),notes=String(data.notes||'').trim();
     if(version.length>80||notes.length>500)throw new InventoryError('Asset details too long');
-    await cap(env,'inventory_assets',user.id,3000);
+    await cap(env,'inventory_assets',user.id,await capacityReady(env.DB)?INVENTORY_CAPACITY:3000);
     const recordId=crypto.randomUUID();
-    await write(env.DB.prepare('INSERT INTO inventory_assets(id,user_id,environment_id,name,asset_type,technology,version,notes) VALUES(?,?,?,?,?,?,?,?)')
-      .bind(recordId,user.id,environment,name,assetType,technology,version,notes));
+    try{await write(env.DB.prepare('INSERT INTO inventory_assets(id,user_id,environment_id,name,asset_type,technology,version,notes) VALUES(?,?,?,?,?,?,?,?)')
+      .bind(recordId,user.id,environment,name,assetType,technology,version,notes));}
+    catch(error){if(String(error.message).includes('Inventory limit reached'))throw new InventoryError('Inventory limit reached',409);throw error;}
     return json({created:true,id:recordId},201);
   }
   const match=/^\/v1\/inventory\/(customers|environments|assets)\/([0-9a-f-]{36})$/.exec(path);

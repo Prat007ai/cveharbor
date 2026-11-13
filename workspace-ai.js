@@ -9,8 +9,8 @@ window.addEventListener('cveharbor-auth-change',()=>{generation++;results.replac
 button.addEventListener('click',async()=>{
  const epoch=++generation;button.disabled=true;status.textContent='Loading your customer inventory…';results.replaceChildren();
  try{
-  const response=await fetch('https://api.cveharbor.com/v1/inventory',{credentials:'include',cache:'no-store'});if(!response.ok)throw Error('Sign in again to review your inventory.');
-  const data=await response.json();if(epoch!==generation)return;
+  const {readInventory}=window.CVEHARBOR_INVENTORY_CLIENT||await import('/inventory-client.js');
+  const data=await readInventory();if(epoch!==generation)return;
   if(!Array.isArray(data.customers))throw Error('Inventory is unavailable. Open My Environments to check your access.');
   await Promise.all([import('/data.js'),import('/catalog.js'),import('/inventory-matching.js').then(()=>import('/inventory-assessment.js'))]);if(epoch!==generation)return;
   const records=[...new Map([...(window.CVEHARBOR_DATA?.advisories||[]),...(window.CVEHARBOR_CATALOG?.advisories||[])].map(r=>[r.id,r])).values()],byCve=new Map(records.map(r=>[r.id,r]));

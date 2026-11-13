@@ -3,6 +3,8 @@
 const $=id=>document.getElementById(id);
 if(!$('customerDashStatus')||new URLSearchParams(location.search).has('org'))return;
 const reporting=!!$('customerReportBody');
+let paginatedInventory=false,reportScopeSequence=0,reportScopeLoading=null,reportScopeAbort=null;
+const reportCustomer=()=>customerReady?$('customerDashFilter').value:new URLSearchParams(location.search).get('customer')||'';
 let inventory={customers:[],environments:[],assets:[]},records=[],customerReady=false,accountEmail='';
 let pluginFindings=[],pluginChecks={},pluginMonitorRows={};
 let customerDataEpoch=0,inventoryRefresh=null,pluginRefreshSequence=0;
@@ -13,6 +15,7 @@ const pluginSlug=name=>pluginSlugOverrides[name.toLowerCase()]||name.toLowerCase
 async function refreshPluginFindings(draw=true,allowFallback=!reporting){
  const epoch=customerDataEpoch,sequence=++pluginRefreshSequence;
  const assets=inventory.assets.filter(a=>a.technology.startsWith('WordPress Plugin: '));
+ if(!assets.length){pluginFindings=[];pluginChecks={};pluginMonitorRows={};if(draw)redraw();return;}
  const nextChecks={},nextFindings=[],nextMonitorRows={};
  let stored=null;
  try{stored=await api('plugin-monitor')}catch(_){}
@@ -133,6 +136,7 @@ async function settledRedraw(){
 }
 async function renderCurrent(){
  if(!customerReady)return;
+ if(paginatedInventory&&inventory.scopeCustomer!==reportCustomer())return loadReportScope();
  if(reportPrinting){reportRedrawPending=true;return;}
  const revision=++renderGeneration,epoch=customerDataEpoch,chosen=$('customerDashFilter').value,env=$('customerDashEnvironment').value;
  const cache=currentStats(),cancelled=()=>revision!==renderGeneration||epoch!==customerDataEpoch||!customerReady;
@@ -295,6 +299,7 @@ function renderFindings(root,issues,readOnly){
 }
 let savedFindingsRequest=null,statusChangeDialog=null,statusChangeBusy=false;
 function invalidateSession(){
+ reportScopeSequence++;reportScopeAbort?.abort();reportScopeLoading=null;
  if(statusChangeDialog?.open)statusChangeDialog.close();
  setAssignmentInfo({ready:false});
  closeFindingDetail();
@@ -396,9 +401,42 @@ async function saveFindingStatus(i,status,select){
 
 const text=(tag,value,cls)=>{const el=document.createElement(tag);el.textContent=String(value??'');if(cls)el.className=cls;return el};
 const api=async (path,method='GET',payload)=>{
+ if(method==='GET'&&['inventory','finding-statuses','finding-tickets','plugin-sources','plugin-installation-status','plugin-monitor','inventory/server-network','inventory/packages'].includes(path.split('?')[0])){
+  const customer=paginatedInventory?reportCustomer():'';
+  const {readInventory}=window.CVEHARBOR_INVENTORY_CLIENT||await import('/inventory-client.js');
+  if(paginatedInventory){
+   if(path==='inventory'){const metadataOnly=!customerReady||(reporting&&!customer);return {assets:[],...await readInventory(path,{customer,metadataUnscoped:true,resourceList:metadataOnly?['customers','environments']:undefined}),scopeCustomer:!customerReady?null:customer};}
+   if(!customerReady||(reporting&&!customer))return {ready:true,append_ready:true,statuses:[],tickets:[],sources:[],checks:[],networks:[],packages:[]};
+  }
+  return readInventory(path,{customer});
+ }
  const r=await fetch('https://api.cveharbor.com/v1/'+path,{method,credentials:'include',cache:'no-store',headers:{Accept:'application/json',...(payload?{'Content-Type':'application/json'}:{})},...(payload?{body:JSON.stringify(payload)}:{})});
  const d=await r.json().catch(()=>({}));if(r.status===401)return {authenticated:false};if(!r.ok){const error=new Error(d.error||'Account service unavailable');error.status=r.status;throw error}return d;
 };
+function loadReportScope(){
+ const customer=reportCustomer(),loadData=!!customer||!reporting;
+ if(reportScopeLoading?.customer===customer)return reportScopeLoading.promise;
+ reportScopeAbort?.abort();reportScopeAbort=new AbortController();
+ const signal=reportScopeAbort.signal,sequence=++reportScopeSequence,epoch=customerDataEpoch;
+ renderGeneration++;pluginRefreshSequence++;
+ for(const id of ['customerReportBody','customerReportAssessment','customerDashboardCves','customerDashFindings','customerDashboardAssessment','customerDashboardServers','customerDashRows'])$(id)?.replaceChildren();
+ $('customerDashStatus').dataset.assessing='true';$('customerDashStatus').textContent='Loading the selected customer… You can choose another customer.';
+ const promise=(async()=>{
+  const {readInventory}=window.CVEHARBOR_INVENTORY_CLIENT||await import('/inventory-client.js');
+  const settings={customer,signal};
+  const next={...inventory,assets:[],...(loadData?await readInventory('inventory',{...settings,resourceList:customer?['assets']:['environments','assets']}):{}),scopeCustomer:customer};
+  const [saved,tickets,installed,sources]=loadData?await Promise.all(['finding-statuses','finding-tickets','plugin-installation-status','plugin-sources'].map(path=>readInventory(path,settings))):Array.from({length:4},()=>({ready:true,append_ready:true}));
+  if(signal.aborted||sequence!==reportScopeSequence||epoch!==customerDataEpoch||!customerReady)return;
+  inventory=next;upgradeHistory.clear();
+  findingStatusReady=!!saved.ready;findingStatuses=new Map((saved.statuses||[]).map(s=>[s.asset_id+'|'+s.cve_id,s.status]));findingNotes=new Map((saved.statuses||[]).map(s=>[s.asset_id+'|'+s.cve_id,s.notes||'']));
+  ticketReady=!!tickets.ready;ticketAppendReady=!!tickets.append_ready;findingTickets=new Map();for(const t of tickets.tickets||[]){const key=t.asset_id+'|'+t.cve_id;findingTickets.set(key,[...(findingTickets.get(key)||[]),t.ticket_number]);}
+  pluginInstallationReady=!!installed.ready;pluginInstallationStatuses=new Map((installed.statuses||[]).map(s=>[s.asset_id,s.status]));pluginSourceReady=!!sources.ready;pluginSources=new Map((sources.sources||[]).map(s=>[s.asset_id,s]));
+  await refreshPluginFindings(false);
+  if(signal.aborted||sequence!==reportScopeSequence||epoch!==customerDataEpoch||!customerReady)return;
+  return redraw();
+ })().catch(error=>{if(!signal.aborted&&sequence===reportScopeSequence){$('customerDashStatus').dataset.assessing='false';$('customerDashStatus').textContent='Could not load the selected customer: '+error.message;}}).finally(()=>{if(sequence===reportScopeSequence)reportScopeLoading=null;});
+ reportScopeLoading={customer,promise};return promise;
+}
 function option(select,label,id){const el=text('option',label);el.value=id;select.append(el)}
 const advisories=()=>{
  const result=new Map();
@@ -1302,6 +1340,7 @@ async function init(){
   if(!session.authenticated){$('customerDashLogin').hidden=false;$('customerDashStatus').textContent='Sign in required to access private customer records.';return}
   accountEmail=session.email;
   const flags=await api('inventory/status');
+  paginatedInventory=flags.pagination===true;
   if(!flags.ready){$('customerDashStatus').textContent='Customer inventory database migration is pending. No private records can be loaded yet.';return}
   inventory=await api('inventory');
   records=advisories();
