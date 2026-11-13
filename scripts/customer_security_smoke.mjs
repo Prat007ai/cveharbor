@@ -29,6 +29,7 @@ const settle=async()=>{await new Promise(r=>setTimeout(r,5));const end=Date.now(
 async function page(kind,customer='c1',data=fixture){
  const dom=new JSDOM(fs.readFileSync(kind+'/index.html','utf8'),{url:'https://cveharbor.com/'+kind+'/?customer='+customer,runScripts:'outside-only'});
  pages.push(dom);const w=dom.window;w.fetch=data.request;w.alert=message=>{w.lastAlert=message};w.CVEHARBOR_DATA={advisories:data.advisories};
+ w.eval(fs.readFileSync('inventory-client.js','utf8').replaceAll('export ',''));
  for(const script of ['inventory-matching.js','inventory-assessment.js','customer-score.js','advisory-details.js','customer-security.js'])w.eval(fs.readFileSync(script,'utf8'));
  await settle();return dom;
 }

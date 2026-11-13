@@ -31,6 +31,7 @@ const fixture=securityFixture();fixture.inventory.assets.push({id:'dotnet-demo',
 fixture.advisories.push({id:'CVE-2099-12345',title:'Fictional .NET advisory',affected:'.NET Runtime before 8.0.3',severity:'high',sources:[{url:'https://example.test/advisory'}]});
 const personal=dom(source('customer-dashboard/index.html'),'https://cveharbor.com/customer-dashboard/?customer=c1&environment=e1');
 personal.window.fetch=fixture.request;personal.window.CVEHARBOR_DATA={advisories:fixture.advisories};
+personal.window.eval(source('inventory-client.js').replaceAll('export ',''));
 for(const name of ['inventory-matching.js','inventory-assessment.js','customer-score.js','advisory-details.js','server-security.js','customer-security.js'])personal.window.eval(source(name));
 for(let i=0;i<200&&personal.window.document.getElementById('customerDashStatus').dataset.ready!=='true';i++)await tick();assert.match(personal.window.document.getElementById('customerDashboardAssessment').textContent,/3 software entries assessed/);
 assert.doesNotMatch(personal.window.document.getElementById('customerDashboardAssessment').textContent,/OTHER01|STAGE01/);

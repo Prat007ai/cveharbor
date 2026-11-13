@@ -13,6 +13,7 @@ const make=(tag,className='',value='')=>{
 };
 const status=message=>{$('inventoryMessage').textContent=message;};
 async function call(path='',method='GET',body){
+ if(method==='GET'&&(path===''||path.startsWith('/packages?'))){const {readInventory}=window.CVEHARBOR_INVENTORY_CLIENT||await import('/inventory-client.js');return readInventory('inventory'+path);}
  const res=await fetch(api+path,{method,credentials:'include',
  headers:{'Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body)});
  const result=await res.json().catch(()=>({}));
@@ -734,7 +735,7 @@ function render(){
 }
 async function load(){
  data=await call();
- try{const r=await fetch('https://api.cveharbor.com/v1/plugin-sources',{credentials:'include'});const s=await r.json();pluginSourceReady=!!s.ready;pluginSources=new Map((s.sources||[]).map(x=>[x.asset_id,x]));}catch(_){pluginSourceReady=false;pluginSources=new Map()}
+ try{const {readInventory}=window.CVEHARBOR_INVENTORY_CLIENT||await import('/inventory-client.js');const s=await readInventory('plugin-sources');pluginSourceReady=!!s.ready;pluginSources=new Map((s.sources||[]).map(x=>[x.asset_id,x]));}catch(_){pluginSourceReady=false;pluginSources=new Map()}
  render();
 }
 let removalPending=false;

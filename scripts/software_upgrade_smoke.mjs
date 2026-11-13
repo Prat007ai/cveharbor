@@ -16,6 +16,7 @@ async function page(kind){
  const dom=new JSDOM(fs.readFileSync(kind+'/index.html','utf8'),{url:'https://cveharbor.com/'+kind+'/?customer=c1',runScripts:'outside-only'}),w=dom.window;
  w.fetch=async(url,opts)=>new URL(url).pathname==='/v1/plugin-monitor'?{ok:true,json:async()=>({ready:true,checks:[structuredClone(staleCheck)]})}:f.request(url,opts);
  w.alert=message=>{w.lastAlert=message};w.CVEHARBOR_DATA={advisories:f.advisories};
+ w.eval(fs.readFileSync('inventory-client.js','utf8').replaceAll('export ',''));
  for(const s of ['inventory-matching.js','inventory-assessment.js','customer-score.js','advisory-details.js','customer-security.js'])w.eval(fs.readFileSync(s,'utf8'));
  await until(()=>w.document.getElementById('customerDashStatus').dataset.ready==='true');
  const select=w.document.getElementById('customerDashEnvironment');select.value='e1';select.dispatchEvent(new w.Event('change'));await until(()=>w.document.getElementById('customerDashStatus').dataset.assessing==='false');

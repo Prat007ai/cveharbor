@@ -1,3 +1,4 @@
+import {inventoryPage,capacityReady} from './inventory-pages.js';
 import {WorkflowError,requireWorkflow,workflowWriteStatements,runWorkflowWrite} from './remediation-workflow.js';
 import {normalizeRecord} from './remediation.js';
 import {inventoryRoute} from './inventory.js';
@@ -12,6 +13,7 @@ const where=' WHERE v.org=? AND v.actor=? AND v.customer_id=?';
 const missing=()=>new WorkflowError('Customer or record unavailable.',404);
 export async function teamDataRoute(req,env,user,org,action,id,data,response,auditGuard){
   const db=env.DB, method=req.method,args=[org.id,user.id,id];
+  if(action==='inventory-page'&&method==='GET'&&id)return response(await inventoryPage(req,env,user,{owner:org.data_owner,org:org.id,actor:user.id,customer:id}));
   if(action==='customers'&&method==='GET'&&!id){
     const list=await db.prepare('SELECT customer_id AS id,name FROM '+visible+' WHERE org=? AND actor=? ORDER BY name').bind(org.id,user.id).all();
     return response({name:org.name,role:org.role,scope:org.scope,customers:list.results});
@@ -53,16 +55,19 @@ export async function teamDataRoute(req,env,user,org,action,id,data,response,aud
   }
   if(!id)throw missing();
   if(action==='customers'&&method==='GET'){
+    const pagination=new URL(req.url).searchParams.get('metadata')==='1'&&await capacityReady(db);
+    const empty=()=>db.prepare('SELECT 1 WHERE 0');
     const read=(columns,joins,suffix='')=>db.prepare('SELECT '+columns+' FROM '+visible+joins+where+suffix).bind(...args);
     const [customer,environments,assets,findings,records,activity]=await db.batch([
       read('v.name,v.role',''),read('e.id,e.name,e.kind',environment,' ORDER BY e.name'),
-      read('a.id,a.environment_id,a.name,e.name AS environment,a.asset_type,a.technology,a.version,a.notes',environment+asset,' ORDER BY e.name,a.name'),
-      read('a.id AS asset_id,a.name AS asset,f.cve_id,f.status,f.notes',environment+asset+' JOIN customer_finding_statuses f ON f.asset_id=a.id AND f.user_id=a.user_id',' ORDER BY f.cve_id,a.name'),
+      pagination?empty():read('a.id,a.environment_id,a.name,e.name AS environment,a.asset_type,a.technology,a.version,a.notes',environment+asset,' ORDER BY e.name,a.name'),
+      pagination?empty():read('a.id AS asset_id,a.name AS asset,f.cve_id,f.status,f.notes',environment+asset+' JOIN customer_finding_statuses f ON f.asset_id=a.id AND f.user_id=a.user_id',' ORDER BY f.cve_id,a.name'),
       read('r.cve_id AS id,r.status,r.owner,r.due,r.notes,r.updated_at',record,' ORDER BY r.cve_id'),
       read('u.email,h.action,h.at',' JOIN team_audit h ON h.org=v.org AND h.customer_id=v.customer_id JOIN users u ON u.id=h.actor',' ORDER BY h.id DESC LIMIT 25')
     ]);
     if(!customer.results.length)throw missing();
-    return response({customer:customer.results[0],environments:environments.results,assets:assets.results,findings:findings.results,remediations:records.results,activity:activity.results});
+    if(!pagination&&assets.results.length>3000)throw new WorkflowError('This inventory requires the updated paginated client. Refresh CVEHarbor.',409);
+    return response({pagination,customer:customer.results[0],environments:environments.results,assets:assets.results,findings:findings.results,remediations:records.results,activity:activity.results});
   }
   if(method!=='PUT'||!['asset','remediation'].includes(action))throw missing();
   if(org.role==='Viewer')throw new WorkflowError('Editor access required.',403);
