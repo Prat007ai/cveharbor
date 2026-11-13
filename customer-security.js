@@ -3,6 +3,10 @@
 const $=id=>document.getElementById(id);
 if(!$('customerDashStatus')||new URLSearchParams(location.search).has('org'))return;
 const reporting=!!$('customerReportBody');
+// Fetch public reader code alongside the session check, before menu data needs it.
+// Handle preload failure here; the awaited reader still reports the original error.
+const inventoryReader=window.CVEHARBOR_INVENTORY_CLIENT?Promise.resolve(window.CVEHARBOR_INVENTORY_CLIENT):import('/inventory-client.js');
+void inventoryReader.catch(()=>{});
 let paginatedInventory=false,reportScopeSequence=0,reportScopeLoading=null,reportScopeAbort=null;
 const reportCustomer=()=>customerReady?$('customerDashFilter').value:new URLSearchParams(location.search).get('customer')||'';
 let inventory={customers:[],environments:[],assets:[]},records=[],customerReady=false,accountEmail='';
@@ -403,7 +407,7 @@ const text=(tag,value,cls)=>{const el=document.createElement(tag);el.textContent
 const api=async (path,method='GET',payload)=>{
  if(method==='GET'&&['inventory','finding-statuses','finding-tickets','plugin-sources','plugin-installation-status','plugin-monitor','inventory/server-network','inventory/packages'].includes(path.split('?')[0])){
   const customer=paginatedInventory?reportCustomer():'';
-  const {readInventory}=window.CVEHARBOR_INVENTORY_CLIENT||await import('/inventory-client.js');
+  const {readInventory}=await inventoryReader;
   if(paginatedInventory){
    if(path==='inventory'){const metadataOnly=!customerReady||(reporting&&!customer);return {assets:[],...await readInventory(path,{customer,metadataUnscoped:true,pagination:true,resourceList:metadataOnly?['customers','environments']:undefined}),scopeCustomer:!customerReady?null:customer};}
    if(!customerReady||(reporting&&!customer))return {ready:true,append_ready:true,statuses:[],tickets:[],sources:[],checks:[],networks:[],packages:[]};
@@ -422,7 +426,7 @@ function loadReportScope(){
  for(const id of ['customerReportBody','customerReportAssessment','customerDashboardCves','customerDashFindings','customerDashboardAssessment','customerDashboardServers','customerDashRows'])$(id)?.replaceChildren();
  $('customerDashStatus').dataset.assessing='true';$('customerDashStatus').textContent='Loading the selected customer… You can choose another customer.';
  const promise=(async()=>{
-  const {readInventory}=window.CVEHARBOR_INVENTORY_CLIENT||await import('/inventory-client.js');
+  const {readInventory}=await inventoryReader;
   const settings={customer,signal,pagination:paginatedInventory};
   const next={...inventory,assets:[],...(loadData?await readInventory('inventory',{...settings,resourceList:customer?['assets']:['environments','assets']}):{}),scopeCustomer:customer};
   const [saved,tickets,installed,sources]=loadData?await Promise.all(['finding-statuses','finding-tickets','plugin-installation-status','plugin-sources'].map(path=>readInventory(path,settings))):Array.from({length:4},()=>({ready:true,append_ready:true}));

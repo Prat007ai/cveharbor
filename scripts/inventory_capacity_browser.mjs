@@ -10,6 +10,9 @@ import {inventoryRoute} from '../account-backend/src/inventory.js';
 import {securityFixture} from './customer_security_fixture.mjs';
 const require=createRequire(new URL('../staging/package.json',import.meta.url));
 const {chromium}=require('playwright-core'),root=path.resolve(process.env.INVENTORY_TEST_SITE||'.');
+// CPU sampling is diagnostic instrumentation, not part of a customer's browser.
+// Keep the same cold-navigation budgets and passive long-task measurements in CI.
+const profileCpu=process.env.CAPACITY_PROFILE==='true';
 // The fixture replaces the CDN. Load its bounded static inputs before timing
 // browser work so shared-runner filesystem contention is not a network model.
 // API latency remains the explicit 50ms delay below, including every page.
@@ -101,10 +104,10 @@ try{
   });
   await cdp.send('Fetch.enable',{patterns:[{urlPattern:'https://*',requestStage:'Request'}]});
   try{
-   await cdp.send('Profiler.enable');await cdp.send('Profiler.setSamplingInterval',{interval:10000});await cdp.send('Profiler.start');
+   if(profileCpu){await cdp.send('Profiler.enable');await cdp.send('Profiler.setSamplingInterval',{interval:10000});await cdp.send('Profiler.start');}
    const start=Date.now();await page.goto(site+'/'+section+'/'+(section==='customer-reports'?'?customer='+fixtureId(50):''));
    await page.waitForFunction(()=>Number.isFinite(window.capacityMenuReady));const menuReady=Math.round(await page.evaluate(()=>window.capacityMenuReady));
-   const {profile}=await cdp.send('Profiler.stop');await cdp.send('Profiler.disable');
+   const {profile}=profileCpu?await cdp.send('Profiler.stop'):{profile:{nodes:[]}};if(profileCpu)await cdp.send('Profiler.disable');
    console.log(JSON.stringify({phase:'menu',section,width,menu_ready_ms:menuReady,runner_observed_ms:Date.now()-start,page_requests:pages,navigation:await page.evaluate(()=>performance.getEntriesByType('navigation').map(({domInteractive,domContentLoadedEventEnd,loadEventEnd})=>({domInteractive,domContentLoadedEventEnd,loadEventEnd}))),errors}));
    if(menuReady>=1500){
     const nodes=new Map(profile.nodes.map(n=>[n.id,n.callFrame])),timings=new Map();
