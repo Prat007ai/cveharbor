@@ -46,3 +46,21 @@ test('identical full refresh retains merge identity but changed evidence and wit
   withdrawn=['CVE-2026-12345'];await client.refresh();assert.equal(client.records.length,0);
  }finally{dom.window.close();}
 });
+
+
+test('large component scopes reuse normalization without changing per-CVE exclusions',()=>{
+ const norm=x=>String(x||'').normalize('NFKC').trim().toLowerCase().replace(/\s+/g,' ');
+ const products=Array.from({length:175},(_,i)=>({name:'Product '+i,component_scope:true}));
+ let calls=0;
+ const records=Array.from({length:10000},(_,i)=>({id:'CVE-2026-'+(100000+i),categories:['Product 0','Product 1','Other'],cvie_products:i%2?['Product 0']:['Product 1']}));
+ const excluded=[{id:records[1].id,product:'Ｐroduct 0'},{id:records[2].id,product:'Other'}];
+ const c=merger({records,products,excluded,normalize:x=>{calls++;return norm(x);}}),started=performance.now(),rows=c.merge();
+ for(let i=0;i<rows.length;i++){
+  const verified=new Set(records[i].cvie_products.map(norm));
+  const expected=[...new Set([...excluded.filter(e=>e.id===rows[i].id).map(e=>e.product),...products.filter(p=>!verified.has(norm(p.name))).map(p=>p.name)])];
+  assert.deepEqual(Array.from(rows[i].cvie_excluded_products),expected);
+  assert.deepEqual(Array.from(rows[i].categories),records[i].categories.filter(n=>!new Set(expected.map(norm)).has(norm(n))));
+ }
+ assert.ok(calls<50000,'Scope normalization must scale with unique combinations, not advisories times products');
+ console.log(JSON.stringify({componentScopeRecords:rows.length,products:175,normalizeCalls:calls,elapsedMs:Math.round(performance.now()-started)}));
+});
