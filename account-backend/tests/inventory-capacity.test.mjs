@@ -9,6 +9,37 @@ import {readInventory} from '../../inventory-client.js';
 const url='https://api.cveharbor.com/v1/inventory/page?';
 const read=(env,params={},owner='owner-0',team)=>inventoryPage(new Request(url+new URLSearchParams(params)),env,{id:owner},team);
 
+test('parallel menu metadata retries the whole snapshot when its revision changes',async()=>{
+ const f=capacityFixture({assets:1000});let changed=false,active=0,peak=0,release;
+ const changedSnapshot=new Promise(resolve=>{release=resolve;});
+ try{
+  const result=await readInventory('inventory',{resourceList:['customers','environments'],fetchPage:async params=>{
+   active++;peak=Math.max(peak,active);
+   try{
+    if(params.get('resource')==='environments')await changedSnapshot;
+    const page=await read(f,Object.fromEntries(params));
+    if(params.get('resource')==='customers'&&!changed){changed=true;f.sql.prepare('INSERT INTO inventory_environments(id,user_id,customer_id,name) VALUES(?,?,?,?)').run(fixtureId(9999),'owner-0',fixtureId(1),'Added during metadata load');release();}
+    await new Promise(resolve=>setTimeout(resolve,1));return page;
+   }finally{active--;}
+  }});
+  assert.equal(peak,2);assert.equal(active,0);assert.equal(result.customers.length,50);assert.equal(result.environments.length,101);assert.equal(result.complete,true);
+ }finally{f.close();}
+});
+
+test('known pagination avoids duplicate capability probes but never reuses private results or authorization',async t=>{
+ const f=capacityFixture({assets:1000});let requests=0,authorized=true;
+ t.mock.method(globalThis,'fetch',async input=>{
+  requests++;const requestUrl=new URL(input);assert.equal(requestUrl.pathname,'/v1/inventory/page');
+  if(!authorized)return Response.json({error:'Sign in required'},{status:401});
+  return Response.json(await read(f,Object.fromEntries(requestUrl.searchParams)));
+ });
+ try{
+  const settings={pagination:true,resourceList:['customers','environments']};
+  const result=await readInventory('inventory',settings);assert.equal(result.customers.length,50);assert.equal(result.environments.length,100);assert.equal(requests,2);
+  authorized=false;await assert.rejects(()=>readInventory('inventory',settings),e=>e.status===401);assert.equal(requests,4);
+ }finally{f.close();}
+});
+
 test('compact database pages preserve text and empty values while reducing the transferred payload',async()=>{
  const f=capacityFixture({owners:1,customers:1,environments:1,assets:500}),batch=f.DB.batch.bind(f.DB);let packed;
  f.DB.batch=async statements=>{const results=await batch(statements);packed=results.at(-1).results;return results;};
