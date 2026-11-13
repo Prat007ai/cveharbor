@@ -125,7 +125,8 @@ try{
    await page.waitForFunction(()=>document.querySelector('#customerDashStatus').dataset.assessing==='false');
    assert.match(await page.locator('.customer-finding-pages').first().textContent(),/of 2000 filtered findings/);
    const selection=Date.now()-at;assert.ok(selection<1200,`${section} ${width}px customer selection took ${selection}ms (budget 1200ms)`);
-   await page.locator('.customer-vulnerability-table').evaluate(el=>{for(let p=el;p;p=p.parentElement)if(p.tagName==='DETAILS')p.open=true;});
+   // Open the stable user-facing section, not a table being replaced by a background refresh.
+   if(section==='customer-dashboard'&&!await page.locator('#customerFindingsSection').evaluate(el=>el.open))await page.locator('#customerFindingsSection > summary').click();
    await page.getByRole('button',{name:'Next findings',exact:true}).click();
    await page.waitForFunction(()=>document.querySelector('.customer-finding-pages')?.textContent.includes('Showing 51–100'));
    await page.evaluate(ids=>{const select=document.querySelector('#customerDashFilter');for(const id of ids){select.value=id;select.dispatchEvent(new Event('change'));}},[fixtureId(50),fixtureId(2),fixtureId(1)]);
