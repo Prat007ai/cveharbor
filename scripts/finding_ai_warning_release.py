@@ -15,6 +15,30 @@ BASE = '37ea53af8c5408c59eb31c88767d6178a7159863'
 CHANGED = {'customer-security.js', 'finding-ai.js', 'finding-ai.css'}
 
 
+def report_wording(data):
+    # Production has independently released report layout changes on these same
+    # lines. Replace exact reviewed labels, retaining all surrounding code.
+    changes = [
+        ('Security score unavailable', 'Inventory review score unavailable'),
+        ('Inventory Based Security Assessment', 'Provisional Inventory Review'),
+        ("assessment.score>=90?'Excellent':assessment.score>=80?'Good':assessment.score>=70?'Needs Improvement':assessment.score>=50?'High Risk':'Critical Risk'",
+         "assessment.score>=80?'Fewer indexed concerns':assessment.score>=50?'Review recommended':'Priority review'"),
+        ('Assessment confidence', 'Inventory completeness'),
+        ('Monitoring coverage', 'Version/check completeness'),
+        ('View score breakdown and history ›', 'Completeness is not vulnerability coverage · View breakdown ›'),
+        ('monitoring coverage is 70% or higher', 'version/check completeness is 70% or higher'),
+        ('Confidence reflects monitoring coverage: High at 90% or more, Medium from 70% to 89%, and Low below 70%. Confidence does not confirm the accuracy of every advisory match.',
+         'Completeness reflects available version/check details: High at 90% or more, Medium from 70% to 89%, and Low below 70%. Completeness does not establish source coverage or the accuracy of an advisory match.'),
+        ('Security Score Trend', 'Inventory Review Trend'),
+        ('Security score trend', 'Inventory review trend'),
+    ]
+    for old, new in changes:
+        old, new = old.encode(), new.encode()
+        pkg.require(old in data, 'Expected report wording missing: '+old.decode())
+        data = data.replace(old, new)
+    return data
+
+
 def prepare(out):
     with tempfile.TemporaryDirectory() as temp:
         prior = Path(temp) / 'predecessor'
@@ -30,6 +54,11 @@ def prepare(out):
     for name in CHANGED:
         original = pkg.git('show', BASE + ':' + name)
         served = (out / 'before' / name).read_bytes()
+        if name == 'customer-security.js':
+            pkg.require(report_wording(original) == Path(name).read_bytes().replace(b'\r\n', b'\n'),
+                        'Report wording transform differs from the reviewed source change')
+            (out / 'after' / name).write_bytes(report_wording(served))
+            continue
         if served.replace(b'\r\n', b'\n') != original:
             # Preserve independently released production overlays. Apply only
             # this reviewed delta to the verified predecessor's serving bytes.
