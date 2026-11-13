@@ -3,11 +3,12 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
-import {fileURLToPath} from 'node:url';
+import {fileURLToPath,pathToFileURL} from 'node:url';
 import {spawn} from 'node:child_process';
-import {createHash} from 'node:crypto';
+import {createHash,randomBytes} from 'node:crypto';
 import {capacityFixture,capacitySessions,fixtureId} from '../account-backend/tests/helpers/capacity-db.mjs';
 import {restBatch} from './cvie_rest_batch.mjs';
+import {seedOutage,extraSchemas} from './nvd_capacity_fixture.mjs';
 const account='9706b4d98ad72884e67fd1eb875c8a61';
 const blocked=new Set(['46710e51-7ca4-4571-b89c-921b9969de0b','fac61562-fc31-426d-8032-550aba63b7f6']);
 // Retained receipt from authorized run 43438175247. Further diagnosis reuses
@@ -92,11 +93,24 @@ export async function cloudRehearsal(env=process.env){
   receipt.leases_before=(await query('SELECT count(*) n FROM operations_leases'))[0].results[0].n;
   receipt.status='retained_fixture_ready';save();
   const backend=path.resolve(env.CAPACITY_BACKEND_DIR||'');assert.ok(env.CAPACITY_BACKEND_DIR&&fs.existsSync(path.join(backend,'account-backend/src/index.js')));
+  const cvie=await import(pathToFileURL(path.join(backend,'account-backend/src/cvie.js')));
+  const seed=await seedOutage(fixture,cvie),controlKey=randomBytes(32).toString('hex');
+  // Add only fictional evidence and compatible read tables to the retained test DB.
+  // No inventory, account, recovery record, hold or lease is reset.
+  for(const file of extraSchemas)await query(fs.readFileSync(path.join('account-backend',file),'utf8'));
+  await query('CREATE TABLE IF NOT EXISTS user_technology_catalogue(user_id TEXT PRIMARY KEY,preferences_json TEXT,updated_at INTEGER)');
+  for(const table of ['cvie_products','cvie_subscriptions','cvie_shared_scopes','cvie_product_scopes','cvie_shared_advisories']){
+   const rows=fixture.sql.prepare('SELECT * FROM '+table).all();
+   for(let offset=0;offset<rows.length;offset+=20){await query(restBatch(rows.slice(offset,offset+20).map(row=>({sql:'INSERT OR IGNORE INTO '+table+'('+Object.keys(row).join(',')+') VALUES('+Object.keys(row).map(()=>'?').join(',')+')',params:Object.values(row)}))).sql);}
+  }
+  const scope=fixture.sql.prepare('SELECT id FROM cvie_shared_scopes').get().id;
+  await query(restBatch([{sql:"UPDATE cvie_shared_scopes SET status='queued',next_attempt_at=0,lease_until=0 WHERE id=?",params:[scope]},{sql:"UPDATE cvie_provider_budget SET next_request_at=0 WHERE provider='nvd'",params:[]}]).sql);
+  receipt.outage_fixture={shared_scopes:1,subscribers:50,saved_advisories:200,epoch:seed.epoch};save();
   const entry=path.join(root,'entry.mjs');
   // This adapter limits the temporary preview to actual application reads.
   // It never bypasses application authentication and never invokes AI or mail.
-  fs.writeFileSync(entry,`import worker from ${JSON.stringify(path.join(backend,'account-backend/src/index.js').replaceAll('\\','/'))};\nimport {observeDatabase} from ${JSON.stringify(path.resolve('scripts/capacity_db_observer.mjs').replaceAll('\\','/'))};\nexport default {async fetch(req,env,ctx){const u=new URL(req.url);if(req.method!=='GET'||!['/v1/me','/v1/inventory/page','/v1/inventory/status'].includes(u.pathname))return new Response('Unavailable',{status:404});const observed=observeDatabase(env.DB),original=await worker.fetch(req,{...env,DB:observed.binding},ctx),r=new Response(original.body,original);r.headers.set('X-Capacity-Application','true');r.headers.set('X-Capacity-Database',JSON.stringify(observed.state));return r;}};\n`);
-  const config={name,account_id:account,main:entry,compatibility_date:'2026-10-28',compatibility_flags:['nodejs_compat'],workers_dev:false,preview_urls:false,routes:[],vars:{RECOVERY_CONTROL_REQUIRED:'true',AI_ENABLED:'false'},d1_databases:[{binding:'DB',database_name:retained.name,database_id:database.uuid,preview_database_id:database.uuid}]};
+  fs.writeFileSync(entry,`import worker from ${JSON.stringify(path.join(backend,'account-backend/src/index.js').replaceAll('\\','/'))};\nimport {runCvieStep} from ${JSON.stringify(path.join(backend,'account-backend/src/cvie.js').replaceAll('\\','/'))};\nimport {outageAdapter} from ${JSON.stringify(path.resolve('scripts/nvd_capacity_fixture.mjs').replaceAll('\\','/'))};\nimport {observeDatabase} from ${JSON.stringify(path.resolve('scripts/capacity_db_observer.mjs').replaceAll('\\','/'))};\nconst adapter=outageAdapter(worker,runCvieStep,${seed.epoch},${JSON.stringify(controlKey)});\nexport default {async fetch(req,env,ctx){const observed=observeDatabase(env.DB),original=await adapter.fetch(req,{...env,DB:observed.binding},ctx),r=new Response(original.body,original);r.headers.set('X-Capacity-Application','true');r.headers.set('X-Capacity-Database',JSON.stringify(observed.state));return r;}};\n`);
+  const config={name,account_id:account,main:entry,compatibility_date:'2026-10-28',compatibility_flags:['nodejs_compat'],workers_dev:false,preview_urls:false,routes:[],vars:{RECOVERY_CONTROL_REQUIRED:'true',CVIE_SHARED_SCANS_ENABLED:'true',AI_ENABLED:'false'},d1_databases:[{binding:'DB',database_name:retained.name,database_id:database.uuid,preview_database_id:database.uuid}]};
   const configPath=path.join(root,'wrangler.json');fs.writeFileSync(configPath,JSON.stringify(config));receipt.config_sha256=sha(fs.readFileSync(configPath));save();
   const childEnv=Object.fromEntries(['PATH','HOME','TMPDIR','HTTPS_PROXY','HTTP_PROXY','NODE_EXTRA_CA_CERTS'].filter(k=>env[k]).map(k=>[k,env[k]]));
   Object.assign(childEnv,{CI:'true',CLOUDFLARE_ACCOUNT_ID:account,CLOUDFLARE_API_TOKEN:env.CLOUDFLARE_API_TOKEN,WRANGLER_SEND_METRICS:'false',CLOUDFLARE_LOAD_DEV_VARS_FROM_DOT_ENV:'false',XDG_CONFIG_HOME:path.join(root,'wrangler-state')});
@@ -139,6 +153,12 @@ export async function cloudRehearsal(env=process.env){
   Object.assign(receipt,{environment:'Cloudflare remote Worker preview and dedicated D1; single GitHub runner, authenticated reads',concurrent_sessions:50,customers:50,environments:100,host_names:10000,software_entries:50000,duration_seconds:Math.round((performance.now()-start)/1000),request_latency:stats(samples),complete_customer_load:stats(journeys),completed_journeys:completed,errors,cvie_background_tested:false});
   receipt.database={calls:databaseSamples.reduce((n,s)=>n+s.calls,0),rows_read:databaseSamples.reduce((n,s)=>n+s.rows_read,0),rows_written:databaseSamples.reduce((n,s)=>n+s.rows_written,0),primary_results:databaseSamples.reduce((n,s)=>n+s.primary_results,0),replica_results:databaseSamples.reduce((n,s)=>n+s.replica_results,0),request_db_elapsed:stats(databaseSamples.map(s=>s.elapsed_ms)),request_sql_time:stats(databaseSamples.map(s=>s.query_ms))};
   receipt.status='measured';save();assert.equal(errors.length,0);assert.ok(completed>=50);assert.ok(receipt.request_latency.p95_ms<1000,'Request p95 exceeds 1 second');assert.ok(receipt.complete_customer_load.p95_ms<3000,'Complete customer read p95 exceeds 3 seconds');
+  const {outageRehearsal}=await import('./nvd_capacity_rehearsal.mjs');
+  receipt.status='outage_rehearsal';save();
+  receipt.outage=await outageRehearsal({base,tokens,controlKey,site:'verification/capacity-site/after',seconds:60,onProgress:result=>{receipt.outage=result;save();}});
+  receipt.cvie_background_tested=true;
+  assert.equal((await query('SELECT count(*) n FROM cvie_shared_advisories'))[0].results[0].n,200);
+  assert.equal((await query('SELECT count(*) n FROM operations_leases'))[0].results[0].n,receipt.leases_before);
   receipt.status='passed';receipt.completed_at=new Date().toISOString();save();console.log(JSON.stringify(receipt));
  }finally{
   try{await stopPreview(child);receipt.preview_stopped=true;save();}finally{fixture.close();}
