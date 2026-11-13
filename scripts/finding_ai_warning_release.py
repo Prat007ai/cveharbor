@@ -1,4 +1,4 @@
-"""Shared applicability statuses and matching safeguards on verified PR355."""
+"""Actionable evidence-backed fix guides on verified PR356."""
 import os
 from pathlib import Path
 import shutil
@@ -11,8 +11,32 @@ import production_release_checks as checks
 import team_release as team
 import version_picker_release as publisher
 
-BASE = 'e7f34f2df1a812ad8b1f72ff41bba56b9107d485'
-CHANGED = {'inventory-assessment.js', 'inventory-matching.js', 'customer-security.js', 'finding-ai.js', 'inventory.js', 'organization-security.js', 'server-security.js', 'workspace-ai.js'}
+BASE = '37ea53af8c5408c59eb31c88767d6178a7159863'
+CHANGED = {'customer-security.js', 'finding-ai.js', 'finding-ai.css'}
+
+
+def report_wording(data):
+    # Production has independently released report layout changes on these same
+    # lines. Replace exact reviewed labels, retaining all surrounding code.
+    changes = [
+        ('Security score unavailable', 'Inventory review score unavailable'),
+        ('Inventory Based Security Assessment', 'Provisional Inventory Review'),
+        ("assessment.score>=90?'Excellent':assessment.score>=80?'Good':assessment.score>=70?'Needs Improvement':assessment.score>=50?'High Risk':'Critical Risk'",
+         "assessment.score>=80?'Fewer indexed concerns':assessment.score>=50?'Review recommended':'Priority review'"),
+        ('Assessment confidence', 'Inventory completeness'),
+        ('Monitoring coverage', 'Version/check completeness'),
+        ('View score breakdown and history ›', 'Completeness is not vulnerability coverage · View breakdown ›'),
+        ('monitoring coverage is 70% or higher', 'version/check completeness is 70% or higher'),
+        ('Confidence reflects monitoring coverage: High at 90% or more, Medium from 70% to 89%, and Low below 70%. Confidence does not confirm the accuracy of every advisory match.',
+         'Completeness reflects available version/check details: High at 90% or more, Medium from 70% to 89%, and Low below 70%. Completeness does not establish source coverage or the accuracy of an advisory match.'),
+        ('Security Score Trend', 'Inventory Review Trend'),
+        ('Security score trend', 'Inventory review trend'),
+    ]
+    for old, new in changes:
+        old, new = old.encode(), new.encode()
+        pkg.require(old in data, 'Expected report wording missing: '+old.decode())
+        data = data.replace(old, new)
+    return data
 
 
 def prepare(out):
@@ -30,6 +54,11 @@ def prepare(out):
     for name in CHANGED:
         original = pkg.git('show', BASE + ':' + name)
         served = (out / 'before' / name).read_bytes()
+        if name == 'customer-security.js':
+            pkg.require(report_wording(original) == Path(name).read_bytes().replace(b'\r\n', b'\n'),
+                        'Report wording transform differs from the reviewed source change')
+            (out / 'after' / name).write_bytes(report_wording(served))
+            continue
         if served.replace(b'\r\n', b'\n') != original:
             # Preserve independently released production overlays. Apply only
             # this reviewed delta to the verified predecessor's serving bytes.
@@ -54,15 +83,15 @@ def ready():
 def run(action, out):
     if action == 'prepare':
         return prepare(out)
-    pr = team.reviewed('fix/matching-confidence')
+    pr = team.reviewed('fix/actionable-fix-guides')
     pkg.require(checks.check_commit(os.environ['GITHUB_SHA']), 'Required application/security checks incomplete')
     if action == 'preflight':
         prod.policy(publisher.ENV)
         ready()
     elif action == 'publish':
         publisher.publish(out, changed=CHANGED, added=set(), reviewed_pr=pr, ready=ready,
-                          previous_version='79339a94-8478-48a4-8f4b-9a7f9ff2f41e',
-                          previous_deployment='d02db434-bb31-4c0c-9f61-037fbf789647',
+                          previous_version='78e9846a-7bde-4e02-b5a9-ba4c972c51da',
+                          previous_deployment='39834c9a-b03c-45d9-ba7e-5d72a0bbac29',
                           served_copy=out / 'verified-origin')
     else:
         raise ValueError(action)

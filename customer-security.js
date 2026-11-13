@@ -650,13 +650,13 @@ const scoreSeries=new Map();
 function renderScorePanel(root,customer,scope,stats){
  const engine=window.CVEHARBOR_SCORE;
  if(!engine)return;
- if(window.CVEHARBOR_CVIE?.coverageLimited){root.append(text('p','Security score unavailable: stored vulnerability evidence is a partial page. Review source coverage before assessment.','ops-note'));return}
- if(!findingStatusReady){root.append(text('p','Inventory Based Security Assessment unavailable: saved remediation data could not be loaded. No score is shown.','ops-note'));return}
+ if(window.CVEHARBOR_CVIE?.coverageLimited){root.append(text('p','Inventory review score unavailable: stored vulnerability evidence is a partial page. Review source coverage before assessment.','ops-note'));return}
+ if(!findingStatusReady){root.append(text('p','Provisional Inventory Review unavailable: saved remediation data could not be loaded. No score is shown.','ops-note'));return}
  const statuses=Object.fromEntries(findingStatuses.entries());
  const checks=Object.fromEntries(stats.assets.map(a=>[a.id,pluginMonitorRows[a.id]||null]));
  const assessment=engine.assessCustomer({assets:stats.assets,issues:stats.issues,checks,statuses});
  const key=customer.id+'|'+scope;
- const rating=assessment.score===null?'Insufficient Data':assessment.score>=90?'Excellent':assessment.score>=80?'Good':assessment.score>=70?'Needs Improvement':assessment.score>=50?'High Risk':'Critical Risk';
+ const rating=assessment.score===null?'Insufficient Data':assessment.score>=80?'Fewer indexed concerns':assessment.score>=50?'Review recommended':'Priority review';
  const tier=assessment.score===null?'unknown':assessment.score>=80?'good':assessment.score>=70?'caution':'risk';
  const card=document.createElement('details');
  card.className='customer-security-score-panel';
@@ -668,13 +668,13 @@ function renderScorePanel(root,customer,scope,stats){
  const header=document.createElement('summary');
  header.className='customer-score-header';
  const headingWrap=text('div','','customer-score-heading');
- headingWrap.append(text('strong','Inventory Based Security Assessment','customer-score-title'),
+ headingWrap.append(text('strong','Provisional Inventory Review','customer-score-title'),
   text('span','Methodology v'+assessment.version,'customer-score-version'));
  if(attention.critical||attention.high)headingWrap.append(attentionBadge(stats.issues));
  const overview=text('div','','customer-score-overview');
  const seal=text('div','','customer-score-seal');
  seal.setAttribute('role','img');
- seal.setAttribute('aria-label',assessment.score===null?'Security score unavailable':assessment.score+' out of 100, '+rating);
+ seal.setAttribute('aria-label',assessment.score===null?'Inventory review score unavailable':assessment.score+' out of 100, '+rating);
  const circle=document.createElement('span');circle.className='customer-score-seal-number';
  circle.textContent=assessment.score===null?'—':String(assessment.score);
  seal.append(circle,text('small',assessment.score===null?'NO SCORE':'OUT OF 100'));
@@ -696,14 +696,14 @@ function renderScorePanel(root,customer,scope,stats){
   }
   overview.append(seal,legend);
   const metadata=text('div','','customer-score-report-meta');
-  for(const [label,value] of [['Assessment confidence',assessment.confidence],['Monitoring coverage',assessment.coverage+'%']]){
-   const item=text('span',label+': ');item.append(text('strong',value));if(label==='Assessment confidence')item.dataset.confidence=normalize(value);metadata.append(item);
+  for(const [label,value] of [['Inventory completeness',assessment.confidence],['Version/check completeness',assessment.coverage+'%']]){
+   const item=text('span',label+': ');item.append(text('strong',value));if(label==='Inventory completeness')item.dataset.confidence=normalize(value);metadata.append(item);
   }
-  header.append(headingWrap,overview,metadata,text('span','View score breakdown and history ›','customer-score-hint'));
+  header.append(headingWrap,overview,metadata,text('span','Completeness is not vulnerability coverage · View breakdown ›','customer-score-hint'));
  }else{
   summaryDetails.append(text('strong',rating,'customer-score-rating'),
-   text('span','Assessment confidence: '+assessment.confidence,'customer-score-meta'),
-   text('span','Monitoring coverage: '+assessment.coverage+'%','customer-score-meta'),
+   text('span','Inventory completeness: '+assessment.confidence,'customer-score-meta'),
+   text('span','Version/check completeness: '+assessment.coverage+'%','customer-score-meta'),
    text('span','View score breakdown and history','customer-score-hint'));
   overview.append(seal,summaryDetails);header.append(headingWrap,overview);
  }
@@ -714,7 +714,7 @@ function renderScorePanel(root,customer,scope,stats){
  contentBox.append(text('h3','Score Breakdown'));
  contentBox.append(table(['Score component','Maximum points','Provisional deduction'],[
   ['Potential vulnerability exposure',50,b.exposure],['Software and patch currency',25,b.currency],
-  ['Remediation effectiveness',15,b.remediation],['Monitoring coverage',10,b.monitoring]
+  ['Remediation effectiveness',15,b.remediation],['Version/check completeness',10,b.monitoring]
  ]));
  contentBox.append(text('p','Scoring methodology v'+assessment.version+'. Inventory findings are candidates, not authenticated proof of exposure.','ops-note'));
  const details=document.createElement('details');details.className='customer-score-methodology';
@@ -727,14 +727,14 @@ function renderScorePanel(root,customer,scope,stats){
   'Vulnerability exposure (up to 50 points): Unresolved version range candidate CVEs deduct 12 points for Critical, 7 for High, 4 for Medium and 2 for Low. Unknown severity deducts 3. A CISA known exploited flag multiplies that finding’s deduction by 1.5. The total is capped at 50.',
   'Software updates (up to 25 points): Each inventoried WordPress plugin with a verified Update Available result deducts 2 points. The total is capped at 25. Other software update types are not included in this v1 calculation.',
   'Remediation (up to 15 points): The share of version range candidate findings still open determines this deduction. Fixed/Patched and Not Applicable are excluded from open findings. These are recorded review statuses, not independently verified fixes.',
-  'Monitoring coverage (up to 10 points): Coverage is the percentage of software entries with a recorded version, including WordPress plugins only when their vulnerability check succeeds for the installed version. The deduction is the rounded percentage of missing coverage divided by 10.'
+  'Version/check completeness (up to 10 points): Coverage is the percentage of software entries with a recorded version, including WordPress plugins only when their vulnerability check succeeds for the installed version. The deduction is the rounded percentage of missing coverage divided by 10.'
  ])rules.append(text('li',explanation));
  content.append(rules);
- content.append(text('p','A numeric score is displayed only when at least one inventory asset exists, monitoring coverage is 70% or higher, and at least one version range candidate CVE is available. Otherwise the report says Insufficient Data.'));
- content.append(text('p','Confidence reflects monitoring coverage: High at 90% or more, Medium from 70% to 89%, and Low below 70%. Confidence does not confirm the accuracy of every advisory match.'));
+ content.append(text('p','A numeric score is displayed only when at least one inventory asset exists, version/check completeness is 70% or higher, and at least one version range candidate CVE is available. Otherwise the report says Insufficient Data.'));
+ content.append(text('p','Completeness reflects available version/check details: High at 90% or more, Medium from 70% to 89%, and Low below 70%. Completeness does not establish source coverage or the accuracy of an advisory match.'));
  content.append(text('p','Example: deductions of 18 for exposure, 8 for software updates, 3 for remediation and 1 for monitoring produce 70 out of 100. The historical trend uses saved assessment snapshots, not invented past scores.'));
  details.append(content);contentBox.append(details);
- const heading=text('h3','Security Score Trend');
+ const heading=text('h3','Inventory Review Trend');
  const chart=document.createElement('div');chart.className='customer-score-trend';
  const message=text('p','Historical scores will appear here as assessments are recorded.','ops-note');
  const renderHistory=history=>{
@@ -743,7 +743,7 @@ function renderScorePanel(root,customer,scope,stats){
   if(points.length<2){message.textContent=points.length===1?'One saved score is available. The trend appears after subsequent changes.':'No historical score data yet.';return}
   message.textContent='Actual saved assessment snapshots. No historical estimates are generated.';
   const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
-  svg.setAttribute('viewBox','0 0 620 200');svg.setAttribute('role','img');svg.setAttribute('aria-label','Security score trend across '+points.length+' recorded assessments');
+  svg.setAttribute('viewBox','0 0 620 200');svg.setAttribute('role','img');svg.setAttribute('aria-label','Inventory review trend across '+points.length+' recorded assessments');
   const positions=points.map((p,i)=>[30+i*560/(points.length-1),170-p.score*1.4]);
   const grid=document.createElementNS(svg.namespaceURI,'path');
   grid.setAttribute('d','M30 30H590 M30 100H590 M30 170H590');grid.setAttribute('stroke','currentColor');grid.setAttribute('opacity','.2');grid.setAttribute('fill','none');svg.append(grid);
@@ -825,9 +825,9 @@ function buildCustomerPrintDocument(customer,stats,scope,date){
  doc.append(counts);
  const assessment=window.CVEHARBOR_SCORE?.assessCustomer({assets:stats.assets,issues:stats.issues,checks:Object.fromEntries(stats.assets.map(a=>[a.id,pluginMonitorRows[a.id]||null])),statuses:Object.fromEntries(findingStatuses)});
  if(assessment&&!window.CVEHARBOR_CVIE?.coverageLimited){
-  const score=text('section','','customer-print-section customer-print-assessment');score.append(section('Inventory Based Security Assessment'));
+  const score=text('section','','customer-print-section customer-print-assessment');score.append(section('Provisional Inventory Review'));
   score.append(text('strong',assessment.score===null?'Insufficient Data — No Score':assessment.score+' / 100','customer-print-score'));
-  score.append(text('p','Assessment confidence: '+assessment.confidence+' · Monitoring coverage: '+assessment.coverage+'%','customer-print-note'),text('p',assessment.explanation,'customer-print-note'));
+  score.append(text('p','Inventory completeness: '+assessment.confidence+' · Version/check completeness: '+assessment.coverage+'%','customer-print-note'),text('p',assessment.explanation,'customer-print-note'));
   score.append(table(['Score component','Deduction'],Object.entries(assessment.parts)));
   doc.append(score);
  }
