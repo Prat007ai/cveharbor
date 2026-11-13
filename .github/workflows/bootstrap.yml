@@ -159,7 +159,7 @@ jobs:
       - name: Install DOM smoke test dependency
         run: npm install --no-save --no-package-lock jsdom@26
       - name: Exercise site interactions
-        run: node scripts/browser_smoke.mjs && node scripts/threat_health_smoke.mjs && node scripts/customer_security_smoke.mjs && node scripts/customer_score_smoke.mjs && node scripts/cvie_client_smoke.mjs && node scripts/cvie_polling_smoke.mjs && node scripts/product_monitoring_smoke.mjs
+        run: node scripts/browser_smoke.mjs && node scripts/threat_health_smoke.mjs && node scripts/customer_security_smoke.mjs && node scripts/customer_score_smoke.mjs && node scripts/cvie_client_smoke.mjs && node scripts/cvie_polling_smoke.mjs && node --test scripts/cvie_performance.test.mjs && node scripts/product_monitoring_smoke.mjs
 
   catalogue-check:
     name: Test the production catalogue package in Chrome
@@ -353,7 +353,7 @@ jobs:
         run: npm install --no-save --no-package-lock jsdom@26
       - name: Exercise site interactions
         if: github.event_name == 'push'
-        run: node scripts/browser_smoke.mjs && node scripts/threat_health_smoke.mjs && node scripts/customer_security_smoke.mjs && node scripts/customer_score_smoke.mjs && node scripts/cvie_client_smoke.mjs && node scripts/cvie_polling_smoke.mjs && node scripts/product_monitoring_smoke.mjs
+        run: node scripts/browser_smoke.mjs && node scripts/threat_health_smoke.mjs && node scripts/customer_security_smoke.mjs && node scripts/customer_score_smoke.mjs && node scripts/cvie_client_smoke.mjs && node scripts/cvie_polling_smoke.mjs && node --test scripts/cvie_performance.test.mjs && node scripts/product_monitoring_smoke.mjs
       - name: Build public site files
         run: python scripts/build_site.py && test -f public/disclosure-trend.js
       - name: Validate generated pages before deployment

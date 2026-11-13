@@ -40,6 +40,7 @@ function selects(){
  if(customers.value)setupCustomerId=customers.value;
  if(envs.value)setupEnvironmentId=envs.value;
 }
+let baselineInputs=[],baselineRecords=[];
 function renderMatches(){
  const panel=$('inventoryMatchResults');if(!panel)return;
  panel.replaceChildren();
@@ -51,7 +52,8 @@ function renderMatches(){
  let tracker=$('inventoryRemediationLink');if(!tracker){tracker=make('a','ops-link','Open Remediation Tracker');tracker.id='inventoryRemediationLink';$('inventoryMatchCustomer').parentElement.append(tracker);}tracker.href='/remediation/'+(chosen?'?customer_id='+encodeURIComponent(chosen):'');
  const environments=new Set(data.environments.filter(e=>!chosen||e.customer_id===chosen).map(e=>e.id));
  const assets=data.assets.filter(a=>environments.has(a.environment_id));
- const baseline=[...(feed.advisories||[]),...(catalog.advisories||[])];
+ if(feed.advisories!==baselineInputs[0]||catalog.advisories!==baselineInputs[1]){baselineInputs=[feed.advisories,catalog.advisories];baselineRecords=[...(feed.advisories||[]),...(catalog.advisories||[])];}
+ const baseline=baselineRecords;
  const advisories=window.CVEHARBOR_CVIE?window.CVEHARBOR_CVIE.merge(baseline):baseline;
  const matches=engine.evaluate(assets,advisories,150);
  $('inventoryMatchCount').textContent=matches.total+' potential matches';

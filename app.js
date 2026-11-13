@@ -114,7 +114,7 @@
   const publicTopicsByCve=new Map(baseItems.filter(isCVE).map(record=>[record.id,record.categories||[]]));
   const monthCutoff=months=>{const now=new Date(),day=now.getUTCDate();now.setUTCDate(1);now.setUTCMonth(now.getUTCMonth()-months);now.setUTCDate(Math.min(day,new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth()+1,0)).getUTCDate()));return now.getTime();};
   const inMonths=(record,months)=>{const date=Date.parse(record.published||'');return Number.isFinite(date)&&date>=monthCutoff(months)&&date<=Date.now();};
-  let cvieWasSignedIn=false;
+  let cvieWasSignedIn=false,cvieOptionSignature='';
   const handleCvieUpdate=event=>{
     const cvie=window.CVEHARBOR_CVIE;
     if(cvieWasSignedIn&&cvie.sessionKnown&&!cvie.signedIn&&catalogueSignedIn){
@@ -124,8 +124,12 @@
     items=window.CVEHARBOR_CVIE.merge(baseItems);
     if(personalized){const names=new Set([...personalized.defaults,...personalized.products.filter(p=>p.enabled!==false).map(p=>p.name)].map(n=>n.toLowerCase()));items=items.filter(r=>[...(r.categories||[]),...(r.cvie_products||[])].some(n=>names.has(n.toLowerCase())));}
     const names=(window.CVEHARBOR_CVIE.products||[]).map(p=>p.name);
-    for(const option of [...$('technologyFilter').options])if(option.dataset.cvie)option.remove();
-    for(const name of names)if(!categories.some(c=>c.name===name)){const option=document.createElement('option');option.value=name;option.textContent=name;option.dataset.cvie='true';$('technologyFilter').append(option);}
+    const optionSignature=JSON.stringify(names);
+    if(optionSignature!==cvieOptionSignature){
+      cvieOptionSignature=optionSignature;
+      for(const option of [...$('technologyFilter').options])if(option.dataset.cvie)option.remove();
+      for(const name of names)if(!categories.some(c=>c.name===name)){const option=document.createElement('option');option.value=name;option.textContent=name;option.dataset.cvie='true';$('technologyFilter').append(option);}
+    }
     if(state.period==='published3m'||state.period==='published12m'){state.period=window.CVEHARBOR_CVIE.months===12?'published12m':'published3m';$('dateRange').value=state.period;}
     if([...$('technologyFilter').options].some(o=>o.value===state.tech))$('technologyFilter').value=state.tech;else state.tech='all';
     renderCategories();
