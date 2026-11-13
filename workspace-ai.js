@@ -20,6 +20,7 @@ button.addEventListener('click',async()=>{
    const customer=chooser.value,envs=new Set(data.environments.filter(e=>e.customer_id===customer).map(e=>e.id)),assets=data.assets.filter(a=>envs.has(a.environment_id));
    const findings=window.CVEHARBOR_INVENTORY_MATCH.evaluate(assets,records,250);
    list.append(el('p',assets.length+' saved software entries · '+findings.total+' potential matches in the available index.'));
+   const states=window.CVEHARBOR_INVENTORY_MATCH.summarize(findings.items);list.append(el('p',states.affected_version+' affected version detected · '+states.needs_verification+' need verification'+(findings.limited?' (available results only)':'')+'.','applicability-summary'));
    list.append(window.CVEHARBOR_FINDING_AI.priorities({findings:findings.items,onOpen:f=>window.CVEHARBOR_FINDING_AI.detailButton({finding:f,advisory:byCve.get(f.id)||f,customer})}));
    const link=el('a','View all findings and inventory coverage');link.href='/customer-dashboard/?customer='+encodeURIComponent(customer);list.append(link);
   });

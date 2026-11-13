@@ -55,6 +55,7 @@ function renderMatches(){
  const advisories=window.CVEHARBOR_CVIE?window.CVEHARBOR_CVIE.merge(baseline):baseline;
  const matches=engine.evaluate(assets,advisories,150);
  $('inventoryMatchCount').textContent=matches.total+' potential matches';
+ const states=engine.summarize(matches.items);panel.append(make('p','applicability-summary',states.affected_version+' affected version detected · '+states.needs_verification+' need verification'+(matches.limited?' (shown results only)':'')+'. No match does not establish safety.'));
  if(!matches.total){panel.append(make('p','ops-note','No category matches found in the current limited index. This does not establish that customer assets are secure.'));return;}
  for(const item of matches.items){
   const asset=assets.find(a=>a.id===item.asset_id);
@@ -67,7 +68,7 @@ function renderMatches(){
   card.append(top,make('p','',item.title));
   card.append(make('p','', (customer?.name||'Customer')+' / '+(environment?.name||'Environment')+' / '+(asset?.name||'Asset')+
    ' · '+item.technology+' '+(item.version||'Version unknown')));
-  card.append(make('p','ops-note',item.evidence));
+  const state=engine.applicability(item);card.append(make('strong','',state.label),make('p','ops-note',state.reason),make('p','ops-note',item.evidence));
   const actions=make('div','inventory-actions');
   const assign=make('button','ops-download','Assign for review');assign.type='button';
   assign.addEventListener('click',()=>window.dispatchEvent(new CustomEvent('cveharbor:assign-remediation',{detail:{id:item.id}})));

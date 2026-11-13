@@ -99,10 +99,18 @@ async function saveReportPluginSource(asset,input,message){
 const statusOptions=['Needs Review','Fix in Progress','Fixed/Patched','Not Applicable','Accepted Risk'];
 const statusKey=i=>i.asset_id+'|'+i.id;
 const statusFor=i=>findingStatuses.get(statusKey(i))||'Needs Review';
+const applicability=i=>window.CVEHARBOR_INVENTORY_MATCH.applicability(i);
+function applicabilitySummary(issues){
+ const counts=window.CVEHARBOR_INVENTORY_MATCH.summarize(issues),box=text('section','','applicability-summary');
+ box.setAttribute('aria-label','Finding applicability');
+ box.append(text('strong',counts.affected_version+' affected version detected · '+counts.needs_verification+' need verification'),text('p','Version matches require deployment checks. Missing or pending evidence is kept for review. Saved remediation statuses do not verify applicability.','ops-note'));
+ return box;
+}
 const closedStatus=s=>['Fixed/Patched','Not Applicable','Accepted Risk'].includes(s);
 let reportPrinting=false,reportRedrawPending=false,exportBusy=false;
 const redraw=()=>reporting?drawReport():drawDashboard();
-const filteredFindings=issues=>sortFindings(issues.filter(i=>findingStatusFilter==='All'||findingStatusFilter==='Unresolved'&&!closedStatus(statusFor(i))||statusFor(i)===findingStatusFilter));
+let applicabilityFilter='all';
+const filteredFindings=issues=>sortFindings(issues.filter(i=>(applicabilityFilter==='all'||applicability(i).code===applicabilityFilter)&&(findingStatusFilter==='All'||findingStatusFilter==='Unresolved'&&!closedStatus(statusFor(i))||statusFor(i)===findingStatusFilter)));
 function findingAttention(issues){
  const open=issues.filter(i=>!closedStatus(statusFor(i)));
  return {open:open.length,critical:open.filter(i=>normalize(i.severity)==='critical').length,high:open.filter(i=>normalize(i.severity)==='high').length};
@@ -142,7 +150,7 @@ function findingDetailButton(i){
   const root=text('div','','customer-finding-content');
   const context=text('section','','customer-finding-context');
   context.setAttribute('aria-label','Selected customer finding');
-  context.append(text('h3','Selected customer finding'),text('p','Potential match — requires verification.'));
+  context.append(text('h3','Selected customer finding'),text('p',applicability(i).label),text('p',applicability(i).reason));
   const customer=inventory.customers.find(c=>c.id===i.environment?.customer_id);
   const facts=[['Customer',customer?.name],['Environment',i.environment?.name],['Hostname / asset',i.asset?.name],['Server role',window.CVEHARBOR_SERVER_SECURITY?.role(i.asset)],
    ['Installed software',i.technology+' '+(i.version||'(version unknown)')],
@@ -179,14 +187,19 @@ function renderFindingAssignment(cell,i){
  if(manual){const candidate=text('div','','finding-manual-assignment');candidate.append(text('strong','Existing record — connect it to this customer asset'));describe(candidate,manual.assignments);if(!manual.assignments.length)candidate.append(text('small','Owner: '+manual.owner));if(linkExistingReady){const link=text('button','Link existing assignment','shared-work-action');link.type='button';link.addEventListener('click',()=>window.CVEHARBOR_SHARED?.finding(i.asset_id,i.id,link));candidate.append(link);candidate.append(text('small','Link this assignment to send status-update emails for this asset.'));}box.append(candidate);}
 }
 function renderFindings(root,issues,readOnly){
+ root.append(applicabilitySummary(issues));
+ const applicabilityLabel=text('label','Applicability '),applicabilitySelect=text('select');applicabilitySelect.setAttribute('aria-label','Filter finding applicability');
+ for(const [value,label] of [['all','All applicability states'],['affected_version','Affected version detected'],['needs_verification','Needs verification']]){const option=text('option',label);option.value=value;applicabilitySelect.append(option);}
+ applicabilitySelect.value=applicabilityFilter;applicabilitySelect.addEventListener('change',()=>{applicabilityFilter=applicabilitySelect.value;redraw();});applicabilityLabel.append(applicabilitySelect);root.append(applicabilityLabel);
  root.append(findingStatusControls(issues));
  const filtered=filteredFindings(issues),compact=filtered.slice(0,250);
- const findingsTable=table(['CVE','Published','Severity','Software / Asset','Vulnerability summary','Vulnerability Fix Status','DevOps Ticket #'],compact.map(i=>[
-  i.id,i.published||'Not available',i.severity,i.technology+' '+(i.version||'Unknown')+' · '+(i.asset?.name||'Asset')+' · '+(i.environment?.name||''),shortSummary(i),'',''
+ const findingsTable=table(['CVE','Published','Advisory severity','Software / Asset','Vulnerability summary','Saved remediation status','DevOps Ticket #','Applicability'],compact.map(i=>[
+  i.id,i.published||'Not available',i.severity,i.technology+' '+(i.version||'Unknown')+' · '+(i.asset?.name||'Asset')+' · '+(i.environment?.name||''),shortSummary(i),'','',applicability(i).label
  ]));
  findingsTable.classList.add('customer-vulnerability-table');enableFindingSort(findingsTable);
  for(const [index,i] of compact.entries()){
   const row=findingsTable.tBodies[0].rows[index],cell=row.cells[5],ticketCell=row.cells[6];
+  row.cells[7].title=applicability(i).reason;row.cells[7].dataset.applicability=applicability(i).code;
   row.cells[0].replaceChildren(findingDetailButton(i));
   const severity=text('span',i.severity,'customer-severity-badge');severity.dataset.level=normalize(i.severity);row.cells[2].replaceChildren(severity);
   const existing=ticketFor(i),history=text('div','','customer-ticket-history');
@@ -389,6 +402,7 @@ function visualize(groups,all){
  if(!attention||!severity||!software)return;
  attention.replaceChildren();severity.replaceChildren();software.replaceChildren();
  const items=groups.flatMap(x=>x.stats.issues.map(i=>({...i,customer:x.customer})));
+ attention.append(applicabilitySummary(items));
  const critical=items.filter(i=>normalize(i.severity)==='critical').length;
  const high=items.filter(i=>normalize(i.severity)==='high').length;
  const other=items.length-critical-high;
@@ -453,10 +467,11 @@ function visualize(groups,all){
 }
 function evidenceDetail(i){
  const panel=text('details','','customer-evidence-detail');
- const summary=text('summary',(i.level==='version_review'?'Numeric range candidate':i.level==='outside_range'?'Outside one stated range':'Category match only')+' · View advisory evidence');
+ const summary=text('summary',applicability(i).label+' · View advisory evidence');
  panel.append(summary);
  const add=(name,value)=>{if(value)panel.append(text('p',name+': '+value,'ops-note'))};
  add('Installed software',i.technology+' '+(i.version||'(version unknown)'));
+ add('Verification needed',applicability(i).reason);
  add('Assessment',i.evidence);
  add('Version comparison',i.comparison_detail);
  add('Advisory description',i.summary||i.title);
@@ -824,6 +839,8 @@ function buildCustomerPrintDocument(customer,stats,scope,date){
  inventoryTable.classList.add('customer-print-table');inventorySection.append(inventoryTable);doc.append(inventorySection);
  const findingsSection=text('section','','customer-print-section');
  findingsSection.append(section('Findings requiring verification'));
+ const applicabilityCounts=window.CVEHARBOR_INVENTORY_MATCH.summarize(stats.issues);
+ findingsSection.append(text('p',applicabilityCounts.affected_version+' affected version detected · '+applicabilityCounts.needs_verification+' need verification. Saved remediation statuses are separate.','customer-print-note'));
  findingsSection.append(text('p','Listed statuses are user recorded. Confirm affected product versions and prerequisites against original advisories before remediation decisions.','customer-print-note'));
  const order={critical:0,high:1,medium:2,low:3};
  const findings=[...stats.issues].sort((a,b)=>(order[a.severity]??4)-(order[b.severity]??4)).slice(0,250);
@@ -855,7 +872,7 @@ function buildCustomerPrintDocument(customer,stats,scope,date){
   head.append(text('strong',finding.id),sev,stateLabel);
   block.append(head,text('h3',finding.technology+' · '+(finding.version||'Unknown')),text('p',shortSummary(finding)));
   const meta=text('p','Asset: '+(finding.asset?.name||'Recorded asset')+'  |  Published: '+(finding.published||'Not available'),'customer-print-note');
-  block.append(meta);
+  block.append(meta,text('p','Applicability: '+applicability(finding).label+' — '+applicability(finding).reason,'customer-print-note'));
   if(finding.evidence)block.append(text('p','Assessment: '+finding.evidence,'customer-print-note'));
   block.append(text('p','DevOps tickets: '+(ticketFor(finding).join(', ')||'None recorded'),'customer-print-note'));
   if(finding.affected)block.append(text('p','Affected versions: '+finding.affected,'customer-print-note'));
@@ -1049,7 +1066,8 @@ function drawReport(){
  root.append(reportSection('Executive Summary'));
  const summary=text('div','','customer-report-summary');
  const high=stats.issues.filter(i=>normalize(i.severity)==='high').length;
- for(const [label,count,kind] of [['Critical findings',stats.critical,'critical'],['High findings',high,'high'],['Other findings',stats.total-stats.critical-high,'other'],['Total potential matches',stats.total,'total']]){
+ const confidence=window.CVEHARBOR_INVENTORY_MATCH.summarize(stats.issues);
+ for(const [label,count,kind] of [['Affected version detected',confidence.affected_version,'high'],['Needs verification',confidence.needs_verification,'other'],['Critical advisory candidates',stats.critical,'critical'],['Total candidates',stats.total,'total']]){
   const card=metric(label,count);card.dataset.kind=kind;card.prepend(reportIcon(kind));summary.append(card);
  }
  root.append(summary,text('p','Potential asset–CVE matches, not confirmed vulnerabilities. Verify applicability against vendor evidence.','ops-note customer-report-caveat'));
@@ -1074,7 +1092,7 @@ function drawReport(){
   stats.environments.find(e=>e.id===a.environment_id)?.name||'',a.name,a.asset_type||'',a.technology,a.version||'Unknown',a.notes||''
  ])));
  root.append(reportSection('Vulnerabilities Requiring Verification'),text('p',stats.total+' potential matches in the selected customer and environment require independent applicability verification. Remediation status does not establish verification.','ops-note'));
- root.append(table(['CVE','Software / Asset','Match classification','Verification evidence'],stats.issues.slice(0,250).map(i=>[i.id,i.technology+' · '+(i.asset?.name||''),i.level,i.evidence||'Requires verification'])));
+ root.append(table(['CVE','Software / Asset','Applicability','Verification evidence'],stats.issues.slice(0,250).map(i=>[i.id,i.technology+' · '+(i.asset?.name||''),applicability(i).label,applicability(i).reason+' '+(i.evidence||'')])));
  renderPluginMonitoring(root,stats);
  root.append(reportSection('CVE Findings'));
  for(const i of filteredFindings(stats.issues).slice(0,250)){
@@ -1188,9 +1206,9 @@ function renderUpgradeHistory(root,customer,environment){
 function csvReport(){
  const id=$('customerDashFilter').value,env=$('customerDashEnvironment').value;
  const customer=inventory.customers.find(c=>c.id===id);if(!customer)return;
- const rows=[['Customer','Environment','Asset','Technology','Installed version','CVE','Severity','CISA KEV','Match classification','Published','Summary','Vulnerability Fix Status','DevOps Ticket #','Affected versions','Version comparison','Remediation','Source','Evidence status','KEV added','CISA last checked','Source verification']];
+ const rows=[['Customer','Environment','Asset','Technology','Installed version','CVE','Severity','CISA KEV','Match classification','Published','Summary','Vulnerability Fix Status','DevOps Ticket #','Affected versions','Version comparison','Remediation','Source','Evidence status','KEV added','CISA last checked','Source verification','Applicability','Verification needed']];
  for(const f of filteredFindings(compute(id,env).issues))
-  rows.push([customer.name,f.environment?.name||'',f.asset?.name||'',f.technology,f.version,f.id,f.severity,f.known_exploited?'Yes':'No',f.level,f.published||'Not available',shortSummary(f),statusFor(f),ticketFor(f).join(' | '),f.affected||'',f.comparison_detail||'',f.remediation||'',f.source_url,f.evidence_status||'',f.kev_added||'',f.kev_verified_at?new Date(f.kev_verified_at).toISOString():'',(f.provenance||[]).map(p=>p.source+': '+(p.checked_at?new Date(p.checked_at).toISOString():'pending')).join('; ')]);
+  rows.push([customer.name,f.environment?.name||'',f.asset?.name||'',f.technology,f.version,f.id,f.severity,f.known_exploited?'Yes':'No',f.level,f.published||'Not available',shortSummary(f),statusFor(f),ticketFor(f).join(' | '),f.affected||'',f.comparison_detail||'',f.remediation||'',f.source_url,f.evidence_status||'',f.kev_added||'',f.kev_verified_at?new Date(f.kev_verified_at).toISOString():'',(f.provenance||[]).map(p=>p.source+': '+(p.checked_at?new Date(p.checked_at).toISOString():'pending')).join('; '),applicability(f).label,applicability(f).reason]);
  const csv=rows.map(r=>r.map(v=>{
   let value=String(v??'');
   if(/^[=+\-@\t\r]/.test(value))value="'"+value;

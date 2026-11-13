@@ -35,6 +35,7 @@ function candidate(asset,record,base){
  if(base.windowsServerApplicability(asset,record)==='outside')return null;
  const dotnet=base.dotnetAssessment(asset,record);
  if(dotnet?.state==='outside')return null;
+ if(!dotnet&&base.structuredAssessment(asset,record)==='outside')return null;
  const original=base.candidate(asset,record);
  if(dotnet&&original)return source(record)?original:null;
  if(!special&&(legacy.has(product)||product.startsWith('wordpress plugin:')))return original;
@@ -44,7 +45,7 @@ function candidate(asset,record,base){
 
  // Explicit reviewed CVIE identities retain the existing structured CPE rules.
  // OS/.NET Framework/IIS builds still require patch evidence, not a generic numeric comparison.
- if(original&&/^cvie_/.test(record.source_type||'')&&!['windows','windows server','.net framework','iis'].includes(product))return source(record)?original:null;
+ if(original&&/^cvie_/.test(record.source_type||''))return source(record)?original:null;
  const affected=String(record.affected||'');
  const aliases=patterns(asset.technology);
  if((!special&&product.length<4)||!aliases.some(pattern=>pattern.test(affected)))return null;
@@ -54,7 +55,7 @@ function candidate(asset,record,base){
   asset_id:asset.id,technology:asset.technology,version:asset.version||'',level:'category',
   evidence:'Potential product match in advisory affected-product text. Installed-version and patch applicability need verification.',
   affected,comparison_detail:dotnet?.detail||familyWarning(asset,record)||(product==='.net framework'?'Windows-serviced .NET Framework requires the installed Release registry value and applicable Windows/.NET update evidence. CLR compatibility versions alone cannot establish exposure.':'No automatic affected-version conclusion was made for this installed-product entry.'),
-  summary:record.summary||'',remediation:record.remediation||'',published:record.published||'',updated:record.updated||'',sources:record.sources||[],source_url:reference.url,source_label:reference.label||'Advisory source'};
+  summary:record.summary||'',remediation:record.remediation||'',published:record.published||'',updated:record.updated||'',verification_pending:!!record.verification_pending,disclosure_verification_stale:!!record.disclosure_verification_stale,sources:record.sources||[],source_url:reference.url,source_label:reference.label||'Advisory source'};
 }
 function install(){
  const base=root.CVEHARBOR_INVENTORY_MATCH;if(!base||base.inventoryAssessment)return;
@@ -62,7 +63,7 @@ function install(){
  // CVIE replaces advisory snapshots when evidence changes. Reuse product/version
  // work within a snapshot while assigning every finding to its current asset.
  const assessments=new WeakMap();
- base.candidate=(a,r)=>candidate(a,r,original);
+ base.candidate=(a,r)=>{const finding=candidate(a,r,original);return finding?base.assessFinding(finding,r):null;};
  base.evaluate=(assets,records,limit=150)=>{
   const items=[],seen=new Set();
   const advisoryRecords=records||[];
@@ -101,6 +102,7 @@ function summary(assets,records){
  if(!engine||!Array.isArray(records)||!records.length)return el('p','Assessment unavailable: the advisory index could not be loaded or is empty. Inventory remains saved; retry when the index is available.','ops-note');
  const result=engine.evaluate(assets,records,5000),matched=new Set(result.items.map(f=>f.asset_id));
  const panel=el('section','','data-panel ops-panel');panel.append(el('h2','Imported inventory assessment'),el('p',assets.length+' software entries assessed against '+records.length+' indexed advisory records. '+result.total+' potential asset/advisory matches. Checked '+new Date().toLocaleString()+'.','ops-note'),el('p','Inventory-based assessment only; no endpoint scan or AI request. No indexed match does not mean secure. Windows, IIS and .NET Framework require patch/build verification.','ops-note'));
+ const states=engine.summarize(result.items);panel.append(el('p',states.affected_version+' affected version detected · '+states.needs_verification+' need verification'+(result.limited?' (available results only)':'')+'. Applicability is separate from saved remediation status.','applicability-summary'));
  const review=assets.filter(a=>!a.version||!matched.has(a.id));
  if(review.length){const details=el('details'),title=el('summary',review.length+' entries need version or coverage review');details.append(title);
   for(const a of review)details.append(el('p',a.name+' · '+a.technology+' '+(a.version||'Unknown version')+' — '+(!a.version?'Installed version required.':'No indexed match; product mapping and source coverage remain unverified.')));panel.append(details);}

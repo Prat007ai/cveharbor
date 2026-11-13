@@ -61,7 +61,8 @@ function render(host,data,{findingLink,loadNetworks,savePrimary}={}){
     else{
      const rows=server.issues.slice(0,100).map(f=>{const a=server.assets.find(a=>a.id===(f.asset_id||f.asset?.id));let reference=node('span','Source unavailable');
       try{if(new URL(f.source_url).protocol==='https:'){reference=node('a','Advisory');reference.href=f.source_url;reference.target='_blank';reference.rel='noopener noreferrer';}}catch{}
-      return [findingLink?findingLink(f):f.id,a?.technology||f.technology,a?.version||'Unknown',f.severity||'Unknown',f.level==='version_review'?'Affected-version candidate':'Needs verification',f.evidence||'Review original advisory',reference];});
+      const state=root.CVEHARBOR_INVENTORY_MATCH?.applicability(f)||{label:'Needs verification',reason:'Review original advisory.'};
+      return [findingLink?findingLink(f):f.id,a?.technology||f.technology,a?.version||'Unknown',f.severity||'Unknown',state.label,state.reason+' '+(f.evidence||''),reference];});
      body.append(grid(['CVE','Product','Installed version','Severity','Assessment','Evidence','Source'],rows));
      if(server.issues.length>100)body.append(node('p','Showing the first 100 product matches for this server. Use the full vulnerability list below to continue review.'));
     }

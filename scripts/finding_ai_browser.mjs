@@ -14,6 +14,7 @@ try{for(const width of [1440,390]){
  f.inventory.assets=Array.from({length:152},(_,i)=>({id:'a'+i,environment_id:'e1',name:'PRIVATE-HOST',technology:'PHP',version:'8.4.1',notes:'PRIVATE-NOTES'}));
  const modern={id:'server',environment_id:'e1',name:'DEMO-SERVER2022',technology:'Windows Server',version:'10.0.20348.5761'};
  f.inventory.assets.push(modern);
+ f.advisories.push({...f.advisories[0],id:'CVE-2026-12347',verification_pending:true,known_exploited:true});
  f.inventory.assets.push({id:'dotnet',environment_id:'e1',name:'DEMO-SERVER2022',technology:'.NET Runtime',version:'7.0.14'});
  f.advisories.push({id:'CVE-2023-38180',source_type:'cvie_combined',cvie_products:['.NET Runtime'],title:'Patched .NET branch fixture',affected:'.NET Runtime: >= 7.0.0, < 7.0.10',severity:'critical',cna_affected:[{vendor:'Microsoft',product:'.NET 7.0',versions:[{version:'7.0.0',lessThan:'7.0.10',versionType:'custom',status:'affected'}]}],sources:[{url:'https://example.test/dotnet'}]});
  f.advisories.push({id:'CVE-2019-0708',categories:['Windows'],title:'Legacy Remote Desktop Services issue',affected:'Windows Server: 2008 R2 for x64-based Systems Service Pack 1 (Core installation); 2008 for x64-based Systems Service Pack 2',severity:'critical',known_exploited:true,sources:[{url:'https://example.test/legacy'}]});
@@ -41,6 +42,7 @@ try{for(const width of [1440,390]){
  });
  await page.goto('https://cveharbor.com/customer-dashboard/?customer=c1');await page.waitForSelector('#customerDashStatus[data-ready="true"]');
  await noLegacy();assert.equal(await page.evaluate(()=>window.CVEHARBOR_INVENTORY_MATCH.evaluate([{id:'server',technology:'Windows Server',version:'10.0.20348.5761'}],window.CVEHARBOR_DATA.advisories).total),0);
+ assert.ok(await page.locator('.applicability-summary').count());
  await page.locator('.finding-ai-priority').first().click();
  assert.equal(posts,0,'opening evidence must not spend allowance');
  const dialog=page.locator('dialog[open]');await dialog.locator('.finding-ai-generate').evaluate(button=>{button.click();button.click();});
@@ -50,12 +52,21 @@ try{for(const width of [1440,390]){
  await page.locator('.finding-ai-priority').first().click();await page.locator('dialog[open] .finding-ai-generate').click();await page.waitForFunction(()=>document.querySelector('dialog[open] .finding-ai-status').textContent.includes('paused'));assert.equal(posts,1);
  await page.goto('https://cveharbor.com/customer-reports/?customer=c1');await page.waitForSelector('#customerDashStatus[data-ready="true"]');
  await noLegacy();
+ await page.getByLabel('Filter finding applicability',{exact:true}).selectOption('needs_verification');
+ assert.ok(await page.locator('td[data-applicability="needs_verification"]').count());
+ assert.equal(await page.locator('td[data-applicability="affected_version"]').count(),0);
+ await page.getByLabel('Filter finding applicability',{exact:true}).selectOption('affected_version');
+ assert.ok(await page.locator('td[data-applicability="affected_version"]').count());
+ assert.equal(await page.locator('td[data-applicability="needs_verification"]').count(),0);
+ await page.getByLabel('Filter finding applicability',{exact:true}).selectOption('all');
  assert.equal(await page.locator('.customer-print-document').count(),0,'hidden print document must be lazy');
  const started=Date.now();await page.selectOption('#customerDashFilter','c2');await page.selectOption('#customerDashFilter','c1');const selectionMs=Date.now()-started;
  assert.equal(await page.locator('.customer-print-document').count(),0);
  await page.evaluate(()=>window.dispatchEvent(new Event('beforeprint')));assert.equal(await page.locator('.customer-print-document').count(),1);assert.match(await page.locator('.customer-print-document').textContent(),/Fixture Harbor/);
  assert.doesNotMatch(await page.locator('.customer-print-document').textContent(),/CVE-2019-0708/);
  assert.doesNotMatch(await page.locator('.customer-print-document').textContent(),/CVE-2023-38180/);
+ assert.match(await page.locator('.customer-print-document').textContent(),/Applicability: Needs verification/);
+ assert.match(await page.locator('.customer-print-document').textContent(),/Applicability: Affected version detected/);
  await page.evaluate(()=>window.dispatchEvent(new Event('afterprint')));await page.selectOption('#customerDashFilter','c2');await page.evaluate(()=>window.dispatchEvent(new Event('beforeprint')));assert.doesNotMatch(await page.locator('.customer-print-document').textContent(),/PRIVATE-HOST/);await page.evaluate(()=>window.dispatchEvent(new Event('afterprint')));
  enabled=true;await page.goto('https://cveharbor.com/customer-dashboard/?org=north&customer=c1');await page.locator('.finding-ai-priority').first().click();await page.locator('dialog[open] .finding-ai-generate').click();await page.locator('dialog[open] .finding-ai-answer:not([hidden])').waitFor();assert.equal(posts,2);
  await noLegacy();
