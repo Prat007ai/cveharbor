@@ -1173,7 +1173,11 @@ async function paintReport(cancelled=()=>false){
  // Build off-screen across cooperative yields. Publishing partial tables forces
  // repeated layout and makes every CVIE/history update visibly blank the report.
  const target=$('customerReportBody'),root=text('div'),assessment=text('div');
- const publish=()=>{if(cancelled())return;target.replaceChildren(...root.childNodes);target.dataset.scope=JSON.stringify([id,env]);$('customerReportAssessment').replaceChildren(...assessment.childNodes);};
+ const publish=()=>{
+  if(cancelled())return;
+  if(reportPrinting){reportRedrawPending=true;return;}
+  target.replaceChildren(...root.childNodes);target.dataset.scope=JSON.stringify([id,env]);$('customerReportAssessment').replaceChildren(...assessment.childNodes);
+ };
  const customer=inventory.customers.find(c=>c.id===id);
  $('customerReportPrint').disabled=!customer;
  $('customerReportCsv').disabled=!customer;
