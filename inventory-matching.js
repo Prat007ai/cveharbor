@@ -17,6 +17,8 @@ const numeric=x=>/^\d+(?:\.\d+){1,3}$/.test(x);
 const serverBuildFamilies={'6.0.6001':'2008','6.0.6002':'2008','6.1.7600':'2008 R2','6.1.7601':'2008 R2','6.2.9200':'2012','6.3.9600':'2012 R2','10.0.14393':'2016','10.0.17763':'2019','10.0.20348':'2022','10.0.26100':'2025'};
 function serverFamily(value){
  const text=String(value||'').trim();
+ const sac=/^(?:Windows Server\s*[:,]?\s*)?version\s+(1709|1803|1809|1903|1909|2004|20H2)(?:\s+\((?:Server )?Core installation\))?$/i.exec(text);
+ if(sac)return 'version '+sac[1].toUpperCase();
  const build=/^(\d+\.\d+\.\d+)(?:\.\d+)?$/.exec(text);
  if(build)return serverBuildFamilies[build[1]]||null;
  // Accept only complete product labels, not prose, ranges or future releases.
@@ -27,15 +29,34 @@ function serverFamily(value){
 function windowsServerApplicability(asset,record){
  if(norm(asset.technology)!=='windows server')return 'unknown';
  const installed=serverFamily(asset.version);if(!installed)return 'unknown';
- const raw=String(record.affected||''),text=raw.trim();
- // The source display is capped at 4,000 characters. Partial/qualified lists
- // cannot prove absence. A stale update pending verification also stays reviewable.
- if(!text||raw.length>=4000||record.verification_pending)return 'unknown';
- const entries=text.split(/[;\n]/).map(x=>x.trim());
- if(!/^Windows Server\b/i.test(entries[0]))return 'unknown';
- const families=entries.map(serverFamily);
+ if(record.verification_pending)return 'unknown';
+ let families=[];
+ const rows=(record.cna_affected||[]).filter(r=>/^(?:Microsoft\s+)?Windows Server\b/i.test(String(r.product||'')));
+ if(record.cna_affected?.length&&!rows.length)return 'unknown';
+ if(rows.length){
+  for(const row of rows){
+   const productFamily=serverFamily(row.product);
+   if(productFamily===installed)return 'possible';
+   if(row.defaultStatus==='affected'&&!productFamily)return 'unknown';
+   if(!row.versions?.length){if(productFamily)families.push(productFamily);else return 'unknown';}
+   for(const v of row.versions||[]){
+    if(v.status==='unaffected')continue;
+    if(v.status!=='affected'||v.changes?.length)return 'unknown';
+    // An explicitly named OS family remains distinct even when its patch range
+    // is complex. Generic Server labels need a complete release identity.
+    const family=productFamily||(!v.lessThan&&!v.lessThanOrEqual&&serverFamily(v.version));
+    if(!family)return 'unknown';families.push(family);
+   }
+  }
+ }else{
+  const raw=String(record.affected||''),text=raw.trim();
+  if(!text||raw.length>=4000)return 'unknown';
+  const entries=text.split(/[;\n]/).map(x=>x.trim());
+  if(!/^Windows Server\b/i.test(entries[0]))return 'unknown';
+  families=entries.map(serverFamily);
+ }
  if(families.includes(installed))return 'possible';
- if(families.some(x=>!x))return 'unknown';
+ if(!families.length||families.some(x=>!x))return 'unknown';
  // Merged records may carry additional structured evidence not present in the
 // display text. Never discard a candidate when that evidence is contradictory.
  for(const range of record.affected_cpes||[]){
@@ -47,18 +68,6 @@ function windowsServerApplicability(asset,record){
   const named=/^windows_server_(2003|2008|2012|2016|2019|2022|2025)(_r2)?$/.exec(p[4]||'');
   if(named&&named[1]+(named[2]?' R2':'')===installed)return 'possible';
  }
- for(const row of record.cna_affected||[]){
-  if(row.defaultStatus==='affected')return 'unknown';
-  const productFamily=serverFamily(row.product);
-  if(productFamily===installed)return 'possible';
-  for(const v of row.versions||[]){
-   if(v.status==='unaffected')continue;
-   if(v.status!=='affected'||v.lessThan||v.lessThanOrEqual||v.changes?.length)return 'unknown';
-   const family=serverFamily(v.version)||((v.version==='*'||v.version==='-')&&productFamily);
-   if(!family)return 'unknown';
-   if(family===installed)return 'possible';
-  }
- }
  return 'outside';
 }
 function compare(a,b){
@@ -68,6 +77,58 @@ function compare(a,b){
   if((x[i]||0)!==(y[i]||0))return(x[i]||0)>(y[i]||0)?1:-1;
  }
  return 0;
+}
+function dotnetKind(value){
+ const name=norm(value).replace(/^microsoft\s+/,'');
+ if(name==='.net')return 'runtime';
+ if(/^\.net (?:core )?sdk\b/.test(name))return 'sdk';
+ if(/^asp\.net core\b/.test(name))return 'aspnet';
+ if(/^\.net (?:desktop runtime|windows desktop runtime|runtime|core runtime|core(?:\s|$)|\d|$)/.test(name))return 'runtime';
+ return null;
+}
+// Microsoft uses "custom" for ordinary numeric .NET ranges as well as complex
+// servicing statements. Interpret only explicit numeric ranges, preserving the
+// original product/branch/platform; never compare SDK builds as runtime patches.
+function dotnetAssessment(asset,record){
+ const kind=dotnetKind(asset.technology);if(!kind)return null;
+ const rows=record.cna_affected;if(!Array.isArray(rows)||!rows.length){
+  if(!/^cvie_/.test(record.source_type||''))return null;
+  const product=norm(asset.technology),families=(record.cvie_identities||[]).filter(x=>norm(x.name)===product).map(x=>String(x.cpe).split(':').slice(0,5).join(':'));
+  const ranges=(record.affected_cpes||[]).filter(x=>x.cvie_product_key?norm(x.cvie_product_key)===product:families.includes(String(x.criteria).split(':').slice(0,5).join(':')));
+  return cvieVersionAssessment(String(asset.version||''),ranges)==='outside'?{state:'outside',detail:'Installed version is outside the structured affected ranges.'}:null;
+ }
+ const microsoft=rows.filter(r=>/^microsoft(?: corporation)?$/i.test(String(r.vendor||'').trim()));
+ const modern=microsoft.filter(r=>dotnetKind(r.product));if(!modern.length)return null;
+ const version=String(asset.version||'').trim(),installed=/^(\d+)\.(\d+)(?:\.(\d+))?$/.exec(version);
+ if(!installed||record.verification_pending)return {state:'unknown',detail:'Exact installed .NET version and current vendor evidence are required.'};
+ let unknown=false,within=false;const evidence=[];
+ for(const row of modern){
+  const product=String(row.product||''),rowKind=dotnetKind(product);
+  const branch=/\b(\d+)\.(\d+)\b/.exec(product);
+  const sdkStyle=(row.versions||[]).some(v=>[v.lessThan,v.lessThanOrEqual].some(x=>/^\d+\.\d+\.\d+$/.test(x||'')&&Number(x.split('.')[2])>=100));
+  const ambiguousSdk=rowKind==='runtime'&&sdkStyle&&!/\bruntime\b/i.test(product);
+  if(rowKind!==kind&&!(kind==='sdk'&&ambiguousSdk))continue;
+  if(asset.assessment_os==='windows'){
+   const platform=[product,...(row.platforms||[])].join(' ');
+   if(/\blinux\b|\bmac\s*os\b/i.test(platform)&&!/\bwindows\b/i.test(platform))continue;
+  }
+  if(branch&&(Number(branch[1])!==Number(installed[1])||Number(branch[2])!==Number(installed[2])))continue;
+  if(ambiguousSdk){unknown=true;continue;}
+  if(!row.versions?.length||row.defaultStatus==='affected')unknown=true;
+  for(const range of row.versions||[]){
+   if(range.status==='unaffected'){unknown=true;continue;}
+   if(range.status!=='affected'||range.changes?.length){unknown=true;continue;}
+   const lower=String(range.version||''),upper=range.lessThan||range.lessThanOrEqual;
+   if(!numeric(lower)||upper&&!numeric(upper)){unknown=true;continue;}
+   const start=compare(version,lower),end=upper?compare(version,upper):null;
+   if(upper&&compare(lower,upper)>=0){unknown=true;continue;}
+   const matches=upper?start>=0&&(range.lessThan?end<0:end<=0):start===0;
+   if(matches){within=true;evidence.push(product+': '+(upper?'>= '+lower+', '+(range.lessThan?'< ':'<= ')+upper:lower));}
+  }
+ }
+ return within?{state:'within',detail:'Installed '+version+' matches the original Microsoft affected range: '+[...new Set(evidence)].join('; ')+'. Verify platform, installed component and deployment prerequisites; this is not confirmed exposure.'}:
+  unknown?{state:'unknown',detail:'Original Microsoft evidence needs component or servicing verification. SDK-style versions, prereleases and complex conditions are not treated as runtime patch versions.'}:
+  {state:'outside',detail:'Installed .NET component/release is outside the original Microsoft affected-product ranges.'};
 }
 // Fixed PHP release versions published by the PHP project on 21 October 2026.
 // Keep this narrowly scoped; an arbitrary bulletin must not inherit this evidence.
@@ -128,12 +189,13 @@ function preciseProductMatch(asset,cve){
 function candidate(asset,cve){
  const product=norm(asset.technology);
  if(windowsServerApplicability(asset,cve)==='outside')return null;
+ const dotnet=dotnetAssessment(asset,cve);if(dotnet?.state==='outside')return null;
  if(!product||!/^(CVE-\d{4}-\d{4,}|GHSA-[a-z0-9-]+)$/i.test(String(cve.id||'')))return null;
  if((cve.cvie_excluded_products||[]).some(name=>norm(name)===product))return null;
  if(/rejected|withdrawn/i.test(String(cve.status||'')))return null;
  const cvie=/^cvie_/.test(cve.source_type||'')&&(cve.cvie_products||[]).some(name=>norm(name)===product);
  const tags=(cve.categories||[]).map(norm);
- if(!cvie&&!(product.startsWith('wordpress plugin:')?tags.includes('wordpress / plugins'):(categories[product]||[product]).some(t=>tags.includes(norm(t)))))return null;
+ if(!cvie&&!dotnet&&!(product.startsWith('wordpress plugin:')?tags.includes('wordpress / plugins'):(categories[product]||[product]).some(t=>tags.includes(norm(t)))))return null;
  if(!cvie&&!preciseProductMatch(asset,cve))return null;
  // An OS release alone cannot establish exposure to arbitrary application
  // packages (Redis, curl, OpenSSL, etc). Require actual package inventory.
@@ -150,7 +212,7 @@ function candidate(asset,cve){
  const vendorAssessment=cvie?null:phpVendorAssessment(product,version,cve);
  if(vendorAssessment?.exclude)return null;
  if(vendorAssessment){level=vendorAssessment.level;evidence=vendorAssessment.evidence;comparisonDetail=vendorAssessment.comparison_detail;}
- if(cvie){
+ if(cvie&&!dotnet){
   const families=(cve.cvie_identities||[]).filter(x=>norm(x.name)===product).map(x=>x.cpe.split(':').slice(0,5).join(':'));
   const result=cvieVersionAssessment(version,(cve.affected_cpes||[]).filter(x=>x.cvie_product_key?norm(x.cvie_product_key)===product:families.includes(String(x.criteria).split(':').slice(0,5).join(':'))));
   if(result==='outside')return null;
@@ -158,6 +220,7 @@ function candidate(asset,cve){
   evidence=result==='within'?'CVIE product identity and a published numeric version range match. Verify vendor prerequisites and deployment before treating this as exposure.':'CVIE matched the affected product identity. Installed-version applicability still needs verification.';
   comparisonDetail=result==='within'?'Installed '+version+' is within a structured affected-version range. Complex configuration prerequisites are not evaluated.':'No unambiguous supported numeric comparison is available. Review the original advisory.';
  }
+ if(dotnet){level=dotnet.state==='within'?'version_review':'category';evidence=dotnet.state==='within'?'Microsoft component and affected-version range match; deployment verification required.':'Microsoft .NET applicability requires verification.';comparisonDetail=dotnet.detail;}
  const distroAsset=['debian','debian linux','ubuntu','ubuntu linux'].includes(product);
  if(distroAsset){
   evidence='Distribution advisory candidate only. OS release does not identify the installed source package or Debian backported revision. Verify package name, Debian suite and installed package version in the security tracker.';
@@ -169,7 +232,7 @@ function candidate(asset,cve){
  // Inventory prefixes plugin names; publisher ranges usually omit that prefix.
  const rangeProduct=product.replace(/^wordpress plugin:\s*/, '');
  const mentions=norm(affected).includes(rangeProduct);
- if(!cvie&&!vendorAssessment&&!distroAsset&&mentions&&numeric(version)&&!/\b(except|unless|only when|requires|if configured)\b/i.test(affected)){
+ if(!cvie&&!dotnet&&!vendorAssessment&&!distroAsset&&mentions&&numeric(version)&&!/\b(except|unless|only when|requires|if configured)\b/i.test(affected)){
   const ranges=[...affected.matchAll(/\b(before|prior to|earlier than|through|up to)\s+(?:version\s+)?(\d+(?:\.\d+){1,3})\b/gi)];
   if(ranges.length===1){
    const comparison=compare(version,ranges[0][2]);
@@ -231,5 +294,5 @@ function evaluate(assets,advisories,limit=150){
   Number(b.level==='version_review')-Number(a.level==='version_review')||a.id.localeCompare(b.id));
  return {items:items.slice(0,limit),total:items.length,limited:items.length>limit};
 }
-root.CVEHARBOR_INVENTORY_MATCH={candidate,evaluate,compare,cvieVersionAssessment,windowsServerApplicability};
+root.CVEHARBOR_INVENTORY_MATCH={candidate,evaluate,compare,cvieVersionAssessment,windowsServerApplicability,dotnetAssessment};
 })(window);

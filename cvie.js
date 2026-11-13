@@ -30,6 +30,7 @@ function merge(base=[]){
    categories:[...new Set([...(prior.categories||[]),...(record.categories||[])])],
    cvie_products:[...new Set([...(prior.cvie_products||[]),...(record.cvie_products||[])])],
    cvie_identities:[...(prior.cvie_identities||[]),...(record.cvie_identities||[])],
+   cna_affected:[...new Map([...(prior.cna_affected||[]),...(record.cna_affected||[])].map(row=>[JSON.stringify(row),row])).values()],
    affected_cpes:[...(prior.affected_cpes||[]),...(record.affected_cpes||[])],sources:[...source.values()]});
  }
  return [...result.values()].map(record=>{

@@ -33,7 +33,10 @@ function candidate(asset,record,base){
  const product=norm(asset.technology),special=Object.hasOwn(names,product);
  // Respect exclusions before the broad affected-product fallback can recreate them.
  if(base.windowsServerApplicability(asset,record)==='outside')return null;
+ const dotnet=base.dotnetAssessment(asset,record);
+ if(dotnet?.state==='outside')return null;
  const original=base.candidate(asset,record);
+ if(dotnet&&original)return source(record)?original:null;
  if(!special&&(legacy.has(product)||product.startsWith('wordpress plugin:')))return original;
  if(!special&&original)return original;
  if(!/^(CVE-\d{4}-\d{4,}|GHSA-[a-z0-9-]+)$/i.test(record.id||'')||/rejected|withdrawn/i.test(record.status||''))return null;
@@ -50,7 +53,7 @@ function candidate(asset,record,base){
  return {id:record.id,title:record.title||record.summary||record.id,severity:record.severity||'unknown',known_exploited:!!record.known_exploited,
   asset_id:asset.id,technology:asset.technology,version:asset.version||'',level:'category',
   evidence:'Potential product match in advisory affected-product text. Installed-version and patch applicability need verification.',
-  affected,comparison_detail:familyWarning(asset,record)||'No automatic affected-version conclusion was made for this installed-product entry.',
+  affected,comparison_detail:dotnet?.detail||familyWarning(asset,record)||(product==='.net framework'?'Windows-serviced .NET Framework requires the installed Release registry value and applicable Windows/.NET update evidence. CLR compatibility versions alone cannot establish exposure.':'No automatic affected-version conclusion was made for this installed-product entry.'),
   summary:record.summary||'',remediation:record.remediation||'',published:record.published||'',updated:record.updated||'',sources:record.sources||[],source_url:reference.url,source_label:reference.label||'Advisory source'};
 }
 function install(){
@@ -69,8 +72,10 @@ function install(){
    assessments.set(advisoryRecords,cached);
   }
   const byProduct=cached.products;
-  for(const asset of assets||[]){
-   const key=JSON.stringify([asset.technology,asset.version]);
+  const windowsHosts=new Set((assets||[]).filter(a=>a.name&&a.environment_id&&norm(a.technology)==='windows server').map(a=>JSON.stringify([a.environment_id,a.name])));
+  for(const rawAsset of assets||[]){
+   const asset=windowsHosts.has(JSON.stringify([rawAsset.environment_id,rawAsset.name]))?{...rawAsset,assessment_os:'windows'}:rawAsset;
+   const key=JSON.stringify([asset.technology,asset.version,asset.assessment_os]);
    let matches=byProduct.get(key);
    if(!matches){
     matches=[];

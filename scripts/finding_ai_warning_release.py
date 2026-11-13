@@ -1,4 +1,4 @@
-"""Exclude incompatible Windows Server families on the verified PR353 website."""
+"""Check original .NET component versions on the verified PR354 website."""
 import os
 from pathlib import Path
 import shutil
@@ -11,8 +11,8 @@ import production_release_checks as checks
 import team_release as team
 import version_picker_release as publisher
 
-BASE = '5ac8518a2ceb5906eb3c52726795e8e2791cdce9'
-CHANGED = {'inventory-assessment.js', 'inventory-matching.js'}
+BASE = '98d0692a2b7634a973334ae35630a4fb91d4aff9'
+CHANGED = {'inventory-assessment.js', 'inventory-matching.js', 'cvie.js'}
 
 
 def prepare(out):
@@ -30,8 +30,17 @@ def prepare(out):
     for name in CHANGED:
         original = pkg.git('show', BASE + ':' + name)
         served = (out / 'before' / name).read_bytes()
-        pkg.require(served.replace(b'\r\n', b'\n') == original, 'Unexpected predecessor ' + name)
-        (out / 'after' / name).write_bytes(Path(name).read_bytes().replace(b'\r\n', b'\n'))
+        if name == 'cvie.js':
+            # The served CVIE has older independently reviewed overlays. Apply
+            # only this original-CNA preservation change to those serving bytes.
+            with tempfile.TemporaryDirectory() as temp:
+                old, new = Path(temp)/'old', Path(temp)/'new'
+                old.write_bytes(original)
+                new.write_bytes(Path(name).read_bytes().replace(b'\r\n', b'\n'))
+                (out/'after'/name).write_bytes(pkg.git('merge-file', '-p', str(out/'before'/name), str(old), str(new)))
+        else:
+            pkg.require(served.replace(b'\r\n', b'\n') == original, 'Unexpected predecessor ' + name)
+            (out / 'after' / name).write_bytes(Path(name).read_bytes().replace(b'\r\n', b'\n'))
     pkg.require(pkg.files(out / 'before') == pkg.files(out / 'after'), 'Asset inventory changed')
     delta = {name for name in pkg.files(out / 'before')
              if (out / 'before' / name).read_bytes() != (out / 'after' / name).read_bytes()}
@@ -45,15 +54,15 @@ def ready():
 def run(action, out):
     if action == 'prepare':
         return prepare(out)
-    pr = team.reviewed('fix/windows-server-applicability')
+    pr = team.reviewed('fix/dotnet-version-applicability')
     pkg.require(checks.check_commit(os.environ['GITHUB_SHA']), 'Required application/security checks incomplete')
     if action == 'preflight':
         prod.policy(publisher.ENV)
         ready()
     elif action == 'publish':
         publisher.publish(out, changed=CHANGED, added=set(), reviewed_pr=pr, ready=ready,
-                          previous_version='3aef1513-3149-4d4d-944a-624384c281d6',
-                          previous_deployment='2b248af2-838d-4fd3-bff5-72299303a6ca',
+                          previous_version='7e54c02d-72b9-4d9c-b7a3-aca5d8b88c3d',
+                          previous_deployment='7b3e6536-e10a-46e9-a08f-3918ad48778b',
                           served_copy=out / 'verified-origin')
     else:
         raise ValueError(action)
