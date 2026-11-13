@@ -221,4 +221,5 @@ BEGIN
 END;
 CREATE INDEX IF NOT EXISTS idx_capacity_asset_environment ON inventory_assets(user_id,environment_id,id);
 CREATE INDEX IF NOT EXISTS idx_capacity_environment_customer ON inventory_environments(user_id,customer_id,id);
+CREATE INDEX IF NOT EXISTS idx_capacity_package_environment ON inventory_packages(user_id,environment_id,id);
 INSERT OR IGNORE INTO inventory_capacity_schema(version) VALUES(1);

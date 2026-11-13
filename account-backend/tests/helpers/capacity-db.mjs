@@ -1,9 +1,10 @@
 import {DatabaseSync} from 'node:sqlite';
 import fs from 'node:fs';
+import {createHash,randomBytes} from 'node:crypto';
 export const fixtureId=n=>Number(n).toString(16).padStart(8,'0')+'-1111-4111-8111-111111111111';
 export function capacityFixture({customers=50,environments=100,assets=10000,owners=1}={}){
- const sql=new DatabaseSync(':memory:');sql.exec('PRAGMA foreign_keys=ON; CREATE TABLE users(id TEXT PRIMARY KEY); CREATE TABLE operations_control(id INTEGER PRIMARY KEY,database_frozen INTEGER); INSERT INTO operations_control VALUES(1,0);');
- for(let i=0;i<owners;i++)sql.prepare('INSERT INTO users VALUES(?)').run('owner-'+i);
+ const sql=new DatabaseSync(':memory:');for(const file of ['schema.sql','totp-schema.sql','migrations/0032_recovery_control.sql'])sql.exec(fs.readFileSync(new URL('../../'+file,import.meta.url),'utf8'));
+ for(let i=0;i<owners;i++)sql.prepare('INSERT INTO users(id,email) VALUES(?,?)').run('owner-'+i,'capacity-'+i+'@example.test');
  for(const file of ['inventory-schema.sql','finding-status-schema.sql','finding-ticket-schema.sql','finding-ticket-history-schema.sql','plugin-source-schema.sql','plugin-monitor-schema.sql','plugin-release-schema.sql','package-inventory-schema.sql','../../deployment/proposals/server-network/schema.sql','inventory-capacity-schema.sql']){
   const url=file.startsWith('../../')?new URL('../../../deployment/proposals/server-network/schema.sql',import.meta.url):new URL('../../'+file,import.meta.url);sql.exec(fs.readFileSync(url,'utf8'));
  }
@@ -15,4 +16,16 @@ export function capacityFixture({customers=50,environments=100,assets=10000,owne
  sql.exec('COMMIT');
  const DB={sql,prepare(query){const statement=sql.prepare(query);const make=args=>({bind:(...values)=>make(values),first:async()=>statement.get(...args)||null,all:async()=>({results:statement.all(...args)}),runSync:()=>statement.columns().length?{results:statement.all(...args),meta:{changes:0}}:{meta:{changes:Number(statement.run(...args).changes)}},run:async()=>statement.columns().length?{results:statement.all(...args),meta:{changes:0}}:{meta:{changes:Number(statement.run(...args).changes)}}});return make([]);},async batch(statements){sql.exec('BEGIN');try{const values=statements.map(s=>s.runSync());sql.exec('COMMIT');return values;}catch(error){sql.exec('ROLLBACK');throw error;}}};
  return {DB,sql,close:()=>sql.close()};
+}
+
+// Fictional sessions use the real session hash and enabled-MFA checks. Tokens
+// are generated per run and must never be printed or added to test artifacts.
+export function capacitySessions(sql,owners=50){
+ const tokens=Array.from({length:owners},()=>randomBytes(32).toString('hex'));
+ const expires=Math.floor(Date.now()/1000)+1800;
+ tokens.forEach((token,i)=>{
+  sql.prepare('INSERT INTO user_totp(user_id,encrypted_secret,enabled,created_at) VALUES(?,?,1,1)').run('owner-'+i,'fictional-not-enrollable');
+  sql.prepare('INSERT INTO sessions(id,user_id,token_hash,expires_at,created_at) VALUES(?,?,?,?,1)').run('load-session-'+i,'owner-'+i,createHash('sha256').update(token).digest('hex'),expires);
+ });
+ return tokens;
 }

@@ -38,8 +38,10 @@ async function cap(env,table,userId,max){
   if(Number(row?.total||0)>=max)throw new InventoryError('Inventory limit reached',409);
 }
 export async function inventoryRoute(req,env,user,path,data={},write=statement=>statement.run()){
-  if(path==='/v1/inventory/status'&&req.method==='GET')
-    return json({storage:'d1',ready:await ready(env),max_customers:100,max_environments:500,max_assets:await capacityReady(env.DB)?INVENTORY_CAPACITY:3000,pagination:await capacityReady(env.DB)});
+  if(path==='/v1/inventory/status'&&req.method==='GET'){
+    const pagination=await capacityReady(env.DB);
+    return json({storage:'d1',ready:await ready(env),max_customers:100,max_environments:500,max_assets:pagination?INVENTORY_CAPACITY:3000,pagination});
+  }
   await ensureReady(env);
   if(path==='/v1/inventory/page'&&req.method==='GET')return json(await inventoryPage(req,env,user));
   if(path==='/v1/inventory/server-network'){
@@ -146,8 +148,9 @@ export async function inventoryRoute(req,env,user,path,data={},write=statement=>
     if(version.length>80||notes.length>500)throw new InventoryError('Asset details too long');
     await cap(env,'inventory_assets',user.id,await capacityReady(env.DB)?INVENTORY_CAPACITY:3000);
     const recordId=crypto.randomUUID();
-    await write(env.DB.prepare('INSERT INTO inventory_assets(id,user_id,environment_id,name,asset_type,technology,version,notes) VALUES(?,?,?,?,?,?,?,?)')
-      .bind(recordId,user.id,environment,name,assetType,technology,version,notes));
+    try{await write(env.DB.prepare('INSERT INTO inventory_assets(id,user_id,environment_id,name,asset_type,technology,version,notes) VALUES(?,?,?,?,?,?,?,?)')
+      .bind(recordId,user.id,environment,name,assetType,technology,version,notes));}
+    catch(error){if(String(error.message).includes('Inventory limit reached'))throw new InventoryError('Inventory limit reached',409);throw error;}
     return json({created:true,id:recordId},201);
   }
   const match=/^\/v1\/inventory\/(customers|environments|assets)\/([0-9a-f-]{36})$/.exec(path);

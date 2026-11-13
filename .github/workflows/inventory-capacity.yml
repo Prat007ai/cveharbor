@@ -25,7 +25,7 @@ jobs:
         with:
           node-version: '24'
       - name: Verify completeness, revisions, limits and customer isolation
-        run: node --test account-backend/tests/inventory-capacity.test.mjs account-backend/tests/inventory-history.test.mjs account-backend/tests/inventory-import.test.mjs
+        run: node --test scripts/inventory_capacity_cloud.test.mjs account-backend/tests/inventory-capacity.test.mjs account-backend/tests/inventory-history.test.mjs account-backend/tests/inventory-import.test.mjs
       - name: Rehearse 50 concurrent sessions against loopback only
         env:
           CAPACITY_OUTPUT: capacity-local.json

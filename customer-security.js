@@ -424,7 +424,7 @@ function loadReportScope(){
  const promise=(async()=>{
   const {readInventory}=window.CVEHARBOR_INVENTORY_CLIENT||await import('/inventory-client.js');
   const settings={customer,signal};
-  const next={...inventory,assets:[],...customer?await readInventory('inventory',{...settings,resourceList:['assets']}):{},scopeCustomer:customer};
+  const next={...inventory,assets:[],...(customer?await readInventory('inventory',{...settings,resourceList:['assets']}):{}),scopeCustomer:customer};
   const [saved,tickets,installed,sources]=customer?await Promise.all(['finding-statuses','finding-tickets','plugin-installation-status','plugin-sources'].map(path=>readInventory(path,settings))):Array.from({length:4},()=>({ready:true,append_ready:true}));
   if(signal.aborted||sequence!==reportScopeSequence||epoch!==customerDataEpoch||!customerReady)return;
   inventory=next;upgradeHistory.clear();

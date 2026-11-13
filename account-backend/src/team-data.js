@@ -60,7 +60,7 @@ export async function teamDataRoute(req,env,user,org,action,id,data,response,aud
     const read=(columns,joins,suffix='')=>db.prepare('SELECT '+columns+' FROM '+visible+joins+where+suffix).bind(...args);
     const [customer,environments,assets,findings,records,activity]=await db.batch([
       read('v.name,v.role',''),read('e.id,e.name,e.kind',environment,' ORDER BY e.name'),
-      pagination?empty():read('a.id,a.environment_id,a.name,e.name AS environment,a.asset_type,a.technology,a.version,a.notes',environment+asset,' ORDER BY e.name,a.name'),
+      pagination?empty():read('a.id,a.environment_id,a.name,e.name AS environment,a.asset_type,a.technology,a.version,a.notes',environment+asset,' ORDER BY e.name,a.name LIMIT 3001'),
       pagination?empty():read('a.id AS asset_id,a.name AS asset,f.cve_id,f.status,f.notes',environment+asset+' JOIN customer_finding_statuses f ON f.asset_id=a.id AND f.user_id=a.user_id',' ORDER BY f.cve_id,a.name'),
       read('r.cve_id AS id,r.status,r.owner,r.due,r.notes,r.updated_at',record,' ORDER BY r.cve_id'),
       read('u.email,h.action,h.at',' JOIN team_audit h ON h.org=v.org AND h.customer_id=v.customer_id JOIN users u ON u.id=h.actor',' ORDER BY h.id DESC LIMIT 25')

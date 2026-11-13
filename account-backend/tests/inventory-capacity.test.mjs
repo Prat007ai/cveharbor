@@ -3,10 +3,42 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {inventoryPage} from '../src/inventory-pages.js';
 import {inventoryRoute} from '../src/inventory.js';
-import {capacityFixture,fixtureId} from './helpers/capacity-db.mjs';
+import {capacityFixture,capacitySessions,fixtureId} from './helpers/capacity-db.mjs';
+import worker from '../src/index.js';
 import {readInventory} from '../../inventory-client.js';
 const url='https://api.cveharbor.com/v1/inventory/page?';
 const read=(env,params={},owner='owner-0',team)=>inventoryPage(new Request(url+new URLSearchParams(params)),env,{id:owner},team);
+
+test('full Worker requires current session and enabled MFA, scopes pages and drains recovery leases',async()=>{
+ const f=capacityFixture({owners:2,customers:2,environments:2,assets:1000}),tokens=capacitySessions(f.sql,2);
+ const call=(token,query='',origin='https://cveharbor.com')=>worker.fetch(new Request(url+query,{headers:{Origin:origin,...token?{Cookie:'cvh_session='+token}:{}}}),{DB:f.DB,RECOVERY_CONTROL_REQUIRED:'true'});
+ try{
+  assert.equal((await call()).status,401);
+  assert.equal((await call(tokens[0],'','https://foreign.example')).status,403);
+  assert.equal((await call(tokens[0],'customer_id='+fixtureId(2))).status,404);
+  const r=await call(tokens[0]);assert.equal(r.status,200);const first=await r.json();assert.ok(first.next_cursor);
+  f.sql.prepare('UPDATE user_totp SET enabled=0 WHERE user_id=?').run('owner-0');
+  assert.equal((await call(tokens[0],'cursor='+first.next_cursor)).status,401);
+  f.sql.prepare('UPDATE user_totp SET enabled=1 WHERE user_id=?').run('owner-0');
+  f.sql.prepare('DELETE FROM sessions WHERE user_id=?').run('owner-0');
+  assert.equal((await call(tokens[0],'cursor='+first.next_cursor)).status,401);
+  assert.equal(f.sql.prepare('SELECT count(*) n FROM operations_leases').get().n,0);
+ }finally{f.close();}
+});
+
+test('a selected customer uses environment index seeks within a 50,000-entry MSP account',async()=>{
+ const f=capacityFixture({assets:50000}),prepare=f.DB.prepare,plans=[];
+ f.DB.prepare=query=>{
+  const statement=prepare(query);
+  if(!query.startsWith('SELECT t.'))return statement;
+  const bind=statement.bind;statement.bind=(...args)=>{plans.push(...f.sql.prepare('EXPLAIN QUERY PLAN '+query).all(...args).map(r=>r.detail));return bind(...args);};return statement;
+ };
+ try{
+  const page=await read(f,{customer_id:fixtureId(50)});assert.equal(page.items.length,250);assert.ok(page.next_cursor);
+  assert.ok(plans.some(p=>p.includes('idx_capacity_asset_environment (user_id=? AND environment_id=?)')));
+  assert.ok(!plans.some(p=>p.includes('SCAN t')||p.includes('idx_capacity_inventory_assets (user_id=?)')));
+ }finally{f.close();}
+});
 test('10,000 rows are complete and unique; pages are bounded and scope is enforced',async()=>{
  const f=capacityFixture();try{
   let cursor='',all=[],pages=0;

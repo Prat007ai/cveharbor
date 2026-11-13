@@ -11,7 +11,7 @@ const assetJoin=' JOIN inventory_assets a ON a.id=t.asset_id AND a.user_id=t.use
 const resources={
  customers:{table:'inventory_customers',keys:['id'],fields:'t.id,t.name',scope:'t.id'},
  environments:{table:'inventory_environments',keys:['id'],fields:'t.id,t.customer_id,t.name,t.kind',scope:'t.customer_id',env:'t.id'},
- assets:{table:'inventory_assets',keys:['id'],fields:'t.id,t.environment_id,t.name,t.asset_type,t.technology,t.version,t.notes',join:' JOIN inventory_environments e ON e.id=t.environment_id AND e.user_id=t.user_id',scope:'e.customer_id',env:'t.environment_id'},
+ assets:{table:'inventory_assets',keys:['environment_id','id'],fields:'t.id,t.environment_id,t.name,t.asset_type,t.technology,t.version,t.notes',join:' JOIN inventory_environments e ON e.id=t.environment_id AND e.user_id=t.user_id',scope:'e.customer_id',env:'t.environment_id'},
  statuses:{table:'customer_finding_statuses',keys:['asset_id','cve_id'],fields:'t.asset_id,t.cve_id,t.status,t.notes,t.updated_at',join:assetJoin,scope:'e.customer_id',env:'e.id'},
  tickets:{table:'customer_finding_ticket_history',keys:['asset_id','cve_id','ticket_number'],fields:'t.asset_id,t.cve_id,t.ticket_number,t.created_at',join:assetJoin,scope:'e.customer_id',env:'e.id'},
  sources:{table:'plugin_source_mappings',keys:['asset_id'],fields:'t.asset_id,t.vendor_url,t.release_url,t.advisory_url,t.plugin_slug,t.verification,t.updated_at',join:assetJoin,scope:'e.customer_id',env:'e.id'},
@@ -43,6 +43,14 @@ export async function inventoryPage(req,env,user,team=null){
  if(!await capacityReady(env.DB))fail('Inventory capacity migration is required',503);
  const clauses=['t.user_id=?'],args=[owner];
  if(customer){clauses.push(def.scope+'=?');args.push(customer);}
+ // Restrict indexed keys before joining; a selected customer must not scan
+ // all other customers belonging to a large MSP account.
+ if(customer&&['assets','packages','networks'].includes(resource)){
+  clauses.push('t.environment_id IN (SELECT id FROM inventory_environments WHERE user_id=? AND customer_id=?)');args.push(owner,customer);
+ }
+ if(customer&&def.join===assetJoin){
+  clauses.push('t.asset_id IN (SELECT id FROM inventory_assets WHERE user_id=? AND environment_id IN (SELECT id FROM inventory_environments WHERE user_id=? AND customer_id=?))');args.push(owner,owner,customer);
+ }
  if(environment&&def.env){clauses.push(def.env+'=?');args.push(environment);}
  if(environment&&!def.env){clauses.push('EXISTS(SELECT 1 FROM inventory_environments x WHERE x.user_id=t.user_id AND x.customer_id=t.id AND x.id=?)');args.push(environment);}
  if(team){clauses.push('EXISTS(SELECT 1 FROM team_visible_customers v WHERE v.org=? AND v.actor=? AND v.data_owner=t.user_id AND v.customer_id='+def.scope+')');args.push(team.org,team.actor);}

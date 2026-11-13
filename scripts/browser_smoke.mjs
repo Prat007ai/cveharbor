@@ -307,6 +307,7 @@ editDom.window.fetch=async url=>({ok:true,json:async()=>String(url).endsWith('/s
  environments:[{id:'env-one',customer_id:'customer-one',name:'Production',kind:'Production'}],
  assets:[{id:'asset-one',environment_id:'env-one',name:'Web Servers',asset_type:'WEB',technology:'PHP',version:'8.3.36',notes:'Production Servers'}]
 }});
+editDom.window.eval(fs.readFileSync('inventory-client.js','utf8').replaceAll('export ',''));
 editDom.window.eval(fs.readFileSync('inventory.js','utf8'));
 editDom.window.dispatchEvent(new editDom.window.CustomEvent('cveharbor:account-state',{detail:{authenticated:true}}));
 await new Promise(resolve=>setTimeout(resolve,70));
