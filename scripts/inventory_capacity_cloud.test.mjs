@@ -1,8 +1,28 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {validateCloudRun,validateRetainedDatabase,previewDiagnostics} from './inventory_capacity_cloud.mjs';
+import {validateCloudRun,validateRetainedDatabase,previewDiagnostics,enableRetainedReadReplication} from './inventory_capacity_cloud.mjs';
 import {classifyDatabaseError,observeDatabase} from './capacity_db_observer.mjs';
 const valid={GITHUB_REPOSITORY:'Prat007ai/cveharbor',GITHUB_REF:'refs/heads/main',GITHUB_EVENT_NAME:'workflow_dispatch',GITHUB_RUN_ATTEMPT:'1',GITHUB_WORKFLOW_REF:'Prat007ai/cveharbor/.github/workflows/inventory-capacity-cloud.yml@refs/heads/main',GITHUB_RUN_ID:'12345678901',GITHUB_SHA:'a'.repeat(40),CAPACITY_REVIEWED_COMMIT:'a'.repeat(40),CLOUDFLARE_ACCOUNT_ID:'9706b4d98ad72884e67fd1eb875c8a61',CLOUDFLARE_API_TOKEN:'fictional-only'};
+
+test('replication configuration is restricted to the retained fictional database',async()=>{
+ const database={uuid:'b4a226d7-35e8-469f-abfe-2a2eee0a96de',name:'cveharbor-capacity-43438175247',read_replication:{mode:'disabled'}},calls=[];
+ const api=async(path,method,body)=>{calls.push({path,method,body});return {...database,read_replication:{mode:'auto'}};};
+ assert.deepEqual(await enableRetainedReadReplication(api,database),{before:'disabled',after:'auto'});
+ assert.deepEqual(calls,[{path:'/d1/database/'+database.uuid,method:'PUT',body:{read_replication:{mode:'auto'}}},{path:'/d1/database/'+database.uuid,method:undefined,body:undefined}]);
+ calls.length=0;await enableRetainedReadReplication(api,{...database,read_replication:{mode:'auto'}});assert.equal(calls.length,1);assert.equal(calls[0].method,undefined);
+ calls.length=0;
+ await assert.rejects(enableRetainedReadReplication(api,{...database,uuid:'46710e51-7ca4-4571-b89c-921b9969de0b'}));
+ await assert.rejects(enableRetainedReadReplication(api,{...database,read_replication:{}}));assert.equal(calls.length,0);
+});
+
+test('observer measures replica page results without exposing session bookmarks',async()=>{
+ const result={results:[],meta:{served_by_primary:false,rows_read:3,duration:1}};
+ const {binding,state}=observeDatabase({withSession(bookmark){assert.equal(bookmark,'fictional-private-bookmark');return {getBookmark:()=>bookmark,prepare:()=>({all:async()=>result})};}});
+ const session=binding.withSession('fictional-private-bookmark');assert.equal(session.getBookmark(),'fictional-private-bookmark');
+ assert.equal(await session.prepare('SELECT 1 AS packed').all(),result);
+ assert.equal(state.replica_results,1);assert.equal(state.primary_results,0);assert.equal(state.calls,1);assert.equal(state.rows_read,3);
+ assert.doesNotMatch(JSON.stringify(state),/fictional|bookmark/);
+});
 test('preview diagnostics retain only closed categories and provider codes',()=>{
  const result=previewDiagnostics('secret-value https://private.example/?token=private Authentication error [code: 10000]\nA request to the Cloudflare API failed');
  assert.deepEqual(result,{categories:['authentication','provider_api'],provider_codes:[10000]});

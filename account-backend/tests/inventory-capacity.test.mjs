@@ -54,8 +54,17 @@ test('compact database pages preserve text and empty values while reducing the t
  }finally{f.close();}
 });
 
-test('full Worker requires current session and enabled MFA, scopes pages and performs no read-side writes',async()=>{
+for(const replicas of [false,true])test('full Worker requires current session and enabled MFA, scopes pages and performs no read-side writes'+(replicas?' with anchored replicas':''),async()=>{
  const f=capacityFixture({owners:2,customers:2,environments:2,assets:1000}),tokens=capacitySessions(f.sql,2);
+ let bookmarkNumber=0;
+ if(replicas)f.DB.withSession=constraint=>{
+  let bookmark=null;
+  return {getBookmark:()=>bookmark,prepare(sql){
+   const page=sql.includes(' AS packed');assert.equal(constraint,page?'fixture-'+bookmarkNumber:'first-primary');
+   const wrap=statement=>({bind:(...args)=>wrap(statement.bind(...args)),first:async()=>{assert.equal(constraint,'first-primary');const result=await statement.first();bookmark='fixture-'+(++bookmarkNumber);return result;},all:()=>statement.all()});
+   return wrap(f.DB.prepare(sql));
+  }};
+ };
  const call=(token,query='',origin='https://cveharbor.com')=>worker.fetch(new Request(url+query,{headers:{Origin:origin,...token?{Cookie:'cvh_session='+token}:{}}}),{DB:f.DB,RECOVERY_CONTROL_REQUIRED:'true'});
  try{
   assert.equal((await call()).status,401);
