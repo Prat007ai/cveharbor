@@ -1,8 +1,17 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {validateCloudRun,validateRetainedDatabase,previewDiagnostics,enableRetainedReadReplication} from './inventory_capacity_cloud.mjs';
+import {validateCloudRun,validateRetainedDatabase,previewDiagnostics,enableRetainedReadReplication,stopPreview} from './inventory_capacity_cloud.mjs';
 import {classifyDatabaseError,observeDatabase} from './capacity_db_observer.mjs';
 const valid={GITHUB_REPOSITORY:'Prat007ai/cveharbor',GITHUB_REF:'refs/heads/main',GITHUB_EVENT_NAME:'workflow_dispatch',GITHUB_RUN_ATTEMPT:'1',GITHUB_WORKFLOW_REF:'Prat007ai/cveharbor/.github/workflows/inventory-capacity-cloud.yml@refs/heads/main',GITHUB_RUN_ID:'12345678901',GITHUB_SHA:'a'.repeat(40),CAPACITY_REVIEWED_COMMIT:'a'.repeat(40),CLOUDFLARE_ACCOUNT_ID:'9706b4d98ad72884e67fd1eb875c8a61',CLOUDFLARE_API_TOKEN:'fictional-only'};
+
+test('preview cleanup terminates only its own process group and releases inherited pipes',async()=>{
+ const calls=[],child={pid:12345,stdout:{destroy:()=>calls.push('stdout')},stderr:{destroy:()=>calls.push('stderr')},unref:()=>calls.push('unref')};
+ await stopPreview(child,{platform:'linux',kill:(pid,signal)=>calls.push([pid,signal]),sleep:async ms=>calls.push(ms)});
+ assert.deepEqual(calls,[[-12345,'SIGTERM'],1000,[-12345,'SIGKILL'],'stdout','stderr','unref']);
+ calls.length=0;await stopPreview({...child,pid:undefined},{platform:'linux',kill:()=>assert.fail('Invalid process ID'),sleep:()=>assert.fail('No process')});
+ assert.deepEqual(calls,['stdout','stderr','unref']);
+ await stopPreview(child,{platform:'linux',kill:()=>{throw Object.assign(Error('already exited'),{code:'ESRCH'});},sleep:async()=>{}});
+});
 
 test('replication configuration is restricted to the retained fictional database',async()=>{
  const database={uuid:'b4a226d7-35e8-469f-abfe-2a2eee0a96de',name:'cveharbor-capacity-43438175247',read_replication:{mode:'disabled'}},calls=[];
