@@ -200,7 +200,12 @@ function notify(){
  let recordsChanged=false;
  if(inputs.some((value,i)=>value!==signatureInputs[i])){
   const signature=JSON.stringify([months,records,[...withdrawn].sort(),excluded,scopes]);
-  recordsChanged=signature!==lastSignature;lastSignature=signature;signatureInputs=inputs;
+  recordsChanged=signature!==lastSignature;
+  // Preserve snapshot identity when a full refresh returns identical evidence.
+  // Otherwise a later customer selection invalidates the product/version cache.
+  if(!recordsChanged&&signatureInputs.length){records=signatureInputs[1];withdrawn=signatureInputs[3];excluded=signatureInputs[4];}
+  else signatureInputs=inputs;
+  lastSignature=signature;
  }
  draw();drawIdentity();scheduleIdentityRead();window.dispatchEvent(new CustomEvent('cvie:updated',{detail:{recordsChanged}}));
 }
