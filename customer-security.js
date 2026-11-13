@@ -1228,19 +1228,22 @@ async function init(){
   inventory=await api('inventory');
   records=advisories();
   {
-   const tickets=await api('finding-tickets').catch(()=>({ready:false,tickets:[]}));
+   const [tickets,installed,sources,assignments,saved]=await Promise.all([
+    api('finding-tickets').catch(()=>({ready:false,tickets:[]})),
+    api('plugin-installation-status').catch(()=>({ready:false,statuses:[]})),
+    api('plugin-sources').catch(()=>({ready:false,sources:[]})),
+    api('finding-assignments').catch(()=>({ready:false})),
+    api('finding-statuses').catch(()=>({ready:false,statuses:[]}))
+   ]);
    ticketReady=!!tickets.ready;
    ticketAppendReady=!!tickets.append_ready;
    findingTickets=new Map();
    for(const t of tickets.tickets||[]){const k=t.asset_id+'|'+t.cve_id;findingTickets.set(k,[...(findingTickets.get(k)||[]),t.ticket_number])}
-   const installed=await api('plugin-installation-status').catch(()=>({ready:false,statuses:[]}));
    pluginInstallationReady=!!installed.ready;
    pluginInstallationStatuses=new Map((installed.statuses||[]).map(row=>[row.asset_id,row.status]));
-   const sources=await api('plugin-sources').catch(()=>({ready:false,sources:[]}));
    pluginSourceReady=!!sources.ready;
    pluginSources=new Map((sources.sources||[]).map(s=>[s.asset_id,s]));
-   setAssignmentInfo(await api('finding-assignments').catch(()=>({ready:false})));
-   const saved=await api('finding-statuses').catch(()=>({ready:false,statuses:[]}));
+   setAssignmentInfo(assignments);
    findingStatusReady=!!saved.ready;
    findingStatuses=new Map((saved.statuses||[]).map(s=>[s.asset_id+'|'+s.cve_id,s.status]));
    findingNotes=new Map((saved.statuses||[]).map(s=>[s.asset_id+'|'+s.cve_id,s.notes||'']));

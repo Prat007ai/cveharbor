@@ -216,6 +216,11 @@ try{
  await page.locator('#technologySaveButton').click();
  await page.waitForFunction(()=>window.CVEHARBOR_CVIE.products.length===2&&!window.CVEHARBOR_CVIE.loading);
  assert.deepEqual((await page.locator('.technology-row-name').allTextContents()).sort(),['.NET Core','Windows Server OS']);
+ // Product details are lazy: open the visible disclosure before inspecting rows.
+ if(await page.locator('#technologyManageClose').isVisible())await page.locator('#technologyManageClose').click();
+ const scanDetails=page.locator('#cvieExplorer .cvie-scan-details');
+ if(!await scanDetails.evaluate(el=>el.open))await scanDetails.locator('summary').first().click();
+ await page.waitForFunction(()=>document.querySelectorAll('#cvieExplorer .cvie-product-status').length===2);
  assert.deepEqual((await page.locator('#cvieExplorer .cvie-product-status > strong').allTextContents()).sort(),['.NET Core','Windows Server OS']);
  // A topic opens the public feed with one click even before a Windows edition is chosen.
  await page.getByRole('button',{name:'Windows Server OS',exact:true}).click();
