@@ -13,8 +13,8 @@ import version_picker_release as publisher
 
 BASE = '3ce02f24cbcdfd33cd776c6fdd3e4e7a245ed97a'
 PREDECESSOR = '0b15e96eb98e5d1a2f7e2961e858886c62c632f7eaed1b02d7241a0e7ff34a34'
-WORKER = {'account-backend/src/inventory.js', 'account-backend/src/team-data.js'}
-ADDED_WORKER = {'account-backend/src/inventory-pages.js', 'account-backend/inventory-capacity-schema.sql'}
+WORKER = {'account-backend/src/inventory.js', 'account-backend/src/team-data.js', 'account-backend/src/recovery-control.js'}
+ADDED_WORKER = {'account-backend/src/inventory-pages.js', 'account-backend/src/inventory-read-db.js', 'account-backend/inventory-capacity-schema.sql'}
 SITE = {'customer-security.js', 'inventory.js', 'workspace-ai.js', 'team-ui.js'}
 ADDED_SITE = {'inventory-client.js'}
 

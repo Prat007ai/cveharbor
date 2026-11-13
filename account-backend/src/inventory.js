@@ -42,8 +42,8 @@ export async function inventoryRoute(req,env,user,path,data={},write=statement=>
     const pagination=await capacityReady(env.DB);
     return json({storage:'d1',ready:await ready(env),max_customers:100,max_environments:500,max_assets:pagination?INVENTORY_CAPACITY:3000,pagination});
   }
-  await ensureReady(env);
   if(path==='/v1/inventory/page'&&req.method==='GET')return json(await inventoryPage(req,env,user));
+  await ensureReady(env);
   if(path==='/v1/inventory/server-network'){
     if(req.method==='GET')return json({networks:unpack((await networkRows(env.DB,user.id).all()).results||[])});
     if(['POST','PUT'].includes(req.method))return json(await saveNetwork(env.DB,user.id,data,req.method));

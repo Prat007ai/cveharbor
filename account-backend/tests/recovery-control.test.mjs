@@ -8,6 +8,16 @@ const hold=(f,revision=0)=>setHold(f.DB,{hold:true,revision,reason:'Synthetic re
 const resume=async(f,revision)=>setHold(f.DB,{hold:false,revision:revision??(await holdStatus(f.DB)).revision,reason:'Synthetic recovery checks complete'});
 const freeze=async f=>freezeHold(f.DB,{revision:(await holdStatus(f.DB)).revision,reason:'Synthetic operations fully drained'});
 const snapshot=f=>Object.fromEntries(f.DB.sql.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE 'operations_%' ORDER BY name").all().map(({name})=>[name,f.DB.sql.prepare('SELECT * FROM '+name).all()]));
+
+test('inventory read exemption enforces SELECT-only access and excludes mutation, legacy and scheduled routes',async t=>{
+ const f=await fixture(t);let readContext;
+ const app=recoveryProtected({async fetch(req,env,ctx){readContext=ctx;await env.DB.prepare("UPDATE users SET email=email").run();return new Response('changed');},async scheduled(){}});
+ for(const route of ['/v1/inventory/page','/v1/inventory/status'])await assert.rejects(app.fetch(new Request('https://api.cveharbor.com'+route),f.env,{}),/SELECT only/);
+ assert.equal(readContext,undefined);assert.equal((await holdStatus(f.DB)).active_leases,0);
+ let leaseSeen=0;const writes=recoveryProtected({async fetch(){leaseSeen=(await holdStatus(f.DB)).active_leases;return new Response('ok');},async scheduled(){leaseSeen=(await holdStatus(f.DB)).active_leases;}});
+ for(const [route,method]of [['/v1/inventory/page','POST'],['/v1/inventory','GET'],['/v1/inventory/assets','POST']]){await writes.fetch(new Request('https://api.cveharbor.com'+route,{method}),f.env);assert.equal(leaseSeen,1);}
+ await writes.scheduled({},f.env);assert.equal(leaseSeen,1);assert.equal((await holdStatus(f.DB)).active_leases,0);
+});
 test('guard installation and reinstallation preserve all customer rows; unknown tables block readiness',async t=>{const f=await fixture(t),before=snapshot(f);await installGuards(f.DB);f.DB.sql.exec(migration('0032_recovery_control.sql'));assert.deepEqual(snapshot(f),before);assert.equal((await holdStatus(f.DB)).guards_complete,true);assert.equal((await releaseReadiness(f.env)).status,200);f.DB.sql.exec('CREATE TABLE new_feature(id TEXT)');assert.equal((await releaseReadiness(f.env)).status,503);await assert.rejects(()=>hold(f),/every table guard/);await installGuards(f.DB);assert.equal((await releaseReadiness(f.env)).status,200);});
 test('hold stops remediation, assignments, receipts, reviewers, inventory, account cascades and all cron processes',async t=>{const f=await fixture(t),before=snapshot(f);await hold(f);await freeze(f);const mails=f.emails.length;for(const [path,method,data] of [['/remediations/'+cve,'PUT',{status:'Open',owner:'Alex'}],['/remediations/'+cve+'/assign','POST',{email:'alex@example.net'}],['/finding-statuses/'+assetOne+'/'+cve,'PUT',{status:'Not Applicable'}],['/inventory/assets/'+assetOne,'DELETE'],['/inventory/customers','POST',{name:'Blocked'}],['/account','DELETE'],['/acknowledge/'+'c'.repeat(64),'POST',{confirm:'receipt'}]])assert.equal((await f.api(path,method,data)).status,503,path);
  for(const path of ['/acknowledge/'+'c'.repeat(64),'/assignment/11111111-1111-4111-8111-111111111111'])assert.equal((await f.call(new Request('https://confirm.cveharbor.com'+path))).status,503);
