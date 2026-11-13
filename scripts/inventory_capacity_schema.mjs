@@ -7,6 +7,7 @@ import {canonical,schemaSQL,digest,PRODUCTION_DB} from './production_schema_base
 import {d1Client} from './cloudflare_d1.mjs';
 import {holdStatus} from './recovery_control.mjs';
 import {verifyService} from './production_service_health.mjs';
+import {ensureCapacityReplication} from './inventory_capacity_replication.mjs';
 const account='aa99b9b15e0492302e4f6484b8d27bc2';
 const predecessor='0b15e96eb98e5d1a2f7e2961e858886c62c632f7eaed1b02d7241a0e7ff34a34';
 const sql=fs.readFileSync('account-backend/inventory-capacity-schema.sql','utf8').replaceAll('\r\n','\n');
@@ -44,7 +45,9 @@ if(process.argv[2]==='--apply'){
  assert.equal((await db.prepare('SELECT count(*) n FROM pragma_foreign_key_check').first()).n,0);
  const mismatch="SELECT COUNT(*) n FROM users u LEFT JOIN inventory_capacity_revisions r ON r.user_id=u.id LEFT JOIN (SELECT user_id,COUNT(*) n FROM inventory_assets GROUP BY user_id) a ON a.user_id=u.id WHERE COALESCE(r.software_count,0)!=COALESCE(a.n,0)";
  assert.equal((await db.prepare(mismatch).first()).n,0,'Counter verification failed; do not activate the new backend');
- assert.equal((await holdStatus(db)).guards_complete,true);await verifyService({expectedRelease:predecessor});
+ const finalControl=await holdStatus(db);assert.equal(finalControl.guards_complete,true);assert.equal(finalControl.write_hold,0);assert.equal(finalControl.database_frozen,0);assert.equal(finalControl.revision,control.revision);
+ receipt.status='configuring_read_replication';save();receipt.read_replication=await ensureCapacityReplication(db);save();
+ await verifyService({expectedRelease:predecessor});
  receipt.status='verified';receipt.after_schema_sha256=digest(canonical(after));receipt.completed_at=new Date().toISOString();save();console.log('Verified additive capacity storage, counts, guards, foreign keys and unchanged serving backend.');
 }else{
  assert.equal(process.argv[2],'--rehearse');console.log(JSON.stringify({sql_sha256:hash,tables:2,triggers:40,indexes:added.filter(o=>o.type==='index').length,existing_schema_changed:false}));

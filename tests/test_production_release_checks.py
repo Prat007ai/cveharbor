@@ -68,3 +68,23 @@ class ProductionChecksTest(unittest.TestCase):
         self.run['event']='pull_request'
         with self.assertRaises(ValueError):
             release.check_capacity_commit(self.sha,get)
+
+    def test_cloud_capacity_rejects_cancelled_stale_or_unrecorded_measurement(self):
+        self.run.update(path='.github/workflows/inventory-capacity-cloud.yml',event='workflow_dispatch',run_attempt=1)
+        self.jobs=[dict(name=name,status='completed',conclusion='success') for name in ('prepare','cloud-load')]
+        artifacts=[dict(name=name,expired=False,size_in_bytes=100,digest='sha256:'+'c'*64,workflow_run={'head_sha':self.sha}) for name in ('capacity-backend','capacity-cloud-result')]
+        def get(path):
+            if '/workflows/' in path:return {'workflow_runs':[self.run]}
+            return {'artifacts':artifacts} if '/artifacts?' in path else {'jobs':self.jobs}
+        self.assertTrue(release.check_capacity_cloud_commit(self.sha,get))
+        self.run['conclusion']='cancelled'
+        with self.assertRaises(ValueError):release.check_capacity_cloud_commit(self.sha,get)
+        self.run['conclusion']='success'
+        artifacts[1]['expired']=True
+        self.assertFalse(release.check_capacity_cloud_commit(self.sha,get))
+        artifacts[1]['expired']=False
+        artifacts[1]['workflow_run']['head_sha']='b'*40
+        with self.assertRaises(ValueError):release.check_capacity_cloud_commit(self.sha,get)
+        artifacts[1]['workflow_run']['head_sha']=self.sha
+        self.run['run_attempt']=2
+        with self.assertRaises(ValueError):release.check_capacity_cloud_commit(self.sha,get)
