@@ -34,7 +34,7 @@ export async function outageBrowser(base,token,site,phase){
    const chooser=page.locator('#workspaceAccess > .finding-ai select');await chooser.waitFor();menuReady=Date.now()-start;
    await page.evaluate(()=>window.outageTasks=[]);
    const at=Date.now();await chooser.selectOption(fixtureId(1));interactions.push({control:'customer',ms:Date.now()-at});
-   await page.locator('#workspaceAccess > .finding-ai').getByText(/1000 saved software entries/).waitFor({timeout:30000});
+   await page.locator('#workspaceAccess > .finding-ai').getByText(/1000 saved software entries/).waitFor({timeout:30000});interactions.at(-1).settled_ms=Date.now()-at;
    const tabAt=Date.now();await page.locator('#ws-environments-tab').click();await page.locator('#wsActivityPanel').getByText('Environment 0',{exact:true}).waitFor();interactions.push({control:'environment tab',ms:Date.now()-tabAt});
   }else{
    await page.waitForFunction(()=>document.querySelector('#customerDashFilter')?.options.length>=2&&document.querySelector('#customerDashStatus')?.dataset.ready==='true');menuReady=Date.now()-start;
@@ -42,7 +42,7 @@ export async function outageBrowser(base,token,site,phase){
    const settled=()=>page.waitForFunction(()=>document.querySelector('#customerDashStatus').dataset.assessing==='false');await settled();
    await page.evaluate(()=>window.outageTasks=[]);
    for(const [control,value] of [['customerDashFilter',fixtureId(1)],['customerDashEnvironment',fixtureId(1000)],['customerDashEnvironment','']]){
-    const at=Date.now();await page.selectOption('#'+control,value);interactions.push({control,ms:Date.now()-at});await settled();
+    const at=Date.now();await page.selectOption('#'+control,value);interactions.push({control,ms:Date.now()-at});await settled();interactions.at(-1).settled_ms=Date.now()-at;
    }
   }
   const maxTask=await page.evaluate(()=>Math.round(Math.max(0,...window.outageTasks)));

@@ -23,7 +23,11 @@ class WorkflowSecurityTests(unittest.TestCase):
             with self.subTest(path=p.name):self.assertEqual(policy.validate(policy.load_workflow(p.read_text()),p.name),[])
     def test_capacity_caller_is_exact_scoped_and_protected(self):
         source=policy.load_workflow((ROOT/'.github/workflows/inventory-capacity-cloud.yml').read_text())
-        mutations=[lambda j:j.update({'if':'true'}),lambda j:j.update({'if':policy.MANUAL}),lambda j:j.update(environment='cloudflare-worker-production'),lambda j:j.update(needs=[]),lambda j:j.update({'timeout-minutes':90}),lambda j:j.update(env={'TOKEN':'${{ secrets.CF_STAGING_API_TOKEN }}'}),lambda j:j['steps'][3]['env'].update(CLOUDFLARE_ACCOUNT_ID='aa99b9b15e0492302e4f6484b8d27bc2'),lambda j:j['steps'][3]['env'].update(EXTRA='${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}'),lambda j:j['steps'][3].update(run='node other.mjs')]
+        def executor(job):
+            steps=[step for step in job['steps'] if step.get('run')=='node scripts/inventory_capacity_cloud.mjs']
+            self.assertEqual(len(steps),1)
+            return steps[0]
+        mutations=[lambda j:j.update({'if':'true'}),lambda j:j.update({'if':policy.MANUAL}),lambda j:j.update(environment='cloudflare-worker-production'),lambda j:j.update(needs=[]),lambda j:j.update({'timeout-minutes':90}),lambda j:j.update(env={'TOKEN':'${{ secrets.CF_STAGING_API_TOKEN }}'}),lambda j:executor(j)['env'].update(CLOUDFLARE_ACCOUNT_ID='aa99b9b15e0492302e4f6484b8d27bc2'),lambda j:executor(j)['env'].update(EXTRA='${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}'),lambda j:executor(j).update(run='node other.mjs')]
         for mutate in mutations:
             changed=copy.deepcopy(source);mutate(changed['jobs']['cloud-load']);self.assertTrue(policy.validate(changed,'inventory-capacity-cloud.yml'))
         self.assertTrue(policy.validate(source,'unapproved-caller.yml'))
