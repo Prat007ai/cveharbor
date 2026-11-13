@@ -66,35 +66,62 @@ function install(){
  base.candidate=(a,r)=>{const finding=candidate(a,r,original);return finding?base.assessFinding(finding,r):null;};
  function* evaluate(assets,records,limit=150){
   let work=0;
-  const items=[],seen=new Set();
+  const items=[],streams=[],duplicateIds=new Map(),assetCounts=new Map();
+  const rank={critical:4,high:3,medium:2,low:1};
+  const compare=(a,b)=>b.priority-a.priority||a.finding.id.localeCompare(b.finding.id);
+  // Rank each product/version once, then merge only the requested result window.
+  // Do not allocate and sort the full asset x advisory Cartesian product.
+  for(const asset of assets||[]){assetCounts.set(asset.id,(assetCounts.get(asset.id)||0)+1);if(++work%128===0)yield;}
   const advisoryRecords=records||[];
   let cached=assessments.get(advisoryRecords);
   if(!cached||cached.length!==advisoryRecords.length){
    cached={products:new Map(),findings:0,length:advisoryRecords.length};
    assessments.set(advisoryRecords,cached);
   }
-  const byProduct=cached.products;
+  const byProduct=cached.products,requestProducts=new Map();
   const windowsHosts=new Set((assets||[]).filter(a=>a.name&&a.environment_id&&norm(a.technology)==='windows server').map(a=>JSON.stringify([a.environment_id,a.name])));
   for(const rawAsset of assets||[]){
    const asset=windowsHosts.has(JSON.stringify([rawAsset.environment_id,rawAsset.name]))?{...rawAsset,assessment_os:'windows'}:rawAsset;
    const key=JSON.stringify([asset.technology,asset.version,asset.assessment_os]);
-   let matches=byProduct.get(key);
+   let matches=byProduct.get(key)||requestProducts.get(key);
    if(!matches){
-    matches=[];
-    for(const record of advisoryRecords){const finding=base.candidate(asset,record);if(finding)matches.push(finding);if(++work%128===0)yield;}
+    matches=[];const ids=new Set();
+    for(const record of advisoryRecords){
+     const finding=base.candidate(asset,record);
+     if(finding&&!ids.has(finding.id)){ids.add(finding.id);matches.push({finding,priority:Number(!!finding.known_exploited)*5+(rank[norm(finding.severity)]||0)});}
+     if(++work%128===0)yield;
+    }
+    matches.sort(compare);
+    // Reuse repeated products within this assessment even when the retained
+    // cross-render cache is full; streams must not duplicate their match lists.
+    requestProducts.set(key,matches);
     // Bound retained results even for unusually broad advisory matches.
     if(byProduct.size<1000&&cached.findings+matches.length<=10000){
      byProduct.set(key,matches);cached.findings+=matches.length;
     }
    }
-   for(const finding of matches){
-    const identity=asset.id+'|'+finding.id;
-    if(seen.has(identity))continue;
-    seen.add(identity);items.push({...finding,asset_id:asset.id});if(++work%128===0)yield;
+   if(assetCounts.get(asset.id)>1){
+    let seen=duplicateIds.get(asset.id);if(!seen){seen=new Set();duplicateIds.set(asset.id,seen);}
+    const unique=[];
+    for(const match of matches){if(!seen.has(match.finding.id)){seen.add(match.finding.id);unique.push(match);}if(++work%128===0)yield;}
+    matches=unique;
    }
+   if(matches.length)streams.push({matches,assetId:asset.id,index:0,order:streams.length});
+   if(++work%128===0)yield;
   }
-  const rank={critical:4,high:3,medium:2,low:1};items.sort((a,b)=>Number(b.known_exploited)-Number(a.known_exploited)||(rank[norm(b.severity)]||0)-(rank[norm(a.severity)]||0)||a.id.localeCompare(b.id));
-  return {items:items.slice(0,limit),total:items.length,limited:items.length>limit};
+  const total=streams.reduce((n,s)=>n+s.matches.length,0),heap=[];
+  const before=(a,b)=>compare(a.matches[a.index],b.matches[b.index])||a.order-b.order;
+  const push=stream=>{let i=heap.length;heap.push(stream);while(i){const parent=(i-1)>>1;if(before(heap[parent],stream)<=0)break;heap[i]=heap[parent];i=parent;}heap[i]=stream;};
+  const pop=()=>{const first=heap[0],last=heap.pop();if(heap.length){let i=0;while(i*2+1<heap.length){let child=i*2+1;if(child+1<heap.length&&before(heap[child+1],heap[child])<0)child++;if(before(last,heap[child])<=0)break;heap[i]=heap[child];i=child;}heap[i]=last;}return first;};
+  for(const stream of streams){push(stream);if(++work%128===0)yield;}
+  // Match Array.slice's previous handling of negative limits as well.
+  const end=Math.trunc(Number(limit)),count=Number.isNaN(end)?0:end<0?Math.max(0,total+end):Math.min(total,end);
+  while(items.length<count&&heap.length){
+   const stream=pop();items.push({...stream.matches[stream.index].finding,asset_id:stream.assetId});
+   if(++stream.index<stream.matches.length)push(stream);
+   if(++work%128===0)yield;
+  }
+  return {items,total,limited:total>limit};
  }
  base.evaluate=(...args)=>{const task=evaluate(...args);let step;do{step=task.next();}while(!step.done);return step.value;};
  base.evaluateAsync=async(assets,records,limit=150,{cancelled=()=>false}={})=>{

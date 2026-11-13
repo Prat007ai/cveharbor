@@ -145,12 +145,17 @@ async function renderCurrent(){
  const revision=++renderGeneration,epoch=customerDataEpoch,chosen=$('customerDashFilter').value,env=$('customerDashEnvironment').value;
  const cache=currentStats(),cancelled=()=>revision!==renderGeneration||epoch!==customerDataEpoch||!customerReady;
  const clients=inventory.customers.filter(c=>(!reporting&&!chosen)||c.id===chosen);
+ // Keep a completed report visible during same-scope background refreshes.
+ // A different selection must never display the previous customer's findings.
+ if(reporting&&$('customerReportBody').dataset.scope!==JSON.stringify([chosen,env])){
+  $('customerReportBody').replaceChildren();$('customerReportAssessment').replaceChildren();
+ }
  $('customerDashStatus').dataset.assessing='true';
  const pending=clients.some(c=>!cache.has(JSON.stringify([c.id,env])));
  if(pending){
   $('customerDashStatus').dataset.assessing='true';
   $('customerDashStatus').textContent='Assessing saved inventory… Customer controls remain available.';
-  for(const id of ['customerReportBody','customerReportAssessment','customerDashboardCves','customerDashFindings','customerDashboardAssessment','customerDashboardServers','customerDashRows'])$(id)?.replaceChildren();
+  if(!reporting)for(const id of ['customerDashboardCves','customerDashFindings','customerDashboardAssessment','customerDashboardServers','customerDashRows'])$(id)?.replaceChildren();
  }
  try{
   for(const customer of clients){
@@ -1165,13 +1170,19 @@ function ensurePrintDocument(){
 async function paintReport(cancelled=()=>false){
  if(reportPrinting){reportRedrawPending=true;return}
  const id=$('customerDashFilter').value,env=$('customerDashEnvironment').value;
- const root=$('customerReportBody');root.replaceChildren();
- const assessment=$('customerReportAssessment');assessment.replaceChildren();
+ // Build off-screen across cooperative yields. Publishing partial tables forces
+ // repeated layout and makes every CVIE/history update visibly blank the report.
+ const target=$('customerReportBody'),root=text('div'),assessment=text('div');
+ const publish=()=>{
+  if(cancelled())return;
+  if(reportPrinting){reportRedrawPending=true;return;}
+  target.replaceChildren(...root.childNodes);target.dataset.scope=JSON.stringify([id,env]);$('customerReportAssessment').replaceChildren(...assessment.childNodes);
+ };
  const customer=inventory.customers.find(c=>c.id===id);
  $('customerReportPrint').disabled=!customer;
  $('customerReportCsv').disabled=!customer;
  const emailButton=$('customerReportEmail');if(emailButton)emailButton.disabled=!customer;
- if(!customer){root.append(text('p','Select a customer to generate their security review.','ops-note'));return}
+ if(!customer){root.append(text('p','Select a customer to generate their security review.','ops-note'));publish();return}
  const stats=compute(customer.id,env),date=new Date().toLocaleString(undefined,{timeZoneName:'short'});
  const scope=env?(stats.environments[0]?.name||'Selected environment'):'All recorded environments';
  renderScorePanel(assessment,customer,env,stats);
@@ -1249,6 +1260,7 @@ async function paintReport(cancelled=()=>false){
   if(panel.dataset.section==='Vulnerabilities Requiring Verification'&&stats.total)count.dataset.level='pending';
   panel.querySelector('summary').append(count);
  }
+ publish();
 }
 
 
