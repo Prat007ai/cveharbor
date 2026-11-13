@@ -48,12 +48,21 @@ function merge(base=[]){
    cna_affected:[...new Map([...(prior.cna_affected||[]),...(record.cna_affected||[])].map(row=>[JSON.stringify(row),row])).values()],
    affected_cpes:[...(prior.affected_cpes||[]),...(record.affected_cpes||[])],sources:[...source.values()]});
  }
+ // Many advisories share the same verified product scope. Normalize its
+ // exclusion set once per combination, not once per advisory x product.
+ const scopeExclusions=new Map();
  const merged=[...result.values()].map(record=>{
   // Shared keyword categories cannot establish the registered product scope.
-  const names=[...new Set([...(excludedById.get(record.id)||[]),...normalizedScopes.filter(([,name])=>!verified.get(record.id)?.has(name)).map(([name])=>name)])];
+  const explicit=excludedById.get(record.id)||[],verifiedNames=verified.get(record.id),key=JSON.stringify([explicit,[...(verifiedNames||[])]]);
+  let scope=scopeExclusions.get(key);
+  if(!scope){
+   const names=[...new Set([...explicit,...normalizedScopes.filter(([,name])=>!verifiedNames?.has(name)).map(([name])=>name)])];
+   scope={names,normalized:new Set(names.map(normalize))};
+   if(scopeExclusions.size<1024)scopeExclusions.set(key,scope);
+  }
+  const {names,normalized:excludedNames}=scope;
   if(!names.length)return record;
-  const excludedNames=new Set(names.map(normalize));
-  return {...record,cvie_excluded_products:names,categories:(record.categories||[]).filter(name=>!excludedNames.has(normalize(name)))};
+  return {...record,cvie_excluded_products:[...names],categories:(record.categories||[]).filter(name=>!excludedNames.has(normalize(name)))};
  });
  merge.cache.set(base,merged);return merged;
 }

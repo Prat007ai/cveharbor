@@ -1,4 +1,4 @@
-"""Scoped dashboard and Workspace responsiveness fix on the verified PR374 website."""
+"""Scoped dashboard and Workspace responsiveness fix on the verified PR375 website."""
 import os
 from pathlib import Path
 import shutil
@@ -11,9 +11,9 @@ import production_release_checks as checks
 import team_release as team
 import version_picker_release as publisher
 
-BASE = '7ba0757b62d93984b7d19709ef8153abf8ff76b3'
+BASE = '3ea471dcb395849a795763eef50a3a53d37e73b3'
 BACKEND = 'f941196f5e69b909bc6697a4b9d195eb9767f56a3761a1c8dfe239e6b65dadd2'
-CHANGED = {'customer-security.js','workspace-ai.js','workspace-dashboard.js'}
+CHANGED = {'cvie.js','inventory-matching.js','inventory-assessment.js'}
 
 def prepare(out):
     pkg.require(not out.exists(), 'Use a new package directory')
@@ -41,15 +41,15 @@ def ready():
 
 def run(action,out):
     if action=='prepare':return prepare(out)
-    pr=team.reviewed('fix/dashboard-cvie-interaction')
+    pr=team.reviewed('fix/cvie-scope-normalization')
     pkg.require(checks.check_commit(os.environ['GITHUB_SHA']) and checks.check_capacity_commit(os.environ['GITHUB_SHA']),'Required application/security/capacity checks incomplete')
     if action=='preflight':
         prod.policy(publisher.ENV)
         ready()
     elif action=='publish':
         publisher.publish(out,changed=CHANGED,added=set(),reviewed_pr=pr,ready=ready,
-            previous_version='a288b5d9-88c5-4258-b21e-553290a19086',
-            previous_deployment='009f8f09-87b4-4cae-915f-5d2089d411c6',served_copy=out/'verified-origin')
+            previous_version='57336c70-3182-4856-9635-27955a029d02',
+            previous_deployment='69b77813-f073-4801-acaf-88ecb7efc4c0',served_copy=out/'verified-origin')
     else:raise ValueError(action)
 
 if __name__=='__main__':run(sys.argv[1],Path(sys.argv[2]).resolve() if len(sys.argv)>2 else None)
