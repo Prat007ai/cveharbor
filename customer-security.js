@@ -48,7 +48,7 @@ async function refreshPluginFindings(draw=true,allowFallback=!reporting){
   }
  }
  if(epoch!==customerDataEpoch||sequence!==pluginRefreshSequence)return;
- pluginChecks=nextChecks;pluginFindings=nextFindings;pluginMonitorRows=nextMonitorRows;
+ renderGeneration++;pluginChecks=nextChecks;pluginFindings=nextFindings;pluginMonitorRows=nextMonitorRows;
  if(draw)redraw();
 }
 
@@ -108,7 +108,60 @@ function applicabilitySummary(issues){
 }
 const closedStatus=s=>['Fixed/Patched','Not Applicable','Accepted Risk'].includes(s);
 let reportPrinting=false,reportRedrawPending=false,exportBusy=false;
-const redraw=()=>reporting?drawReport():drawDashboard();
+let renderGeneration=0,lastInventoryRefresh=0,focusCheck=null,refreshRequested=false,activeRender=null;
+let statsInputs=[],statsCache=new Map();
+function currentStats(){
+ const inputs=[inventory,records,pluginFindings];
+ if(inputs.some((value,i)=>value!==statsInputs[i])){statsInputs=inputs;statsCache=new Map();}
+ return statsCache;
+}
+function statsScope(customerId,environmentId){
+ const environments=inventory.environments.filter(e=>e.customer_id===customerId&&(!environmentId||e.id===environmentId));
+ const ids=new Set(environments.map(e=>e.id));
+ return {environments,assets:inventory.assets.filter(a=>ids.has(a.environment_id))};
+}
+function finishStats(scope,matched){
+ const {assets,environments}=scope,byAsset=new Map(assets.map(a=>[a.id,a])),byEnvironment=new Map(environments.map(e=>[e.id,e]));
+ const issues=[...matched.items,...pluginFindings.filter(m=>byAsset.has(m.asset_id))].map(m=>({...m,asset:byAsset.get(m.asset_id),environment:byEnvironment.get(byAsset.get(m.asset_id)?.environment_id)}));
+ return {...scope,issues,total:issues.length,limited:matched.limited,unique:new Set(issues.map(i=>i.id)).size,
+  critical:issues.filter(i=>normalize(i.severity)==='critical').length,kev:issues.filter(i=>i.known_exploited).length,reviewed:issues.filter(i=>i.level==='version_review').length};
+}
+function redraw(){activeRender=renderCurrent();return activeRender;}
+async function settledRedraw(){
+ let request=redraw();
+ while(true){const complete=await request;if(request===activeRender){if(!complete)throw Error('Assessment changed or could not finish. Try again.');return;}request=activeRender;}
+}
+async function renderCurrent(){
+ if(!customerReady)return;
+ if(reportPrinting){reportRedrawPending=true;return;}
+ const revision=++renderGeneration,epoch=customerDataEpoch,chosen=$('customerDashFilter').value,env=$('customerDashEnvironment').value;
+ const cache=currentStats(),cancelled=()=>revision!==renderGeneration||epoch!==customerDataEpoch||!customerReady;
+ const clients=inventory.customers.filter(c=>(!reporting&&!chosen)||c.id===chosen);
+ $('customerDashStatus').dataset.assessing='true';
+ const pending=clients.some(c=>!cache.has(JSON.stringify([c.id,env])));
+ if(pending){
+  $('customerDashStatus').dataset.assessing='true';
+  $('customerDashStatus').textContent='Assessing saved inventory… Customer controls remain available.';
+  for(const id of ['customerReportBody','customerReportAssessment','customerDashboardCves','customerDashFindings','customerDashboardAssessment','customerDashboardServers','customerDashRows'])$(id)?.replaceChildren();
+ }
+ try{
+  for(const customer of clients){
+   const key=JSON.stringify([customer.id,env]);if(cache.has(key))continue;
+   const scope=statsScope(customer.id,env);
+   const matched=await window.CVEHARBOR_INVENTORY_MATCH.evaluateAsync(scope.assets,records,5000,{cancelled});
+   if(cancelled())return;
+   cache.set(key,finishStats(scope,matched));
+  }
+  if(cancelled())return;
+  await (reporting?paintReport(cancelled):paintDashboard(cancelled));
+  if(cancelled())return;
+  $('customerDashStatus').dataset.assessing='false';
+  $('customerDashStatus').textContent=inventory.customers.length+' customer records loaded privately. Advisory matching is preliminary.';
+  return true;
+ }catch(error){if(!cancelled()&&error.name!=='AbortError'){$('customerDashStatus').dataset.assessing='false';$('customerDashStatus').textContent='Assessment unavailable. Select the customer again to retry.';}}
+}
+function drawDashboard(){return redraw();}
+function drawReport(){return redraw();}
 let applicabilityFilter='all';
 const filteredFindings=issues=>sortFindings(issues.filter(i=>(applicabilityFilter==='all'||applicability(i).code===applicabilityFilter)&&(findingStatusFilter==='All'||findingStatusFilter==='Unresolved'&&!closedStatus(statusFor(i))||statusFor(i)===findingStatusFilter)));
 function findingAttention(issues){
@@ -186,13 +239,17 @@ function renderFindingAssignment(cell,i){
  else {if(linked?.owner&&linked.owner!=='Unassigned')box.append(text('strong','Owner: '+linked.owner));box.append(text('small',linked?'No acknowledgement request sent for this asset.':'No assignment linked to this asset.'));}
  if(manual){const candidate=text('div','','finding-manual-assignment');candidate.append(text('strong','Existing record — connect it to this customer asset'));describe(candidate,manual.assignments);if(!manual.assignments.length)candidate.append(text('small','Owner: '+manual.owner));if(linkExistingReady){const link=text('button','Link existing assignment','shared-work-action');link.type='button';link.addEventListener('click',()=>window.CVEHARBOR_SHARED?.finding(i.asset_id,i.id,link));candidate.append(link);candidate.append(text('small','Link this assignment to send status-update emails for this asset.'));}box.append(candidate);}
 }
+let findingPage=0,findingPageKey='';
 function renderFindings(root,issues,readOnly){
  root.append(applicabilitySummary(issues));
  const applicabilityLabel=text('label','Applicability '),applicabilitySelect=text('select');applicabilitySelect.setAttribute('aria-label','Filter finding applicability');
  for(const [value,label] of [['all','All applicability states'],['affected_version','Affected version detected'],['needs_verification','Needs verification']]){const option=text('option',label);option.value=value;applicabilitySelect.append(option);}
  applicabilitySelect.value=applicabilityFilter;applicabilitySelect.addEventListener('change',()=>{applicabilityFilter=applicabilitySelect.value;redraw();});applicabilityLabel.append(applicabilitySelect);root.append(applicabilityLabel);
  root.append(findingStatusControls(issues));
- const filtered=filteredFindings(issues),compact=filtered.slice(0,250);
+ const filtered=filteredFindings(issues),pageKey=JSON.stringify([$('customerDashFilter').value,$('customerDashEnvironment').value,applicabilityFilter,findingStatusFilter,findingSort]);
+ if(pageKey!==findingPageKey){findingPage=0;findingPageKey=pageKey;}
+ const pageSize=50;findingPage=Math.min(findingPage,Math.max(0,Math.ceil(filtered.length/pageSize)-1));
+ const compact=filtered.slice(findingPage*pageSize,(findingPage+1)*pageSize);
  const findingsTable=table(['CVE','Published','Advisory severity','Software / Asset','Vulnerability summary','Saved remediation status','DevOps Ticket #','Applicability'],compact.map(i=>[
   i.id,i.published||'Not available',i.severity,i.technology+' '+(i.version||'Unknown')+' · '+(i.asset?.name||'Asset')+' · '+(i.environment?.name||''),shortSummary(i),'','',applicability(i).label
  ]));
@@ -233,7 +290,7 @@ function renderFindings(root,issues,readOnly){
  }
  root.append(tableScroll(findingsTable));
  if(!filtered.length)root.append(text('p','No findings match this filter. Unmatched software is not evidence of safety.','ops-note'));
- if(filtered.length>250)root.append(text('p','Showing 250 of '+filtered.length+' filtered findings. Narrow the environment, or export all filtered findings as CSV.','ops-note'));
+ if(filtered.length>pageSize){const pages=text('div','','customer-finding-pages'),previous=text('button','Previous findings','ops-download'),next=text('button','Next findings','ops-download');previous.type=next.type='button';previous.disabled=findingPage===0;next.disabled=(findingPage+1)*pageSize>=filtered.length;previous.onclick=()=>{findingPage--;redraw()};next.onclick=()=>{findingPage++;redraw()};pages.append(previous,text('span','Showing '+(findingPage*pageSize+1)+'–'+Math.min((findingPage+1)*pageSize,filtered.length)+' of '+filtered.length+' filtered findings. CSV includes all available filtered findings.','ops-note'),next);root.append(pages);}
  if(!findingStatusReady||!ticketReady)root.append(text('p','Saved remediation information is unavailable. Status and ticket coverage may be incomplete.','ops-note'));
 }
 let savedFindingsRequest=null,statusChangeDialog=null,statusChangeBusy=false;
@@ -241,7 +298,7 @@ function invalidateSession(){
  if(statusChangeDialog?.open)statusChangeDialog.close();
  setAssignmentInfo({ready:false});
  closeFindingDetail();
- customerDataEpoch++;upgradeHistory.clear();inventoryRefresh=null;
+ customerDataEpoch++;renderGeneration++;statsCache.clear();statsInputs=[];upgradeHistory.clear();inventoryRefresh=null;lastInventoryRefresh=0;
  customerReady=false;inventory={customers:[],environments:[],assets:[]};findingStatuses.clear();findingNotes.clear();findingTickets.clear();scoreSeries.clear();
  findingStatusDrafts.clear();findingTicketDrafts.clear();
  pluginFindings=[];pluginMonitorRows={};pluginSources.clear();pluginInstallationStatuses.clear();
@@ -250,6 +307,7 @@ function invalidateSession(){
  for(const id of ['customerReportPrint','customerReportEmail','customerReportCsv'])if($(id))$(id).disabled=true;
  document.querySelectorAll('.customer-email-overlay').forEach(el=>el.remove());
  delete $('customerDashStatus').dataset.ready;
+ $('customerDashStatus').dataset.assessing='false';
  $('customerDashStatus').textContent='Your session changed. Reload and sign in to load authorized customer records.';
 }
 async function refreshSavedFindings(){
@@ -279,7 +337,9 @@ async function prepareExport(action){
   await refreshCustomerInventory();
   await loadUpgradeHistory();
   if(scope!==$('customerDashFilter').value+'|'+$('customerDashEnvironment').value)throw Error('Selection changed. Generate the report again for the selected customer.');
-  drawReport();action();
+  await settledRedraw();
+  if(scope!==$('customerDashFilter').value+'|'+$('customerDashEnvironment').value)throw Error('Selection changed. Generate the report again.');
+  action();
  }catch(error){window.alert('Could not generate report: '+error.message)}finally{exportBusy=false}
 }
 function confirmFindingStatus(i,previous,next,save,mail){
@@ -347,20 +407,11 @@ const advisories=()=>{
  return window.CVEHARBOR_CVIE?window.CVEHARBOR_CVIE.merge([...result.values()]):[...result.values()];
 };
 function compute(customerId,environmentId=''){
- const environments=inventory.environments.filter(e=>e.customer_id===customerId&&(!environmentId||e.id===environmentId));
- const ids=new Set(environments.map(e=>e.id));
- const assets=inventory.assets.filter(a=>ids.has(a.environment_id));
- const matched=window.CVEHARBOR_INVENTORY_MATCH.evaluate(assets,records,5000);
- const issues=[...matched.items,...pluginFindings.filter(m=>assets.some(a=>a.id===m.asset_id))].map(m=>({
-  ...m,asset:assets.find(a=>a.id===m.asset_id),
-  environment:environments.find(e=>e.id===assets.find(a=>a.id===m.asset_id)?.environment_id)
- }));
- const unique=new Set(issues.map(i=>i.id));
- return {environments,assets,issues,total:issues.length,limited:matched.limited,
-  unique:unique.size,critical:issues.filter(i=>i.severity.toLowerCase()==='critical').length,
-  kev:issues.filter(i=>i.known_exploited).length,
-  reviewed:issues.filter(i=>i.level==='version_review').length};
+ const cache=currentStats(),key=JSON.stringify([customerId,environmentId]);
+ if(!cache.has(key)){const scope=statsScope(customerId,environmentId);cache.set(key,finishStats(scope,window.CVEHARBOR_INVENTORY_MATCH.evaluate(scope.assets,records,5000)));}
+ return cache.get(key);
 }
+
 function filters(){
  const chosen=$('customerDashFilter').value;
  $('customerDashFilter').replaceChildren();option($('customerDashFilter'),reporting?'Choose a customer':'All customers','');
@@ -429,10 +480,11 @@ function visualize(groups,all){
  scale.append(fill);attention.append(scale);
  attention.append(text('p','Unmatched or unknown product versions are not evidence of safety.','ops-note'));
  const bySoftware=new Map();
- for(const g of groups)for(const asset of g.stats.assets){
+ for(const g of groups){const byAsset=new Map();for(const issue of g.stats.issues){if(!byAsset.has(issue.asset_id))byAsset.set(issue.asset_id,[]);byAsset.get(issue.asset_id).push(issue);}for(const asset of g.stats.assets){
   const key=g.customer.id+'|'+asset.environment_id+'|'+asset.name+'|'+asset.technology;
-  const findings=g.stats.issues.filter(i=>i.asset_id===asset.id);
+  const findings=byAsset.get(asset.id)||[];
   bySoftware.set(key,{customer:g.customer,asset,findings,environment:g.stats.environments.find(e=>e.id===asset.environment_id)});
+ }
  }
  for(const item of [...bySoftware.values()].slice(0,100)){
   const {customer,asset,findings,environment}=item;
@@ -497,7 +549,8 @@ function showFindings(customerId,assetId){
  if(!box.children.length)box.append(text('p','No candidate advisories for this entry in the current index.','ops-note'));
  box.scrollIntoView?.({behavior:'smooth',block:'start'});
 }
-function drawDashboard(){
+const renderPause=()=>new Promise(resolve=>setTimeout(resolve,0));
+async function paintDashboard(cancelled=()=>false){
  const chosen=$('customerDashFilter').value,env=$('customerDashEnvironment').value;
  const customers=inventory.customers.filter(c=>!chosen||c.id===chosen);
  const all=customers.map(c=>({customer:c,stats:compute(c.id,env)}));
@@ -509,16 +562,21 @@ function drawDashboard(){
   metric('Customers',all.length),metric('Environments',totals.environments),
   metric('Technology entries',totals.assets),metric('Potential matches',totals.issues),
   metric('Critical candidates',totals.critical),metric('KEV candidates',totals.kev));
+ await renderPause();if(cancelled())return;
  visualize(all,customers);
+ await renderPause();if(cancelled())return;
  const scopedStats={assets:all.flatMap(x=>x.stats.assets),issues:all.flatMap(x=>x.stats.issues),environments:all.flatMap(x=>x.stats.environments)};
  const managed=$('customerDashboardCves');managed.replaceChildren();renderFindings(managed,scopedStats.issues,false);
  for(const id of ['customerSoftwareAttention','customerFindingsAttention'])$(id).replaceChildren(attentionBadge(scopedStats.issues));
+ await renderPause();if(cancelled())return;
  const plugins=$('customerDashboardPlugins');plugins.replaceChildren();renderPluginMonitoring(plugins,scopedStats);
  const assessment=$('customerDashboardAssessment');assessment.replaceChildren();
  if(window.CVEHARBOR_FINDING_AI)assessment.append(window.CVEHARBOR_FINDING_AI.priorities({findings:scopedStats.issues.filter(i=>!closedStatus(statusFor(i))),onOpen:findingDetailButton}));
- if(window.CVEHARBOR_ASSESSMENT)assessment.append(window.CVEHARBOR_ASSESSMENT.summary(scopedStats.assets,records));
+ if(window.CVEHARBOR_ASSESSMENT)assessment.append(window.CVEHARBOR_ASSESSMENT.summary(scopedStats.assets,records,{items:scopedStats.issues,total:scopedStats.issues.length,limited:all.some(x=>x.stats.limited)}));
  if(chosen&&all[0])renderScorePanel(assessment,all[0].customer,env,all[0].stats);
+ await renderPause();if(cancelled())return;
  const servers=$('customerDashboardServers');if(servers&&window.CVEHARBOR_SERVER_SECURITY)window.CVEHARBOR_SERVER_SECURITY.render(servers,{...scopedStats,customers,limited:all.some(x=>x.stats.limited)},{findingLink:findingDetailButton,loadNetworks:()=>api('inventory/server-network'),savePrimary:async payload=>{const result=await api('inventory/server-network','PUT',payload);if(!result.saved)throw Error('Sign in again to save server details.');return result;}});
+ await renderPause();if(cancelled())return;
  const historyRoot=$('customerDashboardUpgradeHistory');if(historyRoot){historyRoot.replaceChildren();renderUpgradeHistory(historyRoot,chosen,env)}
  const root=$('customerDashRows');root.replaceChildren();
  for(const {customer,stats} of all){
@@ -532,6 +590,7 @@ function drawDashboard(){
   item.append(overview,a);root.append(item);
  }
  if(!all.length)root.append(text('p','No customer records yet. Create customers in My Environments.','ops-note'));
+ await renderPause();if(cancelled())return;
  const findings=$('customerDashFindings');findings.replaceChildren();
  const list=all.flatMap(x=>x.stats.issues.map(i=>({...i,customer:x.customer})));
  for(const i of list.slice(0,100)){
@@ -551,6 +610,15 @@ function table(headers,rows){
  const body=text('tbody');
  for(const values of rows){const row=text('tr');for(const v of values)row.append(text('td',v));body.append(row)}
  t.append(body);return t;
+}
+// Keep large report sections bounded; PDF and CSV use the complete scoped data.
+function pagedReport(items,render,label,pageSize=50){
+ const box=text('div'),body=text('div'),pager=text('div','','customer-finding-pages');
+ let page=0;
+ const previous=text('button','Previous '+label,'ops-download'),next=text('button','Next '+label,'ops-download'),count=text('span','','ops-note');
+ previous.type=next.type='button';pager.append(previous,count,next);box.append(body,pager);
+ function draw(){body.replaceChildren(render(items.slice(page*pageSize,(page+1)*pageSize)));count.textContent='Showing '+(page*pageSize+1)+'–'+Math.min((page+1)*pageSize,items.length)+' of '+items.length;previous.disabled=page===0;next.disabled=(page+1)*pageSize>=items.length;pager.hidden=items.length<=pageSize;}
+ previous.onclick=()=>{page--;draw()};next.onclick=()=>{page++;draw()};draw();return box;
 }
 function collapseReportSections(root){
  const names=new Set(['Recorded Technology Inventory','Vulnerabilities Requiring Verification','WordPress Plugin Monitoring','CVE Findings','Advisory Evidence and References']);
@@ -1050,7 +1118,7 @@ function ensurePrintDocument(){
  const env=$('customerDashEnvironment').value,stats=compute(customer.id,env);
  root.prepend(buildCustomerPrintDocument(customer,stats,env?(stats.environments[0]?.name||'Selected environment'):'All recorded environments',new Date().toLocaleString(undefined,{timeZoneName:'short'})));
 }
-function drawReport(){
+async function paintReport(cancelled=()=>false){
  if(reportPrinting){reportRedrawPending=true;return}
  const id=$('customerDashFilter').value,env=$('customerDashEnvironment').value;
  const root=$('customerReportBody');root.replaceChildren();
@@ -1073,33 +1141,43 @@ function drawReport(){
  root.append(summary,text('p','Potential asset–CVE matches, not confirmed vulnerabilities. Verify applicability against vendor evidence.','ops-note customer-report-caveat'));
  if(stats.limited)root.append(text('p','The existing matching limit was reached. Counts and exports describe the available results only; narrow the environment for a more complete review.','ops-note'));
  root.append(reportSection('CVE Findings (Read Only)'));
+ await renderPause();if(cancelled())return;
  renderFindings(root,stats.issues,true);
+ await renderPause();if(cancelled())return;
  root.append(reportSection('Installed Software and Security Attention (Read Only)'));
- const software=table(['Software / Technology','Installed version','Environment','Vulnerability attention','Fix status'],stats.assets.map(a=>[
+ const issuesByAsset=new Map();for(const issue of stats.issues){if(!issuesByAsset.has(issue.asset_id))issuesByAsset.set(issue.asset_id,[]);issuesByAsset.get(issue.asset_id).push(issue);}
+ root.append(pagedReport(stats.assets,entries=>{
+ const software=table(['Software / Technology','Installed version','Environment','Vulnerability attention','Fix status'],entries.map(a=>[
   a.technology+' · '+a.name,a.version||'Unknown',stats.environments.find(e=>e.id===a.environment_id)?.name||'','',''
  ]));
  software.classList.add('customer-report-software');
- for(const [index,asset] of stats.assets.entries()){
-  const issues=stats.issues.filter(i=>i.asset_id===asset.id),row=software.tBodies[0].rows[index];
+ for(const [index,asset] of entries.entries()){
+  const issues=issuesByAsset.get(asset.id)||[],row=software.tBodies[0].rows[index];
   row.cells[3].append(attentionBadge(issues));
   const statuses=[...new Set(issues.map(i=>findingStatusReady?statusFor(i):'Status unavailable'))];
   for(const status of statuses)row.cells[4].append(statusBadge(status));
   if(!statuses.length)row.cells[4].textContent='No recorded finding';
  }
- root.append(tableScroll(software));
+ return tableScroll(software);
+ },'software entries'));
+ await renderPause();if(cancelled())return;
  renderUpgradeHistory(root,customer.id,env);
- root.append(reportSection('Recorded Technology Inventory'),table(['Environment','Asset','Category','Technology','Installed version','Recorded notes'],stats.assets.map(a=>[
+ root.append(reportSection('Recorded Technology Inventory'),pagedReport(stats.assets,entries=>table(['Environment','Asset','Category','Technology','Installed version','Recorded notes'],entries.map(a=>[
   stats.environments.find(e=>e.id===a.environment_id)?.name||'',a.name,a.asset_type||'',a.technology,a.version||'Unknown',a.notes||''
- ])));
+ ])), 'inventory entries'));
  root.append(reportSection('Vulnerabilities Requiring Verification'),text('p',stats.total+' potential matches in the selected customer and environment require independent applicability verification. Remediation status does not establish verification.','ops-note'));
- root.append(table(['CVE','Software / Asset','Applicability','Verification evidence'],stats.issues.slice(0,250).map(i=>[i.id,i.technology+' · '+(i.asset?.name||''),applicability(i).label,applicability(i).reason+' '+(i.evidence||'')])));
+ root.append(pagedReport(stats.issues,entries=>table(['CVE','Software / Asset','Applicability','Verification evidence'],entries.map(i=>[i.id,i.technology+' · '+(i.asset?.name||''),applicability(i).label,applicability(i).reason+' '+(i.evidence||'')])), 'verification entries'));
  renderPluginMonitoring(root,stats);
+ await renderPause();if(cancelled())return;
  root.append(reportSection('CVE Findings'));
- for(const i of filteredFindings(stats.issues).slice(0,250)){
+ root.append(pagedReport(filteredFindings(stats.issues),entries=>{const section=text('div');
+ for(const i of entries){
   const detail=text('article','','customer-report-finding');
   detail.append(text('h3',i.id+' · '+i.technology+' · '+(i.asset?.name||'')),evidenceDetail(i));
-  root.append(detail);
+  section.append(detail);
  }
+ return section;},'evidence entries',25));
+ await renderPause();if(cancelled())return;
  root.append(reportSection('Advisory Evidence and References'));
  const references=new Map();
  for(const i of stats.issues){
@@ -1108,7 +1186,7 @@ function drawReport(){
    if(url&&/^https?:\/\//i.test(url)&&!references.has(url))references.set(url,typeof source==='string'?url:source.label||url);
   }
  }
- for(const [url,label] of references){const row=text('p');row.append(link(url,label));root.append(row)}
+ root.append(pagedReport([...references],entries=>{const section=text('div');for(const [url,label] of entries){const row=text('p');row.append(link(url,label));section.append(row)}return section;},'references'));
  if(!references.size)root.append(text('p','No advisory references supplied by the available sources.','ops-note'));
  // End the final accordion before the report metadata.
  root.append(reportSection('Report details'));
@@ -1140,10 +1218,10 @@ async function refreshCustomerInventory(){
   if(epoch!==customerDataEpoch||!customerReady)throw Error('Session changed; reload the page.');
   if(latest.authenticated===false){invalidateSession();throw Error('Sign in to reload current inventory.')}
   if(!Array.isArray(latest.assets)||!Array.isArray(latest.customers)||!Array.isArray(latest.environments))throw Error('Inventory response unavailable');
-  closeFindingDetail();inventory=latest;filters();upgradeHistory.clear();
+  closeFindingDetail();if(JSON.stringify(inventory)!==JSON.stringify(latest)){renderGeneration++;inventory=latest;filters();upgradeHistory.clear();}
   await refreshPluginFindings(false,false);
   if(epoch!==customerDataEpoch||!customerReady)throw Error('Session changed; reload the page.');
-  $('customerDashStatus').dataset.ready='true';
+  $('customerDashStatus').dataset.ready='true';lastInventoryRefresh=Date.now();
  })();
  inventoryRefresh=pending;
  try{await pending}finally{if(inventoryRefresh===pending)inventoryRefresh=null}
@@ -1258,7 +1336,7 @@ async function init(){
   }
   await refreshPluginFindings(false);
   if(reporting)layoutReportIntelligence();
-  const draw=redraw;customerReady=true;draw();
+  const draw=redraw;customerReady=true;
   $('customerDashFilter').addEventListener('change',()=>{closeFindingDetail();environments();draw()});
   $('customerDashEnvironment').addEventListener('change',()=>{closeFindingDetail();draw()});
   if(reporting){
@@ -1267,7 +1345,7 @@ async function init(){
    $('customerReportPrint').addEventListener('click',()=>void prepareExport(()=>window.print()));
    $('customerReportCsv').addEventListener('click',()=>void prepareExport(csvReport));
    $('customerReportEmail').addEventListener('click',async()=>{
-    try{await refreshCustomerInventory();drawReport()}catch(error){window.alert('Could not refresh report: '+error.message);return}
+    try{await refreshCustomerInventory();await settledRedraw()}catch(error){window.alert('Could not refresh report: '+error.message);return}
     const customer=inventory.customers.find(c=>c.id===$('customerDashFilter').value);
     if(!customer)return;
     const emailEnvironment=$('customerDashEnvironment').value;
@@ -1330,20 +1408,31 @@ async function init(){
     actions.append(cancel,send);dialog.append(addressLabel,fileLabel,confirmation,message,actions);shade.append(dialog);document.body.append(shade);address.focus();
    });
   }
+  await settledRedraw();lastInventoryRefresh=Date.now();
   $('customerDashStatus').dataset.ready='true';
   $('customerDashStatus').textContent=inventory.customers.length+' customer records loaded privately. Advisory matching is preliminary.';
-  const refreshCurrent=()=>{
-   if(!customerReady)return;
-   void refreshCustomerInventory().then(redraw).catch(error=>{
-    if(!customerReady)return;
-    delete $('customerDashStatus').dataset.ready;$('customerDashStatus').textContent='Could not refresh current inventory: '+error.message;
-   });
+  const refreshCurrent=(force=false)=>{
+   if(force===true)refreshRequested=true;
+   if(!customerReady||focusCheck)return focusCheck;
+   const epoch=customerDataEpoch;
+   focusCheck=(async()=>{
+    // Revalidate authorization on return, but do not reload/rebuild unchanged
+    // inventory on every focus event. Explicit changes and exports bypass this.
+    const session=await api('me');
+    if(epoch!==customerDataEpoch)return;
+    if(!session.authenticated||session.email!==accountEmail){invalidateSession();return;}
+    do{
+     const reload=refreshRequested||Date.now()-lastInventoryRefresh>=60000;refreshRequested=false;
+     if(reload){await refreshCustomerInventory();await settledRedraw();}
+    }while(refreshRequested&&epoch===customerDataEpoch&&customerReady);
+   })().catch(error=>{if(customerReady){delete $('customerDashStatus').dataset.ready;$('customerDashStatus').textContent='Could not refresh current inventory: '+error.message;}}).finally(()=>{focusCheck=null;});
+   return focusCheck;
   };
   window.addEventListener('focus',refreshCurrent);
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refreshCurrent()});
   if(typeof BroadcastChannel==='function'){
    const changes=new BroadcastChannel('cveharbor-inventory-changed');
-   changes.onmessage=event=>{if(event.data?.changed)void (inventoryRefresh||Promise.resolve()).catch(()=>{}).then(refreshCurrent)};
+   changes.onmessage=event=>{if(event.data?.changed)void (inventoryRefresh||Promise.resolve()).catch(()=>{}).then(()=>refreshCurrent(true))};
   }
  }catch(e){$('customerDashLogin').hidden=false;$('customerDashStatus').textContent=(e.status===404||e.status===503)?'Customer inventory backend is not active. The D1 migration and updated Cloudflare Worker must be deployed.':'Could not reach account data. Please sign in or check the service. '+e.message}
 }

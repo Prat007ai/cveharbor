@@ -142,10 +142,15 @@ function panel({finding,advisory=finding,customer,org}){
 function priorities({findings,onOpen}){
  const root=el('section','','finding-ai finding-ai-priorities');root.append(heading(),el('p','Start with exploited and critical candidates. Open a finding to check applicability and generate a fix guide. Inventory matches refresh when your saved assets or advisory evidence change.'));
  const rank={critical:4,high:3,medium:2,low:1};
- const seen=new Set();
- const selected=[...findings].sort((a,b)=>Number(!!b.known_exploited)-Number(!!a.known_exploited)||(rank[b.severity]||0)-(rank[a.severity]||0)).filter(f=>{
-  const key=JSON.stringify([f.environment?.customer_id||'',f.id,f.technology,f.version]);if(seen.has(key))return false;seen.add(key);return true;
- }).slice(0,3);
+ const compare=(a,b)=>Number(!!b.known_exploited)-Number(!!a.known_exploited)||(rank[b.severity]||0)-(rank[a.severity]||0);
+ const unique=new Map();
+ for(const [index,finding] of findings.entries()){
+  const key=JSON.stringify([finding.environment?.customer_id||'',finding.id,finding.technology,finding.version]),prior=unique.get(key);
+  if(!prior||compare(finding,prior.finding)<0)unique.set(key,{finding,index});
+ }
+ const best=[];
+ for(const row of unique.values()){best.push(row);best.sort((a,b)=>compare(a.finding,b.finding)||a.index-b.index);if(best.length>3)best.pop();}
+ const selected=best.map(row=>row.finding);
  for(const finding of selected){const b=onOpen(finding);b.classList.add('finding-ai-priority');b.append(el('span',' · '+finding.technology+' '+(finding.version||'version unknown')+' · '+window.CVEHARBOR_INVENTORY_MATCH.applicability(finding).label+' · '+(finding.known_exploited?'CVE listed in CISA KEV':finding.severity)));root.append(b);}
  if(!selected.length)root.append(el('p','No candidate findings in this selection. Product coverage, missing versions and installed patches still need review.'));
  return root;

@@ -1,4 +1,4 @@
-"""Cooperative inventory filters and stable CVIE snapshots on verified PR359."""
+"""Bounded customer rendering and reusable assessments on verified PR360."""
 import os
 from pathlib import Path
 import shutil
@@ -11,8 +11,8 @@ import production_release_checks as checks
 import team_release as team
 import version_picker_release as publisher
 
-BASE = 'a46d91ec142935105f164a1854452ff7f63f1c38'
-CHANGED = {'cvie.js', 'inventory.js'}
+BASE = '1bb05f0b7d5f4c47afbe347ce27f613e32e4e922'
+CHANGED = {'customer-security.js', 'inventory.js', 'inventory-assessment.js', 'finding-ai.js'}
 
 
 def prepare(out):
@@ -56,15 +56,15 @@ def ready():
 def run(action, out):
     if action == 'prepare':
         return prepare(out)
-    pr = team.reviewed('fix/inventory-refresh-response')
+    pr = team.reviewed('fix/customer-scale-performance')
     pkg.require(checks.check_commit(os.environ['GITHUB_SHA']), 'Required application/security checks incomplete')
     if action == 'preflight':
         prod.policy(publisher.ENV)
         ready()
     elif action == 'publish':
         publisher.publish(out, changed=CHANGED, added=set(), reviewed_pr=pr, ready=ready,
-                          previous_version='442166bd-f4b6-4083-95ce-e899e8c67b19',
-                          previous_deployment='b403e6e3-b446-46d0-94e4-833a378ff0b6',
+                          previous_version='a4c3f8d0-3ae6-4fed-80ce-3e95aded1347',
+                          previous_deployment='e698f06f-7374-4ed4-980e-ff8e6d12767b',
                           served_copy=out / 'verified-origin')
     else:
         raise ValueError(action)

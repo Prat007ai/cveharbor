@@ -24,25 +24,26 @@ matchingDom.window.close();
 
 const {securityFixture}=await import('./customer_security_fixture.mjs');
 const fixture=securityFixture();
-const settle=()=>new Promise(resolve=>setTimeout(resolve,30));
+const pages=[];
+const settle=async()=>{await new Promise(r=>setTimeout(r,5));const end=Date.now()+5000;while(pages.some(dom=>dom.window.document?.getElementById('customerDashStatus')?.dataset.assessing==='true')){if(Date.now()>end)throw Error('Customer assessment did not settle');await new Promise(r=>setTimeout(r,5));}};
 async function page(kind,customer='c1',data=fixture){
  const dom=new JSDOM(fs.readFileSync(kind+'/index.html','utf8'),{url:'https://cveharbor.com/'+kind+'/?customer='+customer,runScripts:'outside-only'});
- const w=dom.window;w.fetch=data.request;w.alert=message=>{w.lastAlert=message};w.CVEHARBOR_DATA={advisories:data.advisories};
- for(const script of ['inventory-matching.js','customer-score.js','advisory-details.js','customer-security.js'])w.eval(fs.readFileSync(script,'utf8'));
+ pages.push(dom);const w=dom.window;w.fetch=data.request;w.alert=message=>{w.lastAlert=message};w.CVEHARBOR_DATA={advisories:data.advisories};
+ for(const script of ['inventory-matching.js','inventory-assessment.js','customer-score.js','advisory-details.js','customer-security.js'])w.eval(fs.readFileSync(script,'utf8'));
  await settle();return dom;
 }
-function select(dom,id,value){const el=dom.window.document.getElementById(id);el.value=value;el.dispatchEvent(new dom.window.Event('change'))}
-function filter(dom,label){[...dom.window.document.querySelectorAll('.customer-finding-filter')].find(el=>el.textContent.startsWith(label+' (')).click()}
+async function select(dom,id,value){const el=dom.window.document.getElementById(id);el.value=value;el.dispatchEvent(new dom.window.Event('change'));await settle()}
+async function filter(dom,label){[...dom.window.document.querySelectorAll('.customer-finding-filter')].find(el=>el.textContent.startsWith(label+' (')).click();await settle()}
 const report=await page('customer-reports'),w=report.window,doc=w.document;
-select(report,'customerDashEnvironment','e1');
+await select(report,'customerDashEnvironment','e1');
 const reportText=()=>doc.querySelector('#customerReportBody').textContent;
 assert.match(reportText(),/Fixture Harbor/);
 assert.doesNotMatch(reportText(),/OTHER01|Other Customer|STAGE01/);
 assert.equal(doc.querySelectorAll('#customerReportBody input,#customerReportBody select:not([aria-label="Filter finding applicability"])').length,0,'no report editors, including plugins');
 const applicabilityFilter=doc.querySelector('[aria-label="Filter finding applicability"]');
-applicabilityFilter.value='needs_verification';applicabilityFilter.dispatchEvent(new w.Event('change'));
+applicabilityFilter.value='needs_verification';applicabilityFilter.dispatchEvent(new w.Event('change'));await settle();
 assert.equal(doc.querySelectorAll('.customer-vulnerability-table tbody tr').length,0,'version matches do not appear under needs verification');
-const resetApplicability=doc.querySelector('[aria-label="Filter finding applicability"]');resetApplicability.value='all';resetApplicability.dispatchEvent(new w.Event('change'));
+const resetApplicability=doc.querySelector('[aria-label="Filter finding applicability"]');resetApplicability.value='all';resetApplicability.dispatchEvent(new w.Event('change'));await settle();
 assert.equal(fixture.writes.length,0,'applicability filtering remains read only');
 assert.equal(doc.querySelectorAll('#customerReportBody .customer-ticket-save').length,0);
 assert.match(doc.querySelector('.customer-ticket-history').textContent,/DEV-10/);
@@ -52,20 +53,20 @@ assert.deepEqual(sections.map(el=>el.dataset.section),['Software Upgrade History
 assert.ok(sections.every(el=>!el.open));
 sections[1].open=true;sections[1].dispatchEvent(new w.Event('toggle'));
 assert.equal(sections[2].open,false,'accordions expand independently');
-filter(report,'All');
+await filter(report,'All');
 assert.ok(doc.querySelector('[data-section="Recorded Technology Inventory"]').open,'open state survives redraw');
 assert.match(doc.querySelector('#customerReportAssessment').textContent,/Insufficient Data/,'50% coverage is insufficient');
 assert.match(doc.querySelector('#customerReportAssessment').textContent,/Low/);
 assert.match(doc.querySelector('#customerReportAssessment').textContent,/50%/);
 const historyCount=fixture.seen.filter(x=>x.path==='customer-score-history').length;
-filter(report,'Unresolved');filter(report,'All');await settle();
+await filter(report,'Unresolved');await filter(report,'All');await settle();
 assert.equal(fixture.seen.filter(x=>x.path==='customer-score-history').length,historyCount,'history cached by scope');
 assert.equal(fixture.writes.length,0,'report rendering, sorting, and filters never write remediation or score history');
-const published=[...doc.querySelectorAll('.customer-report-sort')].find(el=>el.textContent.startsWith('Published'));published.click();
+const published=[...doc.querySelectorAll('.customer-report-sort')].find(el=>el.textContent.startsWith('Published'));published.click();await settle();
 assert.match(doc.querySelector('.customer-vulnerability-table tbody tr').textContent,/CVE-2026-12346/,'date sort uses actual dates');
 for(const id of ['customerReportPrint','customerReportEmail','customerReportCsv'])assert.equal(doc.getElementById(id).disabled,false);
 const dashboard=await page('customer-dashboard'),dw=dashboard.window,dd=dw.document;
-select(dashboard,'customerDashEnvironment','e1');
+await select(dashboard,'customerDashEnvironment','e1');
 assert.equal(dd.querySelectorAll('#customerSoftwareSection,#customerFindingsSection').length,2);
 assert.ok(!dd.getElementById('customerSoftwareSection').open&&!dd.getElementById('customerFindingsSection').open);
 assert.match(dd.getElementById('customerFindingsAttention').textContent,/1 critical, 1 high/);
@@ -73,7 +74,7 @@ assert.equal(dd.querySelectorAll('.customer-software-attention').length,1,'unres
 assert.ok(dd.querySelector('#customerDashboardPlugins select'),'plugin editing preserved on dashboard');
 assert.ok(dd.querySelector('#customerDashboardPlugins input[type=url]'),'vendor URL editing preserved');
 const draft=dd.querySelector('.customer-ticket-input');draft.value='Draft kept';draft.dispatchEvent(new dw.Event('input'));
-filter(dashboard,'All');assert.equal(dd.querySelector('.customer-ticket-input').value,'Draft kept','draft survives redraw');filter(dashboard,'Unresolved');
+await filter(dashboard,'All');assert.equal(dd.querySelector('.customer-ticket-input').value,'Draft kept','draft survives redraw');await filter(dashboard,'Unresolved');
 const input=dd.querySelector('.customer-ticket-input');input.value='DEV-11';dd.querySelector('#customerDashboardCves .customer-ticket-save').click();await settle();
 assert.deepEqual(fixture.tickets.map(x=>x.ticket_number),['DEV-10','DEV-11']);
 let status=dd.querySelector('#customerDashboardCves .customer-finding-status-select');
@@ -87,12 +88,12 @@ assert.equal(dd.querySelectorAll('.customer-software-progress').length,1,'remain
 status=dd.querySelector('#customerDashboardCves .customer-finding-status-select');status.value='Accepted Risk';dd.querySelector('.customer-status-save').click();await settle();
 assert.match(dd.getElementById('customerFindingsAttention').textContent,/No current unresolved findings/);
 assert.equal(dd.querySelector('#customerFindingsAttention .customer-attention-badge').dataset.level,'neutral');
-w.dispatchEvent(new w.Event('focus'));await settle();filter(report,'All');
+w.dispatchEvent(new w.Event('cveharbor:remediation-changed'));await settle();await filter(report,'All');
 assert.match(doc.querySelector('.customer-vulnerability-table').textContent,/Fixed\/Patched/);
 assert.match(doc.querySelector('.customer-vulnerability-table').textContent,/DEV-10.*DEV-11/);
-const reloaded=await page('customer-reports');select(reloaded,'customerDashEnvironment','e1');filter(reloaded,'All');
+const reloaded=await page('customer-reports');await select(reloaded,'customerDashEnvironment','e1');await filter(reloaded,'All');
 assert.match(reloaded.window.document.querySelector('.customer-vulnerability-table').textContent,/Fixed\/Patched/,'new report reads persisted dashboard status');
-filter(report,'Fixed/Patched');
+await filter(report,'Fixed/Patched');
 let csv='';w.Blob=class{constructor(parts){csv=parts.join('')}};w.URL.createObjectURL=()=> 'blob:fixture';w.URL.revokeObjectURL=()=>{};w.HTMLAnchorElement.prototype.click=()=>{};
 doc.getElementById('customerReportCsv').click();await settle();
 assert.match(csv,/CVE-2026-12345/);assert.doesNotMatch(csv,/CVE-2026-12346|OTHER01|STAGE01/);
@@ -106,16 +107,16 @@ assert.match(doc.querySelector('.customer-print-document').textContent,/Report d
 const frozen=doc.querySelector('.customer-print-document').textContent;
 w.dispatchEvent(new w.CustomEvent('cvie:updated',{detail:{recordsChanged:true}}));
 assert.equal(doc.querySelector('.customer-print-document').textContent,frozen,'print contents remain stable during updates');
-w.dispatchEvent(new w.Event('afterprint'));
+w.dispatchEvent(new w.Event('afterprint'));await settle();
 assert.equal(doc.querySelector('[data-section="WordPress Plugin Monitoring"]').open,false);
-select(report,'customerDashFilter','c2');
+await select(report,'customerDashFilter','c2');
 assert.equal(doc.getElementById('customerDashEnvironment').value,'','customer switch discards unrelated environment');
 assert.doesNotMatch(reportText(),/WEB01|STAGE01|SITE01|Fixture Harbor|DEV-10/);
 assert.match(doc.querySelector('#customerReportAssessment').textContent,/OUT OF 100/,'existing scorer returns numeric result when eligible');
 assert.equal(doc.querySelectorAll('details.customer-report-section').length,6,'five existing sections and upgrade history retained without WordPress');
 assert.match(doc.querySelector('[data-section="WordPress Plugin Monitoring"]').textContent,/Not applicable/);
 const mediumFixture=securityFixture();for(const a of mediumFixture.advisories)a.severity='medium';
-const mediumDashboard=await page('customer-dashboard','c1',mediumFixture);select(mediumDashboard,'customerDashEnvironment','e1');
+const mediumDashboard=await page('customer-dashboard','c1',mediumFixture);await select(mediumDashboard,'customerDashEnvironment','e1');
 assert.equal(mediumDashboard.window.document.querySelectorAll('.customer-software-attention,.customer-software-progress').length,0,'medium-only needs-review findings do not receive critical/high styling');
 assert.equal(mediumDashboard.window.document.querySelector('#customerFindingsAttention .customer-attention-badge').dataset.level,'other');
 mediumDashboard.window.close();

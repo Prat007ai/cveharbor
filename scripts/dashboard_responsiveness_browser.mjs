@@ -34,19 +34,20 @@ try{
     return route.fulfill({body,contentType:({'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css'})[path.extname(filename)]||'application/octet-stream'});
    }catch{return route.fulfill({status:404,body:''});}
   });
-  const started=Date.now();await page.goto('https://cveharbor.com/customer-dashboard/');
+  const settled=()=>page.waitForFunction(()=>document.querySelector('#customerDashStatus').dataset.assessing==='false');
+ const started=Date.now();await page.goto('https://cveharbor.com/customer-dashboard/');
   await page.waitForSelector('#customerDashStatus[data-ready="true"]');
   await page.waitForFunction(()=>!window.CVEHARBOR_CVIE.loading);
   const readyMs=Date.now()-started;
   const calls=await page.evaluate(()=>window.matchCalls);
   assert.ok(calls>0);
   const selectionStart=Date.now();
-  await page.selectOption('#customerDashFilter','c1');await page.selectOption('#customerDashEnvironment','e1');
+  await page.selectOption('#customerDashFilter','c1');await page.selectOption('#customerDashEnvironment','e1');await settled();
   assert.equal(await page.evaluate(()=>window.matchCalls),calls,'unchanged customer/environment selection must reuse matching work');
   assert.match(await page.locator('#customerDashMetrics').innerText(),/152/);
   assert.match(await page.locator('#customerDashboardServers').innerText(),/FICTIONAL-WEB/);
-  await page.selectOption('#customerDashFilter','c2');assert.doesNotMatch(await page.locator('#customerDashboardServers').innerText(),/FICTIONAL-WEB/);
-  await page.selectOption('#customerDashFilter','c1');
+  await page.selectOption('#customerDashFilter','c2');await settled();assert.doesNotMatch(await page.locator('#customerDashboardServers').innerText(),/FICTIONAL-WEB/);
+  await page.selectOption('#customerDashFilter','c1');await settled();
   assert.deepEqual(errors,[]);
   console.log(JSON.stringify({width,readyMs,selectionMs:Date.now()-selectionStart,candidateCalls:calls}));
   await page.screenshot({path:path.join(screenshots,'dashboard-'+width+'.png')});await page.close();

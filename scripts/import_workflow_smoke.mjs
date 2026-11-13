@@ -32,7 +32,7 @@ fixture.advisories.push({id:'CVE-2099-12345',title:'Fictional .NET advisory',aff
 const personal=dom(source('customer-dashboard/index.html'),'https://cveharbor.com/customer-dashboard/?customer=c1&environment=e1');
 personal.window.fetch=fixture.request;personal.window.CVEHARBOR_DATA={advisories:fixture.advisories};
 for(const name of ['inventory-matching.js','inventory-assessment.js','customer-score.js','advisory-details.js','server-security.js','customer-security.js'])personal.window.eval(source(name));
-await tick();assert.match(personal.window.document.getElementById('customerDashboardAssessment').textContent,/3 software entries assessed/);
+for(let i=0;i<200&&personal.window.document.getElementById('customerDashStatus').dataset.ready!=='true';i++)await tick();assert.match(personal.window.document.getElementById('customerDashboardAssessment').textContent,/3 software entries assessed/);
 assert.doesNotMatch(personal.window.document.getElementById('customerDashboardAssessment').textContent,/OTHER01|STAGE01/);
 assert.match(personal.window.document.getElementById('customerDashboardCves').textContent,/CVE-2099-12345/);
 assert.ok(!fixture.seen.some(x=>/ai\//.test(x.path)));personal.window.close();

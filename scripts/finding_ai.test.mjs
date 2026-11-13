@@ -30,3 +30,18 @@ test('finding prompt keeps the admitted byte bound and excludes private labels a
  const advisory={affected:'🧪'.repeat(3000),summary:'🧪'.repeat(3000),remediation:'🧪'.repeat(3000),sources:[{url:'javascript:alert(1)'},{url:'https://user:secret@example.test/'},{url:'https://example.test/vendor',label:'Vendor'}]};
  const result=context.CVEHARBOR_FINDING_AI.question(finding,advisory);assert.ok(Buffer.byteLength(result)<=6000);assert.doesNotMatch(result,/PRIVATE-HOST|PRIVATE-NOTES|javascript|secret/);assert.match(result,/https:\/\/example.test\/vendor/);assert.match(result,/Temporary mitigation/);
 });
+
+
+test('bounded priority selection preserves severity, exploitation, deduplication and stable ties',()=>{
+ const node=()=>({append(){},setAttribute(){},classList:{add(){}}});
+ context.document={createElement:node,createTextNode:node};
+ try{
+  const rank={critical:4,high:3,medium:2,low:1},compare=(a,b)=>Number(!!b.known_exploited)-Number(!!a.known_exploited)||(rank[b.severity]||0)-(rank[a.severity]||0);
+  for(let seed=0;seed<15;seed++){
+   const findings=Array.from({length:6000},(_,i)=>({id:'CVE-2026-'+(10000+(i*37+seed)%231),technology:'PHP',version:'8.4.'+(i%3),severity:['low','high','critical','unknown','medium'][(i+seed)%5],known_exploited:(i+seed)%17===0,environment:{customer_id:'c'+i%4}}));
+   const seen=new Set(),expected=[...findings].sort(compare).filter(f=>{const key=JSON.stringify([f.environment.customer_id,f.id,f.technology,f.version]);if(seen.has(key))return false;seen.add(key);return true;}).slice(0,3),actual=[];
+   context.CVEHARBOR_FINDING_AI.priorities({findings,onOpen:f=>{actual.push(f);return node();}});
+   assert.deepEqual(actual,expected);
+  }
+ }finally{delete context.document;}
+});

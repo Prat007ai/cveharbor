@@ -112,15 +112,18 @@ function install(){
  base.inventoryAssessment=true;
 }
 const el=(tag,text='',cls='')=>{const x=document.createElement(tag);x.textContent=text;if(cls)x.className=cls;return x;};
-function summary(assets,records){
+function summary(assets,records,assessment){
  install();const engine=root.CVEHARBOR_INVENTORY_MATCH;
  if(!engine||!Array.isArray(records)||!records.length)return el('p','Assessment unavailable: the advisory index could not be loaded or is empty. Inventory remains saved; retry when the index is available.','ops-note');
- const result=engine.evaluate(assets,records,5000),matched=new Set(result.items.map(f=>f.asset_id));
+ const result=assessment||engine.evaluate(assets,records,5000),matched=new Set(result.items.map(f=>f.asset_id));
  const panel=el('section','','data-panel ops-panel');panel.append(el('h2','Imported inventory assessment'),el('p',assets.length+' software entries assessed against '+records.length+' indexed advisory records. '+result.total+' potential asset/advisory matches. Checked '+new Date().toLocaleString()+'.','ops-note'),el('p','Inventory-based assessment only; no endpoint scan or AI request. No indexed match does not mean secure. Windows, IIS and .NET Framework require patch/build verification.','ops-note'));
  const states=engine.summarize(result.items);panel.append(el('p',states.affected_version+' affected version detected · '+states.needs_verification+' need verification'+(result.limited?' (available results only)':'')+'. Applicability is separate from saved remediation status.','applicability-summary'));
  const review=assets.filter(a=>!a.version||!matched.has(a.id));
  if(review.length){const details=el('details'),title=el('summary',review.length+' entries need version or coverage review');details.append(title);
-  for(const a of review)details.append(el('p',a.name+' · '+a.technology+' '+(a.version||'Unknown version')+' — '+(!a.version?'Installed version required.':'No indexed match; product mapping and source coverage remain unverified.')));panel.append(details);}
+  const body=el('div'),pager=el('div'),previous=el('button','Previous entries'),next=el('button','Next entries'),count=el('span');let page=0,built=false;
+  previous.type=next.type='button';pager.append(previous,count,next);details.append(body,pager);pager.hidden=true;
+  function draw(){body.replaceChildren();for(const a of review.slice(page*50,(page+1)*50))body.append(el('p',a.name+' · '+a.technology+' '+(a.version||'Unknown version')+' — '+(!a.version?'Installed version required.':'No indexed match; product mapping and source coverage remain unverified.')));count.textContent=' '+(page*50+1)+'–'+Math.min((page+1)*50,review.length)+' of '+review.length+' ';previous.disabled=page===0;next.disabled=(page+1)*50>=review.length;pager.hidden=review.length<=50;built=true;}
+  previous.onclick=()=>{page--;draw()};next.onclick=()=>{page++;draw()};details.addEventListener('toggle',()=>{if(details.open&&!built)draw()});panel.append(details);}
  if(result.limited)panel.append(el('p','Results exceed the 5,000 finding limit. Narrow the environment scope.','ops-note'));
  return panel;
 }
