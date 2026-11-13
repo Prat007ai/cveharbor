@@ -9,6 +9,18 @@ import {inventoryRoute} from '../account-backend/src/inventory.js';
 import {securityFixture} from './customer_security_fixture.mjs';
 const require=createRequire(new URL('../staging/package.json',import.meta.url));
 const {chromium}=require('playwright-core'),root=path.resolve(process.env.INVENTORY_TEST_SITE||'.');
+// The fixture replaces the CDN. Load its bounded static inputs before timing
+// browser work so shared-runner filesystem contention is not a network model.
+// API latency remains the explicit 50ms delay below, including every page.
+const staticFiles=new Map();
+for(const entry of await fs.readdir(root,{withFileTypes:true})){
+ if(entry.isFile()&&/\.(js|css|json|svg|ico)$/.test(entry.name)&&!['data.js','catalog.js'].includes(entry.name)){
+  const file=path.join(root,entry.name);staticFiles.set(file,await fs.readFile(file));
+ }
+}
+for(const section of ['customer-reports','customer-dashboard']){
+ const file=path.join(root,section,'index.html');staticFiles.set(file,await fs.readFile(file));
+}
 const browser=await chromium.launch({headless:true,executablePath:process.env.CVEHARBOR_CHROMIUM_PATH||(process.platform==='win32'?'C:/Program Files/Google/Chrome/Application/chrome.exe':'/usr/bin/google-chrome')});
 try{
  for(const width of [1440,390])for(const section of ['customer-reports','customer-dashboard']){
@@ -30,7 +42,7 @@ try{
    if(url.pathname==='/data.js')return route.fulfill({contentType:'text/javascript',body:'window.CVEHARBOR_DATA='+JSON.stringify({advisories:fixture.advisories})});
    if(url.pathname==='/catalog.js')return route.fulfill({contentType:'text/javascript',body:'window.CVEHARBOR_CATALOG={advisories:[]}'});
    const file=path.resolve(root,'.'+url.pathname+(url.pathname.endsWith('/')?'index.html':''));assert.ok(file.startsWith(root+path.sep));
-   try{return route.fulfill({body:await fs.readFile(file),contentType:({'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json'})[path.extname(file)]||'application/octet-stream'});}catch{return route.fulfill({status:404,body:''});}
+   try{return route.fulfill({body:staticFiles.get(file)||await fs.readFile(file),contentType:({'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json'})[path.extname(file)]||'application/octet-stream'});}catch{return route.fulfill({status:404,body:''});}
   });
   try{
    const start=Date.now();await page.goto('https://cveharbor.com/'+section+'/'+(section==='customer-reports'?'?customer='+fixtureId(50):''));
