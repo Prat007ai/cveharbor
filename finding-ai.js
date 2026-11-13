@@ -31,10 +31,12 @@ function vendorSections(description){
  // Preserve complete small sections; skip code blocks and package tables. Raw vendor prose stays untrusted data.
  const clean=String(description||'').replace(/```[\s\S]*?```/g,'[Code example omitted; consult source]').replace(/\[([^\]]+)\]\([^)]*\)/g,'$1');
  const sections=clean.split(/(?=^#{1,3} )/m),selected=[];
- for(const pattern of [/how do i fix|remediation|solution/i,/executive summary|impact/i,/mitigation|how do i know/i]){
-  const section=sections.find(s=>pattern.test(s.split('\n')[0]));if(section&&!selected.includes(section))selected.push(section);
+ const mitigation=sections.find(s=>/mitigation/i.test(s.split('\n')[0]));
+ if(mitigation){const paragraphs=mitigation.split(/\n\s*\n/).filter(p=>/warning:|until the update|avoid |must stop/i.test(p));selected.push(clip('Vendor mitigation cautions:\n'+paragraphs.join('\n'),900));}
+ for(const pattern of [/how do i fix|remediation|solution/i,/executive summary|impact/i]){
+  const section=sections.find(s=>pattern.test(s.split('\n')[0]));if(section)selected.push(clip(section,800));
  }
- return selected.map(s=>clip(s,800)).join('\n');
+ return selected.join('\n');
 }
 function vendorEvidence(data,link,finding){
  if(data.cve_id!==finding.id||data.ghsa_id!==link.id||!data.published_at||data.withdrawn_at||data.html_url!==link.page)throw Error('Vendor evidence identity mismatch');
