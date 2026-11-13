@@ -151,11 +151,11 @@ async function renderCurrent(){
   $('customerReportBody').replaceChildren();$('customerReportAssessment').replaceChildren();
  }
  $('customerDashStatus').dataset.assessing='true';
+ if(!reporting&&$('customerDashMetrics').dataset.scope!==JSON.stringify([chosen,env]))for(const id of [...dashboardSections,'customerDashboardServers'])$(id)?.replaceChildren();
  const pending=clients.some(c=>!cache.has(JSON.stringify([c.id,env])));
  if(pending){
   $('customerDashStatus').dataset.assessing='true';
   $('customerDashStatus').textContent='Assessing saved inventory… Customer controls remain available.';
-  if(!reporting)for(const id of ['customerDashboardCves','customerDashFindings','customerDashboardAssessment','customerDashboardServers','customerDashRows'])$(id)?.replaceChildren();
  }
  try{
   for(const customer of clients){
@@ -497,8 +497,8 @@ function lifecycleFor(tech,version){
  return {text:remaining<0?'Published support deadline passed':remaining<=90?'Support ends within 90 days':'Published support date '+date,
   state:remaining<0?'expired':remaining<=90?'warning':'supported'};
 }
-function visualize(groups,all){
- const attention=$('customerAttentionVisual'),severity=$('customerSeverityVisual'),software=$('customerSoftwareVisual');
+function visualize(groups,all,view=$){
+ const attention=view('customerAttentionVisual'),severity=view('customerSeverityVisual'),software=view('customerSoftwareVisual');
  if(!attention||!severity||!software)return;
  attention.replaceChildren();severity.replaceChildren();software.replaceChildren();
  const items=groups.flatMap(x=>x.stats.issues.map(i=>({...i,customer:x.customer})));
@@ -598,36 +598,36 @@ function showFindings(customerId,assetId){
  if(!box.children.length)box.append(text('p','No candidate advisories for this entry in the current index.','ops-note'));
  box.scrollIntoView?.({behavior:'smooth',block:'start'});
 }
+const dashboardSections=['customerDashMetrics','customerAttentionVisual','customerSeverityVisual','customerSoftwareVisual','customerDashboardCves','customerSoftwareAttention','customerFindingsAttention','customerDashboardPlugins','customerDashboardAssessment','customerDashboardUpgradeHistory','customerDashRows','customerDashFindings','customerDashCoverage'];
 const renderPause=()=>new Promise(resolve=>setTimeout(resolve,0));
 async function paintDashboard(cancelled=()=>false){
  const chosen=$('customerDashFilter').value,env=$('customerDashEnvironment').value;
+ const sections=new Map(dashboardSections.filter(id=>$(id)).map(id=>[id,$(id).cloneNode(false)])),view=id=>sections.get(id);
  const customers=inventory.customers.filter(c=>!chosen||c.id===chosen);
  const all=customers.map(c=>({customer:c,stats:compute(c.id,env)}));
  const totals=all.reduce((s,x)=>({environments:s.environments+x.stats.environments.length,
   assets:s.assets+x.stats.assets.length,issues:s.issues+x.stats.total,
   critical:s.critical+x.stats.critical,kev:s.kev+x.stats.kev}),
  {environments:0,assets:0,issues:0,critical:0,kev:0});
- const metrics=$('customerDashMetrics');metrics.replaceChildren(
+ const metrics=view('customerDashMetrics');metrics.replaceChildren(
   metric('Customers',all.length),metric('Environments',totals.environments),
   metric('Technology entries',totals.assets),metric('Potential matches',totals.issues),
   metric('Critical candidates',totals.critical),metric('KEV candidates',totals.kev));
  await renderPause();if(cancelled())return;
- visualize(all,customers);
+ visualize(all,customers,view);
  await renderPause();if(cancelled())return;
  const scopedStats={assets:all.flatMap(x=>x.stats.assets),issues:all.flatMap(x=>x.stats.issues),environments:all.flatMap(x=>x.stats.environments)};
- const managed=$('customerDashboardCves');managed.replaceChildren();renderFindings(managed,scopedStats.issues,false);
- for(const id of ['customerSoftwareAttention','customerFindingsAttention'])$(id).replaceChildren(attentionBadge(scopedStats.issues));
+ const managed=view('customerDashboardCves');managed.replaceChildren();renderFindings(managed,scopedStats.issues,false);
+ for(const id of ['customerSoftwareAttention','customerFindingsAttention'])view(id).replaceChildren(attentionBadge(scopedStats.issues));
  await renderPause();if(cancelled())return;
- const plugins=$('customerDashboardPlugins');plugins.replaceChildren();renderPluginMonitoring(plugins,scopedStats);
- const assessment=$('customerDashboardAssessment');assessment.replaceChildren();
+ const plugins=view('customerDashboardPlugins');plugins.replaceChildren();renderPluginMonitoring(plugins,scopedStats);
+ const assessment=view('customerDashboardAssessment');assessment.replaceChildren();
  if(window.CVEHARBOR_FINDING_AI)assessment.append(window.CVEHARBOR_FINDING_AI.priorities({findings:scopedStats.issues.filter(i=>!closedStatus(statusFor(i))),onOpen:findingDetailButton}));
  if(window.CVEHARBOR_ASSESSMENT)assessment.append(window.CVEHARBOR_ASSESSMENT.summary(scopedStats.assets,records,{items:scopedStats.issues,total:scopedStats.issues.length,limited:all.some(x=>x.stats.limited)}));
  if(chosen&&all[0])renderScorePanel(assessment,all[0].customer,env,all[0].stats);
  await renderPause();if(cancelled())return;
- const servers=$('customerDashboardServers');if(servers&&window.CVEHARBOR_SERVER_SECURITY)window.CVEHARBOR_SERVER_SECURITY.render(servers,{...scopedStats,customers,limited:all.some(x=>x.stats.limited)},{findingLink:findingDetailButton,loadNetworks:()=>api('inventory/server-network'),savePrimary:async payload=>{const result=await api('inventory/server-network','PUT',payload);if(!result.saved)throw Error('Sign in again to save server details.');return result;}});
- await renderPause();if(cancelled())return;
- const historyRoot=$('customerDashboardUpgradeHistory');if(historyRoot){historyRoot.replaceChildren();renderUpgradeHistory(historyRoot,chosen,env)}
- const root=$('customerDashRows');root.replaceChildren();
+ const historyRoot=view('customerDashboardUpgradeHistory');if(historyRoot){historyRoot.replaceChildren();renderUpgradeHistory(historyRoot,chosen,env)}
+ const root=view('customerDashRows');root.replaceChildren();
  for(const {customer,stats} of all){
   const item=text('article','','ops-result');const row=text('div','','ops-result-top');
   row.append(text('strong',customer.name),text('span',stats.environments.length+' environments · '+stats.assets.length+' technologies · '+stats.total+' potential matches'));
@@ -640,8 +640,8 @@ async function paintDashboard(cancelled=()=>false){
  }
  if(!all.length)root.append(text('p','No customer records yet. Create customers in My Environments.','ops-note'));
  await renderPause();if(cancelled())return;
- const findings=$('customerDashFindings');findings.replaceChildren();
- const list=all.flatMap(x=>x.stats.issues.map(i=>({...i,customer:x.customer})));
+ const findings=view('customerDashFindings');findings.replaceChildren();
+ const list=[];for(const x of all){for(const i of x.stats.issues.slice(0,100-list.length))list.push({...i,customer:x.customer});if(list.length===100)break;}
  for(const i of list.slice(0,100)){
   const row=text('article','','ops-result');
   row.append(text('strong',i.id+' · '+i.severity.toUpperCase()+(i.known_exploited?' · CISA KEV':'')),
@@ -650,7 +650,12 @@ async function paintDashboard(cancelled=()=>false){
   findings.append(row);
  }
  if(!list.length)findings.append(text('p','No matching findings within the available index. This does not prove the assets are secure.','ops-note'));
- $('customerDashCoverage').textContent='Showing up to 100 findings. CVEHarbor matches from a limited indexed feed; product category matches are unverified. One CVE on multiple assets counts as multiple asset findings.';
+ view('customerDashCoverage').textContent='Showing up to 100 findings. CVEHarbor matches from a limited indexed feed; product category matches are unverified. One CVE on multiple assets counts as multiple asset findings.';
+ if(cancelled())return;
+ // Publish completed sections together; keep the previous same-scope view usable.
+ view('customerDashMetrics').dataset.scope=JSON.stringify([chosen,env]);
+ for(const [id,section] of sections)$(id).replaceWith(section);
+ const servers=$('customerDashboardServers');if(servers&&window.CVEHARBOR_SERVER_SECURITY)window.CVEHARBOR_SERVER_SECURITY.render(servers,{...scopedStats,customers,limited:all.some(x=>x.stats.limited)},{findingLink:findingDetailButton,loadNetworks:()=>api('inventory/server-network'),savePrimary:async payload=>{const result=await api('inventory/server-network','PUT',payload);if(!result.saved)throw Error('Sign in again to save server details.');return result;}});
 }
 function reportSection(title){return text('h2',title)}
 function table(headers,rows){

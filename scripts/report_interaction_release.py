@@ -1,4 +1,4 @@
-"""Scoped report responsiveness fix on the verified PR372 website."""
+"""Scoped dashboard and Workspace responsiveness fix on the verified PR374 website."""
 import os
 from pathlib import Path
 import shutil
@@ -11,9 +11,9 @@ import production_release_checks as checks
 import team_release as team
 import version_picker_release as publisher
 
-BASE = 'e4cc0870615e2d9452f4226813c074688d55fe7c'
+BASE = '7ba0757b62d93984b7d19709ef8153abf8ff76b3'
 BACKEND = 'f941196f5e69b909bc6697a4b9d195eb9767f56a3761a1c8dfe239e6b65dadd2'
-CHANGED = {'inventory-assessment.js','customer-security.js'}
+CHANGED = {'customer-security.js','workspace-ai.js','workspace-dashboard.js'}
 
 def prepare(out):
     pkg.require(not out.exists(), 'Use a new package directory')
@@ -22,7 +22,7 @@ def prepare(out):
         pkg.git('-c','core.autocrlf=false','worktree','add','--detach',str(prior),BASE)
         try:
             shutil.copytree('collector-app/package',prior/'collector-app/package',dirs_exist_ok=True)
-            subprocess.run([sys.executable,'scripts/inventory_capacity_release.py','prepare',str(out)],cwd=prior,check=True,env={**os.environ,'GITHUB_SHA':BASE})
+            subprocess.run([sys.executable,'scripts/report_interaction_release.py','prepare',str(out)],cwd=prior,check=True,env={**os.environ,'GITHUB_SHA':BASE})
         finally:
             pkg.git('worktree','remove','--force',str(prior))
     shutil.rmtree(out/'before')
@@ -41,15 +41,15 @@ def ready():
 
 def run(action,out):
     if action=='prepare':return prepare(out)
-    pr=team.reviewed('fix/report-interaction-delay')
+    pr=team.reviewed('fix/dashboard-cvie-interaction')
     pkg.require(checks.check_commit(os.environ['GITHUB_SHA']) and checks.check_capacity_commit(os.environ['GITHUB_SHA']),'Required application/security/capacity checks incomplete')
     if action=='preflight':
         prod.policy(publisher.ENV)
         ready()
     elif action=='publish':
         publisher.publish(out,changed=CHANGED,added=set(),reviewed_pr=pr,ready=ready,
-            previous_version='c5528969-294e-4270-be8d-c0c019f21ef9',
-            previous_deployment='f8fbee62-e88f-4267-9b6e-6fd7db3137ba',served_copy=out/'verified-origin')
+            previous_version='a288b5d9-88c5-4258-b21e-553290a19086',
+            previous_deployment='009f8f09-87b4-4cae-915f-5d2089d411c6',served_copy=out/'verified-origin')
     else:raise ValueError(action)
 
 if __name__=='__main__':run(sys.argv[1],Path(sys.argv[2]).resolve() if len(sys.argv)>2 else None)
