@@ -23,6 +23,8 @@ try{
   const file=path.resolve('public','.'+url.pathname+(url.pathname.endsWith('/')?'index.html':''));if(!file.startsWith(path.resolve('public')+path.sep)||!fs.existsSync(file))return route.fulfill({status:404,body:''});return route.fulfill({contentType:{'.html':'text/html','.js':'application/javascript','.css':'text/css','.json':'application/json','.svg':'image/svg+xml'}[path.extname(file)]||'application/octet-stream',body:fs.readFileSync(file)});
  });
  const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));await page.goto('https://cveharbor.com/customer-dashboard/');await page.waitForSelector('#customerDashStatus[data-ready=true]');await page.locator('#customerDashFilter').selectOption('c-'+assetOne);await page.locator('#customerDashEnvironment').selectOption('e-'+assetOne);
+ // Filter requests replace the disclosure; open it after the selected scope finishes loading.
+ await page.waitForLoadState('networkidle');
  const table=page.locator('.customer-vulnerability-table');await table.locator('tbody tr').first().waitFor({state:'attached'});await table.evaluate(n=>{let p=n.parentElement;while(p){if(p.tagName==='DETAILS')p.open=true;p=p.parentElement;}});
  assert.deepEqual(await table.locator('thead th').allTextContents(),['CVE','Published ⇅','Severity ⇅','Software / Asset ⇅','Vulnerability summary','Vulnerability Fix Status ⇅','DevOps Ticket #','Applicability']);
  assert.equal(seen.some(x=>/^\/v1\/(?:finding|remediation)/.test(x.path)&&x.method!=='GET'),false,'Viewing customer findings performs no writes');
