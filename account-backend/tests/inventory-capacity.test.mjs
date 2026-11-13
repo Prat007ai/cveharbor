@@ -41,8 +41,8 @@ test('known pagination avoids duplicate capability probes but never reuses priva
 });
 
 test('compact database pages preserve text and empty values while reducing the transferred payload',async()=>{
- const f=capacityFixture({owners:1,customers:1,environments:1,assets:500}),batch=f.DB.batch.bind(f.DB);let packed;
- f.DB.batch=async statements=>{const results=await batch(statements);packed=results.at(-1).results;return results;};
+ const f=capacityFixture({owners:1,customers:1,environments:1,assets:500}),prepare=f.DB.prepare.bind(f.DB);let packed;
+ f.DB.prepare=sql=>{const wrap=s=>({...s,bind:(...args)=>wrap(s.bind(...args)),all:async()=>{const result=await s.all();packed=result.results;return result;}});return wrap(prepare(sql));};
  try{
   f.sql.prepare("UPDATE inventory_assets SET notes=?,version=''").run('Quotes " and newlines\nUnicode 日本語 and literal [null]');
   const page=await read(f);
@@ -73,14 +73,14 @@ test('full Worker requires current session and enabled MFA, scopes pages and per
  }finally{f.close();}
 });
 
-test('inventory read fast path uses three database round trips and still obeys current maintenance holds',async()=>{
- const f=capacityFixture({owners:1,customers:1,environments:1,assets:500}),[token]=capacitySessions(f.sql,1);let calls=0;
+test('inventory read fast path uses only three statements and round trips and still obeys current maintenance holds',async()=>{
+ const f=capacityFixture({owners:1,customers:1,environments:1,assets:500}),[token]=capacitySessions(f.sql,1);let calls=0,statements=0;
  const prepare=f.DB.prepare.bind(f.DB),batch=f.DB.batch.bind(f.DB);
- f.DB.prepare=sql=>{const wrap=s=>{const result={bind:(...args)=>wrap(s.bind(...args))};for(const method of ['first','all','run'])result[method]=(...args)=>{calls++;return s[method](...args);};result.runSync=s.runSync;return result;};return wrap(prepare(sql));};
+ f.DB.prepare=sql=>{statements++;const wrap=s=>{const result={bind:(...args)=>wrap(s.bind(...args))};for(const method of ['first','all','run'])result[method]=(...args)=>{calls++;return s[method](...args);};result.runSync=s.runSync;return result;};return wrap(prepare(sql));};
  f.DB.batch=statements=>{calls++;return batch(statements);};
  const call=()=>worker.fetch(new Request(url,{headers:{Cookie:'cvh_session='+token,Origin:'https://cveharbor.com'}}),{DB:f.DB,RECOVERY_CONTROL_REQUIRED:'true'});
  try{
-  assert.equal((await call()).status,200);assert.equal(calls,3);
+  assert.equal((await call()).status,200);assert.equal(calls,3);assert.equal(statements,3);
   f.sql.exec('UPDATE operations_control SET write_hold=1');calls=0;assert.equal((await call()).status,503);assert.equal(calls,1);
   f.sql.exec('UPDATE operations_control SET database_frozen=1');assert.equal((await call()).status,503);
   f.sql.exec('DROP TABLE operations_control');assert.equal((await call()).status,503);
@@ -88,8 +88,8 @@ test('inventory read fast path uses three database round trips and still obeys c
 });
 
 test('temporary D1 overload is retried without writes; missing capacity storage still fails closed',async()=>{
- const f=capacityFixture({owners:1,customers:1,environments:1,assets:500}),[token]=capacitySessions(f.sql,1),batch=f.DB.batch.bind(f.DB);let attempts=0;
- f.DB.batch=async statements=>{if(++attempts===1)throw new Error('D1 DB is overloaded. Requests queued for too long.');return batch(statements);};
+ const f=capacityFixture({owners:1,customers:1,environments:1,assets:500}),[token]=capacitySessions(f.sql,1),prepare=f.DB.prepare.bind(f.DB);let attempts=0;
+ f.DB.prepare=sql=>{const wrap=s=>({...s,bind:(...args)=>wrap(s.bind(...args)),all:async()=>{if(++attempts===1)throw new Error('D1 DB is overloaded. Requests queued for too long.');return s.all();}});return sql.includes(' AS packed')?wrap(prepare(sql)):prepare(sql);};
  const call=()=>worker.fetch(new Request(url,{headers:{Cookie:'cvh_session='+token,Origin:'https://cveharbor.com'}}),{DB:f.DB,RECOVERY_CONTROL_REQUIRED:'true'});
  try{
   const before=f.sql.prepare('SELECT total_changes() n').get().n;

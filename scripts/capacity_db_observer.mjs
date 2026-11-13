@@ -14,7 +14,7 @@ export function classifyDatabaseError(error){
  if(/timeout|timed out/i.test(message))return 'timeout';
  return 'unknown';
 }
-const operation=sql=>/operations_control/.test(sql)?'recovery_state':/INSERT INTO operations_leases/.test(sql)?'lease_start':/DELETE FROM operations_leases/.test(sql)?'lease_end':/FROM sessions|JOIN users ON users.id=sessions/.test(sql)?'session_auth':/inventory_capacity_schema/.test(sql)?'capacity_marker':'query';
+const operation=sql=>/operations_control/.test(sql)?'recovery_state':/INSERT INTO operations_leases/.test(sql)?'lease_start':/DELETE FROM operations_leases/.test(sql)?'lease_end':/FROM sessions|JOIN users ON users.id=sessions/.test(sql)?'session_auth':/ AS packed/.test(sql)?'page_query':/inventory_capacity_schema/.test(sql)?'capacity_marker':'query';
 export function observeDatabase(db){
  const native=new WeakMap(),state={calls:0,elapsed_ms:0,rows_read:0,rows_written:0,query_ms:0,errors:[]};
  async function call(kind,fn){

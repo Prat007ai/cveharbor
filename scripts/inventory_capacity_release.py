@@ -22,8 +22,19 @@ def overlay(out, names):
     with tempfile.TemporaryDirectory() as temp:
         old, new = Path(temp)/'old', Path(temp)/'new'
         for name in sorted(names):
-            old.write_bytes(pkg.git('show', BASE+':'+name))
-            new.write_bytes(Path(name).read_bytes().replace(b'\r\n', b'\n'))
+            before = pkg.git('show', BASE+':'+name)
+            after = Path(name).read_bytes().replace(b'\r\n', b'\n')
+            if name == 'customer-security.js':
+                # This unchanged main-only tracker link is absent from the
+                # serving package. Exclude it on both sides before merging an
+                # adjacent menu optimization; never reintroduce held UI.
+                held = [line for line in before.splitlines(keepends=True)
+                        if line.startswith(b" let tracker=$('customerRemediationLink');")]
+                pkg.require(len(held)==1 and held[0] in after, 'Held tracker line changed')
+                pkg.require(b'customerRemediationLink' not in (out/name).read_bytes(), 'Unexpected serving tracker')
+                before, after = before.replace(held[0],b''), after.replace(held[0],b'')
+            old.write_bytes(before)
+            new.write_bytes(after)
             (out/name).write_bytes(pkg.git('merge-file', '-p', str(out/name), str(old), str(new)))
 
 def backend(out, check=True):
