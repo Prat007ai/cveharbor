@@ -28,6 +28,14 @@ export async function enableRetainedReadReplication(api,database){
 }
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
 const stats=values=>{const rows=[...values].sort((a,b)=>a-b),q=p=>Math.round(rows[Math.min(rows.length-1,Math.floor(rows.length*p))]||0);return {count:rows.length,p50_ms:q(.5),p95_ms:q(.95),p99_ms:q(.99),max_ms:q(1)};};
+export async function stopPreview(child,{platform=process.platform,kill=process.kill,sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms))}={}){
+ if(!child)return;
+ if(Number.isInteger(child.pid)&&child.pid>1){
+  const signal=value=>{try{if(platform==='linux')kill(-child.pid,value);else child.kill(value);}catch(error){if(error.code!=='ESRCH')throw error;}};
+  signal('SIGTERM');await sleep(1000);signal('SIGKILL');
+ }
+ child.stdout?.destroy();child.stderr?.destroy();child.unref();
+}
 export function previewDiagnostics(output){
  const text=String(output).replace(/\u001b\[[0-9;]*m/g,'');
  const categories=[
@@ -92,7 +100,9 @@ export async function cloudRehearsal(env=process.env){
   const configPath=path.join(root,'wrangler.json');fs.writeFileSync(configPath,JSON.stringify(config));receipt.config_sha256=sha(fs.readFileSync(configPath));save();
   const childEnv=Object.fromEntries(['PATH','HOME','TMPDIR','HTTPS_PROXY','HTTP_PROXY','NODE_EXTRA_CA_CERTS'].filter(k=>env[k]).map(k=>[k,env[k]]));
   Object.assign(childEnv,{CI:'true',CLOUDFLARE_ACCOUNT_ID:account,CLOUDFLARE_API_TOKEN:env.CLOUDFLARE_API_TOKEN,WRANGLER_SEND_METRICS:'false',CLOUDFLARE_LOAD_DEV_VARS_FROM_DOT_ENV:'false',XDG_CONFIG_HOME:path.join(root,'wrangler-state')});
-  child=spawn('npx',['--yes','wrangler@4.156.0','dev','--remote','--config',configPath,'--ip','127.0.0.1','--port','8787','--log-level','error'],{env:childEnv,stdio:['ignore','pipe','pipe']});
+  // Give npx and its Wrangler descendants a dedicated Linux process group so
+  // successful measurements can terminate the entire temporary preview tree.
+  child=spawn('npx',['--yes','wrangler@4.156.0','dev','--remote','--config',configPath,'--ip','127.0.0.1','--port','8787','--log-level','error'],{env:childEnv,stdio:['ignore','pipe','pipe'],detached:process.platform==='linux'});
   // Keep only a bounded in-memory tail. Persist closed categories/numeric codes,
   // never raw output, preview URLs/tokens, session values or provider messages.
   let previewOutput='';const capture=chunk=>{previewOutput=(previewOutput+String(chunk)).slice(-32768);};
@@ -131,7 +141,7 @@ export async function cloudRehearsal(env=process.env){
   receipt.status='measured';save();assert.equal(errors.length,0);assert.ok(completed>=50);assert.ok(receipt.request_latency.p95_ms<1000,'Request p95 exceeds 1 second');assert.ok(receipt.complete_customer_load.p95_ms<3000,'Complete customer read p95 exceeds 3 seconds');
   receipt.status='passed';receipt.completed_at=new Date().toISOString();save();console.log(JSON.stringify(receipt));
  }finally{
-  child?.kill('SIGTERM');fixture.close();
+  try{await stopPreview(child);receipt.preview_stopped=true;save();}finally{fixture.close();}
   // Retain the named synthetic database for inspection. No existing resource
   // is deleted, reset, rebound, exposed or deployed by this executor.
  }

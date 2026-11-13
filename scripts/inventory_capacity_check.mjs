@@ -13,6 +13,7 @@ if(after)await verifyAfterDeployment({expectedRelease:expected,predecessor});els
 const account='aa99b9b15e0492302e4f6484b8d27bc2';assert.equal(process.env.CLOUDFLARE_ACCOUNT_ID,account);
 const db=d1Client({database:PRODUCTION_DB,readOnly:true}),metadata=await db.metadata();
 assert.equal(metadata.uuid,PRODUCTION_DB);assert.equal(metadata.name,'cveharbor-accounts');
+assert.equal(metadata.read_replication?.mode,'auto','Capacity release requires verified read replicas');
 const control=await holdStatus(db);assert.equal(control.guards_complete,true);assert.equal(control.write_hold,0);assert.equal(control.database_frozen,0);
 assert.equal((await db.prepare('SELECT version FROM inventory_capacity_schema').first()).version,1);
 assert.equal((await db.prepare('SELECT COUNT(*) n FROM users u LEFT JOIN inventory_capacity_revisions r ON r.user_id=u.id LEFT JOIN (SELECT user_id,COUNT(*) n FROM inventory_assets GROUP BY user_id) a ON a.user_id=u.id WHERE COALESCE(r.software_count,0)!=COALESCE(a.n,0)').first()).n,0);

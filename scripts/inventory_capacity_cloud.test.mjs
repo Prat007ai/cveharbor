@@ -1,8 +1,30 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {validateCloudRun,validateRetainedDatabase,previewDiagnostics,enableRetainedReadReplication} from './inventory_capacity_cloud.mjs';
+import {validateCloudRun,validateRetainedDatabase,previewDiagnostics,enableRetainedReadReplication,stopPreview} from './inventory_capacity_cloud.mjs';
 import {classifyDatabaseError,observeDatabase} from './capacity_db_observer.mjs';
+import {ensureCapacityReplication} from './inventory_capacity_replication.mjs';
 const valid={GITHUB_REPOSITORY:'Prat007ai/cveharbor',GITHUB_REF:'refs/heads/main',GITHUB_EVENT_NAME:'workflow_dispatch',GITHUB_RUN_ATTEMPT:'1',GITHUB_WORKFLOW_REF:'Prat007ai/cveharbor/.github/workflows/inventory-capacity-cloud.yml@refs/heads/main',GITHUB_RUN_ID:'12345678901',GITHUB_SHA:'a'.repeat(40),CAPACITY_REVIEWED_COMMIT:'a'.repeat(40),CLOUDFLARE_ACCOUNT_ID:'9706b4d98ad72884e67fd1eb875c8a61',CLOUDFLARE_API_TOKEN:'fictional-only'};
+
+test('production replication configuration requires exact target/main and preserves all other settings',async()=>{
+ const env={...valid,CLOUDFLARE_ACCOUNT_ID:'aa99b9b15e0492302e4f6484b8d27bc2'},metadata={uuid:'46710e51-7ca4-4571-b89c-921b9969de0b',name:'cveharbor-accounts',read_replication:{mode:'disabled'}};
+ let calls=0;const db={metadata:async()=>metadata},fetcher=async(url,options)=>{
+  calls++;assert.equal(url,'https://api.cloudflare.com/client/v4/accounts/'+env.CLOUDFLARE_ACCOUNT_ID+'/d1/database/'+metadata.uuid);assert.equal(options.method,'PUT');assert.equal(options.redirect,'error');
+  assert.deepEqual(JSON.parse(options.body),{read_replication:{mode:'auto'}});metadata.read_replication.mode='auto';return {ok:true,json:async()=>({success:true})};
+ };
+ assert.deepEqual(await ensureCapacityReplication(db,{env,fetcher}),{before:'disabled',after:'auto'});assert.equal(calls,1);
+ assert.deepEqual(await ensureCapacityReplication(db,{env,fetcher}),{before:'auto',after:'auto'});assert.equal(calls,1);
+ for(const changed of [{GITHUB_REF:'refs/heads/feature'},{CLOUDFLARE_ACCOUNT_ID:valid.CLOUDFLARE_ACCOUNT_ID},{CLOUDFLARE_API_TOKEN:''}])await assert.rejects(ensureCapacityReplication(db,{env:{...env,...changed},fetcher}));
+ await assert.rejects(ensureCapacityReplication({metadata:async()=>({...metadata,uuid:'b4a226d7-35e8-469f-abfe-2a2eee0a96de'})},{env,fetcher}));assert.equal(calls,1);
+});
+
+test('preview cleanup terminates only its own process group and releases inherited pipes',async()=>{
+ const calls=[],child={pid:12345,stdout:{destroy:()=>calls.push('stdout')},stderr:{destroy:()=>calls.push('stderr')},unref:()=>calls.push('unref')};
+ await stopPreview(child,{platform:'linux',kill:(pid,signal)=>calls.push([pid,signal]),sleep:async ms=>calls.push(ms)});
+ assert.deepEqual(calls,[[-12345,'SIGTERM'],1000,[-12345,'SIGKILL'],'stdout','stderr','unref']);
+ calls.length=0;await stopPreview({...child,pid:undefined},{platform:'linux',kill:()=>assert.fail('Invalid process ID'),sleep:()=>assert.fail('No process')});
+ assert.deepEqual(calls,['stdout','stderr','unref']);
+ await stopPreview(child,{platform:'linux',kill:()=>{throw Object.assign(Error('already exited'),{code:'ESRCH'});},sleep:async()=>{}});
+});
 
 test('replication configuration is restricted to the retained fictional database',async()=>{
  const database={uuid:'b4a226d7-35e8-469f-abfe-2a2eee0a96de',name:'cveharbor-capacity-43438175247',read_replication:{mode:'disabled'}},calls=[];

@@ -94,6 +94,33 @@ def check_capacity_commit(sha, get=github):
     return required <= {j['name'] for j in jobs if j['status']=='completed' and j['conclusion']=='success'}
 
 
+def check_capacity_cloud_commit(sha, get=github):
+    """Require a completed protected cloud rehearsal of this exact release."""
+    workflow = '.github/workflows/inventory-capacity-cloud.yml'
+    runs = get('/actions/workflows/inventory-capacity-cloud.yml/runs?branch=main&event=workflow_dispatch&head_sha='+sha+'&per_page=1')['workflow_runs']
+    if not runs:
+        return False
+    run = runs[0]
+    if (run['path'],run['head_sha'],run['head_branch'],run['event'],run['repository']['full_name'],run['run_attempt']) != (workflow,sha,'main','workflow_dispatch',REPOSITORY,1):
+        raise ValueError('Cloud capacity provenance mismatch.')
+    if run['status'] != 'completed':
+        return False
+    if run['conclusion'] != 'success':
+        raise ValueError('Cloud capacity rehearsal did not pass: '+run['html_url'])
+    jobs = get(f"/actions/runs/{run['id']}/jobs?filter=latest&per_page=100")['jobs']
+    if not {'prepare','cloud-load'} <= {j['name'] for j in jobs if j['status']=='completed' and j['conclusion']=='success'}:
+        return False
+    artifacts = get(f"/actions/runs/{run['id']}/artifacts?per_page=100")['artifacts']
+    for name in ('capacity-backend','capacity-cloud-result'):
+        rows = [a for a in artifacts if a['name']==name]
+        if len(rows)!=1 or rows[0]['expired'] or rows[0]['size_in_bytes']<=0:
+            return False
+        artifact=rows[0]
+        if artifact['workflow_run']['head_sha']!=sha or not re.fullmatch('sha256:[0-9a-f]{64}',artifact.get('digest','')):
+            raise ValueError('Cloud capacity artifact provenance mismatch.')
+    return True
+
+
 def main():
     if os.environ["GITHUB_REPOSITORY"] != REPOSITORY or os.environ["GITHUB_REF"] != "refs/heads/main":
         raise ValueError("Production releases must run from the repository's main branch.")
@@ -110,7 +137,7 @@ def main():
         inventory_release = any(inputs.get(key) in ('windows-inventory','dotnet-mapping','server-security','server-network') for key in ('team_release', 'site_release','schema'))
         inventory_jobs = ('collector','workflow','mapping','network') if any(inputs.get(k)=='server-network' for k in ('team_release','site_release','schema')) else ('collector','workflow','mapping') if inputs.get('team_release') == 'dotnet-mapping' else ('collector','workflow')
         capacity_release = any(inputs.get(key)=='inventory-capacity' for key in ('team_release','site_release','schema'))
-        if check_commit(sha) and (not ai_release or check_ai_commit(sha)) and (not inventory_release or check_inventory_commit(sha, required_jobs=inventory_jobs)) and (not capacity_release or check_capacity_commit(sha) and check_inventory_commit(sha)):
+        if check_commit(sha) and (not ai_release or check_ai_commit(sha)) and (not inventory_release or check_inventory_commit(sha, required_jobs=inventory_jobs)) and (not capacity_release or check_capacity_commit(sha) and check_inventory_commit(sha) and check_capacity_cloud_commit(sha)):
             print(f"Verified production CI for {sha}.")
             return
         time.sleep(10)
