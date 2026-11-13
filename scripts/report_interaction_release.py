@@ -13,7 +13,7 @@ import version_picker_release as publisher
 
 BASE = '3ea471dcb395849a795763eef50a3a53d37e73b3'
 BACKEND = 'f941196f5e69b909bc6697a4b9d195eb9767f56a3761a1c8dfe239e6b65dadd2'
-CHANGED = {'cvie.js'}
+CHANGED = {'cvie.js','inventory-matching.js','inventory-assessment.js'}
 
 def prepare(out):
     pkg.require(not out.exists(), 'Use a new package directory')

@@ -1,6 +1,15 @@
 (function(root){
 'use strict';
-const norm=v=>String(v||'').trim().toLowerCase();
+// Product and exclusion names repeat across thousands of candidate comparisons.
+// Cache short immutable strings only; each matcher retains its original normalization.
+const normalizedNames=new Map();
+function norm(value){
+ const text=String(value||'');
+ if(normalizedNames.has(text))return normalizedNames.get(text);
+ const result=text.trim().toLowerCase();
+ if(text.length<=256){if(normalizedNames.size>=2048)normalizedNames.clear();normalizedNames.set(text,result);}
+ return result;
+}
 const escape=v=>v.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
 const names={'.net runtime':['.NET Runtime','.NET Core Runtime'],'.net desktop runtime':['.NET Desktop Runtime','Windows Desktop Runtime'],'asp.net core runtime':['ASP.NET Core'],'.net sdk':['.NET SDK'],'.net framework':['.NET Framework'],'windows server':['Windows Server'],'windows':['Windows 10','Windows 11'],'iis':['Internet Information Services','Microsoft IIS']};
 const legacy=new Set(['php','wordpress','mysql','mariadb','sql server','microsoft sql server','asp.net','.net','python','azure','fortigate','fortios','docker','kubernetes','linux','ubuntu','ubuntu linux','debian','debian linux','sitefinity']);

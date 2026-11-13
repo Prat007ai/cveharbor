@@ -10,7 +10,16 @@ const categories={
  'kubernetes':['Docker / Kubernetes'],'linux':['Linux'],
  'ubuntu':['Linux'],'ubuntu linux':['Linux'],'debian':['Linux'],'debian linux':['Linux'],'sitefinity':['Progress Sitefinity']
 };
-const norm=x=>String(x||'').normalize('NFKC').trim().toLowerCase().replace(/\s+/g,' ');
+// Product and exclusion names repeat across thousands of candidate comparisons.
+// Cache short immutable strings only; each matcher retains its original normalization.
+const normalizedNames=new Map();
+function norm(value){
+ const text=String(value||'');
+ if(normalizedNames.has(text))return normalizedNames.get(text);
+ const result=text.normalize('NFKC').trim().toLowerCase().replace(/\s+/g,' ');
+ if(text.length<=256){if(normalizedNames.size>=2048)normalizedNames.clear();normalizedNames.set(text,result);}
+ return result;
+}
 const numeric=x=>/^\d+(?:\.\d+){1,3}$/.test(x);
 const sourcePending=record=>!!(record.verification_pending||record.disclosure_verification_stale);
 function applicability(finding){
