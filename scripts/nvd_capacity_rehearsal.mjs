@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {fixtureId} from '../account-backend/tests/helpers/capacity-db.mjs';
 import {outageBrowser} from './nvd_capacity_browser.mjs';
 const stats=values=>{const sorted=[...values].sort((a,b)=>a-b),q=p=>Math.round(sorted[Math.min(sorted.length-1,Math.floor(sorted.length*p))]||0);return {count:sorted.length,p50_ms:q(.5),p95_ms:q(.95),p99_ms:q(.99),max_ms:q(1)};};
-export async function outageRehearsal({base,tokens,controlKey,site,seconds=30,onProgress=()=>{}}){
+export async function outageRehearsal({base,tokens,controlKey,site,seconds=30,onProgress=()=>{},browserProbe=outageBrowser}){
  const result={concurrent_sessions:50,customers:50,environments:100,software_entries:50000,host_names:10000,phases:[],browser:[],errors:[]};
  const get=async(i,suffix)=>{const start=performance.now(),r=await fetch(base+suffix,{headers:{Cookie:'cvh_session='+tokens[i],Origin:'https://cveharbor.com'},signal:AbortSignal.timeout(15000)});assert.equal(r.status,200,suffix+' HTTP '+r.status);return {body:await r.json(),ms:performance.now()-start};};
  for(const mode of ['timeout','503']){
@@ -29,7 +29,7 @@ export async function outageRehearsal({base,tokens,controlKey,site,seconds=30,on
   })()));
   let sourceResults=[];
   try{
-   const browser=outageBrowser(base,tokens[0],site,mode);
+   const browser=browserProbe(base,tokens[0],site,mode);
    const outcomes=await Promise.allSettled([source,browser,new Promise(resolve=>setTimeout(resolve,seconds*1000))]);
    if(outcomes[0].status==='fulfilled')sourceResults=outcomes[0].value;
    if(outcomes[1].status==='fulfilled')result.browser.push(...outcomes[1].value);
