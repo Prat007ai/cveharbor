@@ -699,7 +699,7 @@ function renderScorePanel(root,customer,scope,stats){
   for(const [label,value] of [['Inventory completeness',assessment.confidence],['Version/check completeness',assessment.coverage+'%']]){
    const item=text('span',label+': ');item.append(text('strong',value));if(label==='Inventory completeness')item.dataset.confidence=normalize(value);metadata.append(item);
   }
-  header.append(headingWrap,overview,metadata,text('small','Prioritization only; completeness is not vulnerability coverage.','customer-score-meta'),text('span','View score breakdown and history ›','customer-score-hint'));
+  header.append(headingWrap,overview,metadata,text('span','Completeness is not vulnerability coverage · View breakdown ›','customer-score-hint'));
  }else{
   summaryDetails.append(text('strong',rating,'customer-score-rating'),
    text('span','Inventory completeness: '+assessment.confidence,'customer-score-meta'),
