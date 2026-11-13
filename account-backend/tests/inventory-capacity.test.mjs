@@ -39,6 +39,26 @@ test('a selected customer uses environment index seeks within a 50,000-entry MSP
   assert.ok(!plans.some(p=>p.includes('SCAN t')||p.includes('idx_capacity_inventory_assets (user_id=?)')));
  }finally{f.close();}
 });
+
+test('parallel environment reads stay bounded and retry a changed partition list without losing rows',async()=>{
+ const f=capacityFixture({assets:10000});let active=0,peak=0,changed=false;
+ try{
+  const result=await readInventory('inventory',{fetchPage:async params=>{
+   active++;peak=Math.max(peak,active);
+   try{
+    await new Promise(resolve=>setTimeout(resolve,1));
+    if(params.get('resource')==='assets'&&!changed){
+     changed=true;
+     f.sql.prepare('INSERT INTO inventory_environments(id,user_id,customer_id,name) VALUES(?,?,?,?)').run(fixtureId(9999),'owner-0',fixtureId(1),'Added during load');
+     f.sql.prepare("INSERT INTO inventory_assets(id,user_id,environment_id,name,asset_type,technology) VALUES(?,?,?,?,'Software','PHP')").run(fixtureId(99999),'owner-0',fixtureId(9999),'New host');
+    }
+    return await read(f,Object.fromEntries(params));
+   }finally{active--;}
+  }});
+  assert.ok(changed);assert.ok(peak>1&&peak<=4);assert.equal(active,0);
+  assert.equal(result.environments.length,101);assert.equal(result.assets.length,10001);assert.equal(new Set(result.assets.map(a=>a.id)).size,10001);
+ }finally{f.close();}
+});
 test('10,000 rows are complete and unique; pages are bounded and scope is enforced',async()=>{
  const f=capacityFixture();try{
   let cursor='',all=[],pages=0;
@@ -72,7 +92,7 @@ test('50 owners and revocation between pages never cross customer boundaries',as
  }finally{f.close()}
 });
 test('browser reader retries an invalidated snapshot and returns all rows, never a partial result',async()=>{
- const f=capacityFixture({assets:1000});try{
+ const f=capacityFixture({assets:1000,environments:4});try{
   let changed=false,calls=0;
   const result=await readInventory('inventory',{fetchPage:async params=>{
    calls++;if(!changed&&params.has('cursor')){changed=true;f.sql.prepare('UPDATE inventory_assets SET version=? WHERE id=?').run('8.0.2',fixtureId(10000));}

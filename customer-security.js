@@ -3,7 +3,7 @@
 const $=id=>document.getElementById(id);
 if(!$('customerDashStatus')||new URLSearchParams(location.search).has('org'))return;
 const reporting=!!$('customerReportBody');
-let paginatedReports=false,reportScopeSequence=0,reportScopeLoading=null,reportScopeAbort=null;
+let paginatedInventory=false,reportScopeSequence=0,reportScopeLoading=null,reportScopeAbort=null;
 const reportCustomer=()=>customerReady?$('customerDashFilter').value:new URLSearchParams(location.search).get('customer')||'';
 let inventory={customers:[],environments:[],assets:[]},records=[],customerReady=false,accountEmail='';
 let pluginFindings=[],pluginChecks={},pluginMonitorRows={};
@@ -136,7 +136,7 @@ async function settledRedraw(){
 }
 async function renderCurrent(){
  if(!customerReady)return;
- if(paginatedReports&&inventory.scopeCustomer!==reportCustomer())return loadReportScope();
+ if(paginatedInventory&&inventory.scopeCustomer!==reportCustomer())return loadReportScope();
  if(reportPrinting){reportRedrawPending=true;return;}
  const revision=++renderGeneration,epoch=customerDataEpoch,chosen=$('customerDashFilter').value,env=$('customerDashEnvironment').value;
  const cache=currentStats(),cancelled=()=>revision!==renderGeneration||epoch!==customerDataEpoch||!customerReady;
@@ -402,11 +402,11 @@ async function saveFindingStatus(i,status,select){
 const text=(tag,value,cls)=>{const el=document.createElement(tag);el.textContent=String(value??'');if(cls)el.className=cls;return el};
 const api=async (path,method='GET',payload)=>{
  if(method==='GET'&&['inventory','finding-statuses','finding-tickets','plugin-sources','plugin-installation-status','plugin-monitor','inventory/server-network','inventory/packages'].includes(path.split('?')[0])){
-  const customer=paginatedReports?reportCustomer():'';
+  const customer=paginatedInventory?reportCustomer():'';
   const {readInventory}=window.CVEHARBOR_INVENTORY_CLIENT||await import('/inventory-client.js');
-  if(paginatedReports){
-   if(path==='inventory')return {assets:[],...await readInventory(path,{customer,metadataUnscoped:true,resourceList:customer?undefined:['customers','environments']}),scopeCustomer:customer};
-   if(!customer)return {ready:true,append_ready:true,statuses:[],tickets:[],sources:[],checks:[],networks:[],packages:[]};
+  if(paginatedInventory){
+   if(path==='inventory'){const metadataOnly=!customerReady||(reporting&&!customer);return {assets:[],...await readInventory(path,{customer,metadataUnscoped:true,resourceList:metadataOnly?['customers','environments']:undefined}),scopeCustomer:!customerReady?null:customer};}
+   if(!customerReady||(reporting&&!customer))return {ready:true,append_ready:true,statuses:[],tickets:[],sources:[],checks:[],networks:[],packages:[]};
   }
   return readInventory(path,{customer});
  }
@@ -414,18 +414,18 @@ const api=async (path,method='GET',payload)=>{
  const d=await r.json().catch(()=>({}));if(r.status===401)return {authenticated:false};if(!r.ok){const error=new Error(d.error||'Account service unavailable');error.status=r.status;throw error}return d;
 };
 function loadReportScope(){
- const customer=reportCustomer();
+ const customer=reportCustomer(),loadData=!!customer||!reporting;
  if(reportScopeLoading?.customer===customer)return reportScopeLoading.promise;
  reportScopeAbort?.abort();reportScopeAbort=new AbortController();
  const signal=reportScopeAbort.signal,sequence=++reportScopeSequence,epoch=customerDataEpoch;
  renderGeneration++;pluginRefreshSequence++;
- for(const id of ['customerReportBody','customerReportAssessment'])$(id)?.replaceChildren();
+ for(const id of ['customerReportBody','customerReportAssessment','customerDashboardCves','customerDashFindings','customerDashboardAssessment','customerDashboardServers','customerDashRows'])$(id)?.replaceChildren();
  $('customerDashStatus').dataset.assessing='true';$('customerDashStatus').textContent='Loading the selected customer… You can choose another customer.';
  const promise=(async()=>{
   const {readInventory}=window.CVEHARBOR_INVENTORY_CLIENT||await import('/inventory-client.js');
   const settings={customer,signal};
-  const next={...inventory,assets:[],...(customer?await readInventory('inventory',{...settings,resourceList:['assets']}):{}),scopeCustomer:customer};
-  const [saved,tickets,installed,sources]=customer?await Promise.all(['finding-statuses','finding-tickets','plugin-installation-status','plugin-sources'].map(path=>readInventory(path,settings))):Array.from({length:4},()=>({ready:true,append_ready:true}));
+  const next={...inventory,assets:[],...(loadData?await readInventory('inventory',{...settings,resourceList:customer?['assets']:['environments','assets']}):{}),scopeCustomer:customer};
+  const [saved,tickets,installed,sources]=loadData?await Promise.all(['finding-statuses','finding-tickets','plugin-installation-status','plugin-sources'].map(path=>readInventory(path,settings))):Array.from({length:4},()=>({ready:true,append_ready:true}));
   if(signal.aborted||sequence!==reportScopeSequence||epoch!==customerDataEpoch||!customerReady)return;
   inventory=next;upgradeHistory.clear();
   findingStatusReady=!!saved.ready;findingStatuses=new Map((saved.statuses||[]).map(s=>[s.asset_id+'|'+s.cve_id,s.status]));findingNotes=new Map((saved.statuses||[]).map(s=>[s.asset_id+'|'+s.cve_id,s.notes||'']));
@@ -1340,7 +1340,7 @@ async function init(){
   if(!session.authenticated){$('customerDashLogin').hidden=false;$('customerDashStatus').textContent='Sign in required to access private customer records.';return}
   accountEmail=session.email;
   const flags=await api('inventory/status');
-  paginatedReports=reporting&&flags.pagination===true;
+  paginatedInventory=flags.pagination===true;
   if(!flags.ready){$('customerDashStatus').textContent='Customer inventory database migration is pending. No private records can be loaded yet.';return}
   inventory=await api('inventory');
   records=advisories();
