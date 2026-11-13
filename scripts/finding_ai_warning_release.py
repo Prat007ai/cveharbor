@@ -1,4 +1,4 @@
-"""Shared applicability statuses and matching safeguards on verified PR355."""
+"""Actionable evidence-backed fix guides on verified PR356."""
 import os
 from pathlib import Path
 import shutil
@@ -11,8 +11,8 @@ import production_release_checks as checks
 import team_release as team
 import version_picker_release as publisher
 
-BASE = 'e7f34f2df1a812ad8b1f72ff41bba56b9107d485'
-CHANGED = {'inventory-assessment.js', 'inventory-matching.js', 'customer-security.js', 'finding-ai.js', 'inventory.js', 'organization-security.js', 'server-security.js', 'workspace-ai.js'}
+BASE = '37ea53af8c5408c59eb31c88767d6178a7159863'
+CHANGED = {'customer-security.js', 'finding-ai.js', 'finding-ai.css'}
 
 
 def prepare(out):
@@ -54,15 +54,15 @@ def ready():
 def run(action, out):
     if action == 'prepare':
         return prepare(out)
-    pr = team.reviewed('fix/matching-confidence')
+    pr = team.reviewed('fix/actionable-fix-guides')
     pkg.require(checks.check_commit(os.environ['GITHUB_SHA']), 'Required application/security checks incomplete')
     if action == 'preflight':
         prod.policy(publisher.ENV)
         ready()
     elif action == 'publish':
         publisher.publish(out, changed=CHANGED, added=set(), reviewed_pr=pr, ready=ready,
-                          previous_version='79339a94-8478-48a4-8f4b-9a7f9ff2f41e',
-                          previous_deployment='d02db434-bb31-4c0c-9f61-037fbf789647',
+                          previous_version='78e9846a-7bde-4e02-b5a9-ba4c972c51da',
+                          previous_deployment='39834c9a-b03c-45d9-ba7e-5d72a0bbac29',
                           served_copy=out / 'verified-origin')
     else:
         raise ValueError(action)
