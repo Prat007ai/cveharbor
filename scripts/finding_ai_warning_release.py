@@ -1,4 +1,4 @@
-"""Cooperative Workspace assessment on verified PR358."""
+"""Cooperative inventory filters and stable CVIE snapshots on verified PR359."""
 import os
 from pathlib import Path
 import shutil
@@ -11,8 +11,8 @@ import production_release_checks as checks
 import team_release as team
 import version_picker_release as publisher
 
-BASE = '25f7830e3108509a12d2622b5c8f24a46a2dc1dc'
-CHANGED = {'inventory-assessment.js', 'workspace-ai.js'}
+BASE = 'a46d91ec142935105f164a1854452ff7f63f1c38'
+CHANGED = {'cvie.js', 'inventory.js'}
 
 
 def prepare(out):
@@ -56,15 +56,15 @@ def ready():
 def run(action, out):
     if action == 'prepare':
         return prepare(out)
-    pr = team.reviewed('fix/workspace-priority-response')
+    pr = team.reviewed('fix/inventory-refresh-response')
     pkg.require(checks.check_commit(os.environ['GITHUB_SHA']), 'Required application/security checks incomplete')
     if action == 'preflight':
         prod.policy(publisher.ENV)
         ready()
     elif action == 'publish':
         publisher.publish(out, changed=CHANGED, added=set(), reviewed_pr=pr, ready=ready,
-                          previous_version='3964dc44-ffe1-4b94-a7c2-65b3662eb729',
-                          previous_deployment='59442905-d85a-4436-aefe-7d5d5613dd50',
+                          previous_version='442166bd-f4b6-4083-95ce-e899e8c67b19',
+                          previous_deployment='b403e6e3-b446-46d0-94e4-833a378ff0b6',
                           served_copy=out / 'verified-origin')
     else:
         raise ValueError(action)

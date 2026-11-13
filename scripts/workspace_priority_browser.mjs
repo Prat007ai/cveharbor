@@ -2,8 +2,10 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import {createRequire} from 'node:module';
 import {workspaceFixture} from './workspace_fixture.mjs';
-const {chromium}=await import(process.env.CVEHARBOR_PLAYWRIGHT_MODULE||'playwright-core');
+const require=createRequire(new URL('../staging/package.json',import.meta.url));
+const {chromium}=process.env.CVEHARBOR_PLAYWRIGHT_MODULE?await import(process.env.CVEHARBOR_PLAYWRIGHT_MODULE):require('playwright-core');
 const root=path.resolve(process.env.INVENTORY_TEST_SITE||'.');
 const browser=await chromium.launch({headless:true,executablePath:process.env.CVEHARBOR_CHROMIUM_PATH||(process.platform==='win32'?'C:/Program Files/Google/Chrome/Application/chrome.exe':'/usr/bin/google-chrome')});
 try{for(const width of [1440,390]){

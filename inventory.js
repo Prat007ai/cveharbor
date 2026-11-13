@@ -40,8 +40,9 @@ function selects(){
  if(customers.value)setupCustomerId=customers.value;
  if(envs.value)setupEnvironmentId=envs.value;
 }
-let baselineInputs=[],baselineRecords=[];
-function renderMatches(){
+let baselineInputs=[],baselineRecords=[],matchGeneration=0;
+async function renderMatches(){
+ const generation=++matchGeneration;
  const panel=$('inventoryMatchResults');if(!panel)return;
  panel.replaceChildren();
  const engine=window.CVEHARBOR_INVENTORY_MATCH;
@@ -55,7 +56,14 @@ function renderMatches(){
  if(feed.advisories!==baselineInputs[0]||catalog.advisories!==baselineInputs[1]){baselineInputs=[feed.advisories,catalog.advisories];baselineRecords=[...(feed.advisories||[]),...(catalog.advisories||[])];}
  const baseline=baselineRecords;
  const advisories=window.CVEHARBOR_CVIE?window.CVEHARBOR_CVIE.merge(baseline):baseline;
- const matches=engine.evaluate(assets,advisories,150);
+ panel.append(make('p','ops-note','Checking saved inventory… Customer controls remain available.'));
+ $('inventoryMatchCount').textContent='Checking matches…';
+ const cancelled=()=>generation!==matchGeneration||!signedIn||!ready;
+ let matches;
+ try{matches=await engine.evaluateAsync(assets,advisories,150,{cancelled});}
+ catch(error){if(!cancelled()&&error.name!=='AbortError'){panel.replaceChildren(make('p','ops-note','Assessment unavailable. Select the customer again to retry.'));$('inventoryMatchCount').textContent='Assessment unavailable';}return;}
+ if(cancelled())return;
+ panel.replaceChildren();
  $('inventoryMatchCount').textContent=matches.total+' potential matches';
  const states=engine.summarize(matches.items);panel.append(make('p','applicability-summary',states.affected_version+' affected version detected · '+states.needs_verification+' need verification'+(matches.limited?' (shown results only)':'')+'. No match does not establish safety.'));
  if(!matches.total){panel.append(make('p','ops-note','No category matches found in the current limited index. This does not establish that customer assets are secure.'));return;}

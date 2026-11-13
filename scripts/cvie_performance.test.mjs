@@ -35,3 +35,14 @@ test('progress redraw keeps the focused History control and lazily renders colla
   unauthorized=true;await client.refresh();assert.equal(w.document.querySelectorAll('.cvie-product-status').length,0);assert.equal(client.records.length,0);assert.equal(w.localStorage.length,0);
  }finally{dom.window.close();}
 });
+test('identical full refresh retains merge identity but changed evidence and withdrawals invalidate it',async()=>{
+ const dom=new JSDOM('<div id="cvieExplorer"></div>',{url:'https://cveharbor.com/environments/',runScripts:'outside-only',pretendToBeVisual:true}),w=dom.window;
+ w.AbortSignal=globalThis.AbortSignal;let revision=1,withdrawn=[];
+ w.fetch=async url=>Response.json(new URL(url).pathname.endsWith('/advisories')?{account_id:'a',advisories:[{id:'CVE-2026-12345',summary:'Evidence '+revision,categories:['PHP'],cvie_products:['PHP']}],next:null}:{account_id:'a',ready:true,products:[{id:'p',name:'PHP',status:'ready'}],withdrawn_ids:withdrawn,excluded_product_cves:[],evidence:{sources:[]}});
+ const until=async fn=>{const end=Date.now()+3000;while(!fn()){if(Date.now()>end)throw Error('Client did not settle');await new Promise(r=>setTimeout(r,1));}};
+ try{w.eval(source);const client=w.CVEHARBOR_CVIE;await until(()=>client.ready&&!client.loading);
+  const before=client.records;await client.refresh();assert.equal(client.records,before,'unchanged full reads must keep downstream matching caches warm');
+  revision++;await client.refresh();assert.notEqual(client.records,before);assert.equal(client.records[0].summary,'Evidence 2');
+  withdrawn=['CVE-2026-12345'];await client.refresh();assert.equal(client.records.length,0);
+ }finally{dom.window.close();}
+});

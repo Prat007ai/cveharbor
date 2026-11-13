@@ -33,6 +33,7 @@ try{for(const width of [1440,390]){
   try{return route.fulfill({body:await fs.readFile(file),contentType:({'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.json':'application/json'})[path.extname(file)]||'application/octet-stream'});}catch{return route.fulfill({status:404,body:''});}
  });
  for(const section of ['customer-dashboard','customer-reports','environments','vulnerabilities']){
+  if(section==='environments')fixture.inventory.assets.push(...Array.from({length:102},(_,i)=>({id:'large'+i,environment_id:'e1',name:'FICTIONAL-'+i,technology:'Fictional app '+i,version:'1.0.0'})));
   const start=Date.now();await page.goto('https://cveharbor.com/'+section+'/');
   await page.waitForFunction(()=>window.CVEHARBOR_CVIE?.ready&&!window.CVEHARBOR_CVIE.loading);
   if(section.startsWith('customer-'))await page.waitForSelector('#customerDashStatus[data-ready="true"]');
@@ -50,6 +51,9 @@ try{for(const width of [1440,390]){
    await page.selectOption('#customerDashFilter','c2');assert.equal(await page.locator('#customerDashFilter').inputValue(),'c2');
   }else if(section==='environments'){
    await page.selectOption('#inventoryMatchCustomer','c1');await page.selectOption('#inventoryMatchCustomer','c2');assert.equal(await page.locator('#inventoryMatchCustomer').inputValue(),'c2');
+   await page.waitForFunction(()=>document.getElementById('inventoryMatchCount').textContent==='2 potential matches');
+   assert.match(await page.locator('#inventoryMatchResults').innerText(),/Other Customer/);assert.doesNotMatch(await page.locator('#inventoryMatchResults').innerText(),/Fixture Harbor/);
+   assert.equal(await page.evaluate(async()=>{const before=window.CVEHARBOR_CVIE.records;await window.CVEHARBOR_CVIE.refresh();return window.CVEHARBOR_CVIE.records===before;}),true,'unchanged full refresh preserves matching snapshot');
   }else if(section==='vulnerabilities'){
    // The filter can be below the catalogue feed; selectOption exercises its actual handler.
    await page.locator('#technologyFilter').selectOption('all');
