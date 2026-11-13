@@ -17,6 +17,15 @@ export function validateRetainedDatabase(database){
  assert.equal(database.uuid,retained.uuid);assert.equal(database.name,retained.name);assert.ok(!blocked.has(database.uuid));
  return database;
 }
+export async function enableRetainedReadReplication(api,database){
+ validateRetainedDatabase(database);
+ const before=database.read_replication?.mode;
+ assert.ok(['auto','disabled'].includes(before),'Unknown retained database replication state');
+ if(before!=='auto')await api('/d1/database/'+retained.uuid,'PUT',{read_replication:{mode:'auto'}});
+ const after=validateRetainedDatabase(await api('/d1/database/'+retained.uuid));
+ assert.equal(after.read_replication?.mode,'auto');
+ return {before,after:'auto'};
+}
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
 const stats=values=>{const rows=[...values].sort((a,b)=>a-b),q=p=>Math.round(rows[Math.min(rows.length-1,Math.floor(rows.length*p))]||0);return {count:rows.length,p50_ms:q(.5),p95_ms:q(.95),p99_ms:q(.99),max_ms:q(1)};};
 export function previewDiagnostics(output){
@@ -54,6 +63,9 @@ export async function cloudRehearsal(env=process.env){
  assert.equal((await api('/workers/subdomain')).subdomain,'cveharbor-staging');
  const database=validateRetainedDatabase(await api('/d1/database/'+retained.uuid));
  receipt.database_id=database.uuid;receipt.status='retained_database_verified';save();
+ // Only this already-authorized fictional database gets managed read replicas.
+ // No production/staging database, access setting or credential is changed.
+ receipt.read_replication=await enableRetainedReadReplication(api,database);save();
  const query=async sql=>{const rows=await api('/d1/database/'+database.uuid+'/query','POST',{sql});assert.ok(rows.every(r=>r.success));return rows;};
  const fixture=capacityFixture({owners:50,customers:50,environments:100,assets:50000}),tokens=capacitySessions(fixture.sql);
  let child;
@@ -115,7 +127,7 @@ export async function cloudRehearsal(env=process.env){
    }catch{errors.push({session:i,elapsed_ms:Math.round(performance.now()-start),...diagnostic});break;}}
   })()));
   Object.assign(receipt,{environment:'Cloudflare remote Worker preview and dedicated D1; single GitHub runner, authenticated reads',concurrent_sessions:50,customers:50,environments:100,host_names:10000,software_entries:50000,duration_seconds:Math.round((performance.now()-start)/1000),request_latency:stats(samples),complete_customer_load:stats(journeys),completed_journeys:completed,errors,cvie_background_tested:false});
-  receipt.database={calls:databaseSamples.reduce((n,s)=>n+s.calls,0),rows_read:databaseSamples.reduce((n,s)=>n+s.rows_read,0),rows_written:databaseSamples.reduce((n,s)=>n+s.rows_written,0),request_db_elapsed:stats(databaseSamples.map(s=>s.elapsed_ms)),request_sql_time:stats(databaseSamples.map(s=>s.query_ms))};
+  receipt.database={calls:databaseSamples.reduce((n,s)=>n+s.calls,0),rows_read:databaseSamples.reduce((n,s)=>n+s.rows_read,0),rows_written:databaseSamples.reduce((n,s)=>n+s.rows_written,0),primary_results:databaseSamples.reduce((n,s)=>n+s.primary_results,0),replica_results:databaseSamples.reduce((n,s)=>n+s.replica_results,0),request_db_elapsed:stats(databaseSamples.map(s=>s.elapsed_ms)),request_sql_time:stats(databaseSamples.map(s=>s.query_ms))};
   receipt.status='measured';save();assert.equal(errors.length,0);assert.ok(completed>=50);assert.ok(receipt.request_latency.p95_ms<1000,'Request p95 exceeds 1 second');assert.ok(receipt.complete_customer_load.p95_ms<3000,'Complete customer read p95 exceeds 3 seconds');
   receipt.status='passed';receipt.completed_at=new Date().toISOString();save();console.log(JSON.stringify(receipt));
  }finally{
