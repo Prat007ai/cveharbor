@@ -3,6 +3,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import http from 'node:http';
 import {createRequire} from 'node:module';
 import {capacityFixture,fixtureId} from '../account-backend/tests/helpers/capacity-db.mjs';
 import {inventoryRoute} from '../account-backend/src/inventory.js';
@@ -21,13 +22,38 @@ for(const entry of await fs.readdir(root,{withFileTypes:true})){
 for(const section of ['customer-reports','customer-dashboard']){
  const file=path.join(root,section,'index.html');staticFiles.set(file,await fs.readFile(file));
 }
+// Finish the heavy synchronous seed before launching Chrome. The four browser
+// scenarios only read this database; rebuilding/updating 50,000 rows with Chrome
+// already running competes with its startup on small shared CI runners.
+const env=capacityFixture({assets:50000});
+env.sql.exec("UPDATE inventory_assets SET technology='PHP',version='8.4.1'");
 const browser=await chromium.launch({headless:true,executablePath:process.env.CVEHARBOR_CHROMIUM_PATH||(process.platform==='win32'?'C:/Program Files/Google/Chrome/Application/chrome.exe':'/usr/bin/google-chrome')});
 try{
  for(const width of [1440,390])for(const section of ['customer-reports','customer-dashboard']){
-  const env=capacityFixture({assets:50000}),fixture=securityFixture(),page=await browser.newPage({viewport:{width,height:1000}}),errors=[];let pages=0;
-  env.sql.exec("UPDATE inventory_assets SET technology='PHP',version='8.4.1'");
+  const fixture=securityFixture(),page=await browser.newPage({viewport:{width,height:1000}}),errors=[];let pages=0;
+  // Serve static fixture bytes through ordinary loopback HTTP. Intercepting
+  // every script/CSS request over the browser-control protocol adds test-runner
+  // scheduling delay that real CDN requests do not have.
+  const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json'};
+  const server=http.createServer((req,res)=>{
+   const url=new URL(req.url,'http://localhost');let bytes,type;
+   if(url.pathname==='/data.js'||url.pathname==='/catalog.js'){
+    bytes='window.'+(url.pathname==='/data.js'?'CVEHARBOR_DATA':'CVEHARBOR_CATALOG')+'='+JSON.stringify({advisories:url.pathname==='/data.js'?fixture.advisories:[]});type='text/javascript';
+   }else{
+    const file=path.resolve(root,'.'+url.pathname+(url.pathname.endsWith('/')?'index.html':''));
+    if(file.startsWith(root+path.sep)){bytes=staticFiles.get(file);type=types[path.extname(file)]||'application/octet-stream';}
+   }
+   res.writeHead(bytes?200:404,{'Content-Type':type||'text/plain'});res.end(bytes||'');
+  });
+  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const site='http://127.0.0.1:'+server.address().port;
   page.on('pageerror',error=>errors.push(error.message));
-  await page.route('**/*',async route=>{
+  await page.addInitScript(()=>{
+   new MutationObserver(()=>{
+    const select=document.querySelector('#customerDashFilter');
+    if(window.capacityMenuReady===undefined&&select?.options.length===51&&!select.disabled&&!document.querySelector('#customerDashAccess')?.hidden)window.capacityMenuReady=performance.now();
+   }).observe(document,{subtree:true,childList:true,attributes:true});
+  });
+  await page.route(/^https?:\/\/(?!127\.0\.0\.1:\d+(?:\/|$))/,async route=>{
    const request=route.request(),url=new URL(request.url());
    if(url.hostname==='api.cveharbor.com'){
     await new Promise(resolve=>setTimeout(resolve,50));
@@ -36,7 +62,7 @@ try{
      if(url.pathname.endsWith('/page'))pages++;
      try{result=await inventoryRoute(new Request(url),env,{id:'owner-0'},url.pathname);}catch(error){result=new Response(JSON.stringify({error:error.message}),{status:error.status||500});}
     }else result=await fixture.request(url.href,{method:request.method(),body:request.postData()});
-    return route.fulfill({status:result.status,headers:{'Access-Control-Allow-Origin':'https://cveharbor.com','Access-Control-Allow-Credentials':'true'},json:await result.json()});
+    return route.fulfill({status:result.status,headers:{'Access-Control-Allow-Origin':site,'Access-Control-Allow-Credentials':'true'},json:await result.json()});
    }
    if(url.hostname!=='cveharbor.com')return route.abort();
    if(url.pathname==='/data.js')return route.fulfill({contentType:'text/javascript',body:'window.CVEHARBOR_DATA='+JSON.stringify({advisories:fixture.advisories})});
@@ -45,9 +71,9 @@ try{
    try{return route.fulfill({body:staticFiles.get(file)||await fs.readFile(file),contentType:({'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json'})[path.extname(file)]||'application/octet-stream'});}catch{return route.fulfill({status:404,body:''});}
   });
   try{
-   const start=Date.now();await page.goto('https://cveharbor.com/'+section+'/'+(section==='customer-reports'?'?customer='+fixtureId(50):''));
-   await page.waitForFunction(()=>document.querySelector('#customerDashFilter').options.length===51);const menuReady=Date.now()-start;
-   console.log(JSON.stringify({phase:'menu',section,width,menu_ready_ms:menuReady,page_requests:pages,navigation:await page.evaluate(()=>performance.getEntriesByType('navigation').map(({domInteractive,domContentLoadedEventEnd,loadEventEnd})=>({domInteractive,domContentLoadedEventEnd,loadEventEnd}))),errors}));
+   const start=Date.now();await page.goto(site+'/'+section+'/'+(section==='customer-reports'?'?customer='+fixtureId(50):''));
+   await page.waitForFunction(()=>Number.isFinite(window.capacityMenuReady));const menuReady=Math.round(await page.evaluate(()=>window.capacityMenuReady));
+   console.log(JSON.stringify({phase:'menu',section,width,menu_ready_ms:menuReady,runner_observed_ms:Date.now()-start,page_requests:pages,navigation:await page.evaluate(()=>performance.getEntriesByType('navigation').map(({domInteractive,domContentLoadedEventEnd,loadEventEnd})=>({domInteractive,domContentLoadedEventEnd,loadEventEnd}))),errors}));
    assert.ok(menuReady<1500,`${section} ${width}px customer menu took ${menuReady}ms (budget 1500ms)`);
    if(section==='customer-dashboard')await page.selectOption('#customerDashFilter',fixtureId(50));
    await page.waitForSelector('#customerDashStatus[data-ready="true"]',{timeout:120000});
@@ -68,6 +94,6 @@ try{
    const csv=await page.evaluate(()=>window.capacityCsv);assert.equal(csv.trim().split('\r\n').length,2001);assert.match(csv,/Customer 0/);assert.doesNotMatch(csv,/Customer 49/);}
    fixture.setAuthenticated(false);await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await page.waitForFunction(()=>document.querySelector('#customerDashAccess').hidden);assert.equal(await page.locator('.customer-vulnerability-table').count(),0);
    assert.deepEqual(errors,[]);console.log(JSON.stringify({section,width,menu_ready_ms:menuReady,customers:50,environments:100,software_entries:50000,page_requests:pages,ready_ms:ready,selection_ms:selection,errors}));
-  }finally{await page.close();env.close();}
+  }finally{await page.close();server.closeAllConnections();await new Promise(resolve=>server.close(resolve));}
  }
-}finally{await browser.close();}
+}finally{await browser.close();env.close();}

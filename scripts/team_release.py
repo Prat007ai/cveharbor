@@ -131,7 +131,10 @@ def site(action,out):
 if __name__=='__main__':
     action=sys.argv[1]
     output=Path(sys.argv[2]).resolve() if len(sys.argv)>2 else None
-    if action == 'finding-ai':
+    if action == 'inventory-capacity':
+        from inventory_capacity_release import backend
+        backend(output)
+    elif action == 'finding-ai':
         from finding_ai_release import backend
         backend(output)
     elif action == 'server-network':

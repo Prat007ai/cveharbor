@@ -7,6 +7,9 @@ import sys
 import tempfile
 import catalogue_package as pkg
 import team_release as team
+import catalogue_promotion as prod
+import production_release_checks as checks
+import version_picker_release as publisher
 
 BASE = '3ce02f24cbcdfd33cd776c6fdd3e4e7a245ed97a'
 PREDECESSOR = '0b15e96eb98e5d1a2f7e2961e858886c62c632f7eaed1b02d7241a0e7ff34a34'
@@ -60,9 +63,25 @@ def prepare(out):
     pkg.require(pkg.files(out/'after')-pkg.files(out/'before')==ADDED_SITE,'Unexpected site additions')
     pkg.require({name for name in pkg.files(out/'before') if (out/'before'/name).read_bytes()!=(out/'after'/name).read_bytes()}==SITE,'Unexpected site delta')
 
+def ready():
+    prod.ready(PREDECESSOR)
+
+
+def run(action, out):
+    if action=='prepare':return prepare(out)
+    if action in ('backend','record'):return backend(out,action!='record')
+    pr=team.reviewed('release/backend-capacity')
+    pkg.require(checks.check_commit(os.environ['GITHUB_SHA']),'Required application/security checks incomplete')
+    if action=='preflight':
+        prod.policy(publisher.ENV)
+        ready()
+    elif action=='publish':
+        publisher.publish(out,changed=SITE,added=ADDED_SITE,reviewed_pr=pr,ready=ready,
+                          previous_version='59156339-bd9c-4a68-8d3b-d0061179f0bc',
+                          previous_deployment='07a11258-dab6-4b84-a31e-f9e11cfb9d34',
+                          served_copy=out/'verified-origin')
+    else:raise ValueError(action)
+
+
 if __name__=='__main__':
-    action=sys.argv[1]
-    pkg.require(action in ('backend','record','prepare'),'Only local package preparation is available')
-    out=Path(sys.argv[2]).resolve()
-    if action=='prepare':prepare(out)
-    else:backend(out,action!='record')
+    run(sys.argv[1],Path(sys.argv[2]).resolve() if len(sys.argv)>2 else None)

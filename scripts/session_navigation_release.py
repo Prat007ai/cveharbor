@@ -154,6 +154,10 @@ def readiness():
 
 
 if __name__ == "__main__":
+    if os.environ.get("CVEHARBOR_SITE_RELEASE") == "inventory-capacity":
+        import inventory_capacity_release
+        inventory_capacity_release.run(sys.argv[1],Path(sys.argv[2]).resolve() if len(sys.argv)>2 else None)
+        sys.exit(0)
     if os.environ.get("CVEHARBOR_SITE_RELEASE") == "finding-ai":
         import finding_ai_warning_release as finding_ai_release
         finding_ai_release.run(sys.argv[1],Path(sys.argv[2]).resolve() if len(sys.argv)>2 else None)

@@ -10,7 +10,11 @@ export function validateStagingTarget({database,name,metadata,disposable}){
 }
 export async function syntheticFixture(){
  const f=await unifiedFixture();const loaded=new Set(['schema.sql','totp-schema.sql','remediation-schema.sql','inventory-schema.sql','finding-status-schema.sql','finding-ticket-schema.sql','finding-ticket-history-schema.sql']);
- for(const n of fs.readdirSync(path.join(root,'account-backend')).filter(n=>n.endsWith('-schema.sql')&&!loaded.has(n)).sort())f.DB.sql.exec(sqlFile(n));
+ // This fixture represents the pre-0031/0032 baseline. Capacity is a later
+ // migration requiring recovery control and server-network storage; its own
+ // full-schema rehearsal covers that installation separately.
+ const later=new Set(['inventory-capacity-schema.sql']);
+ for(const n of fs.readdirSync(path.join(root,'account-backend')).filter(n=>n.endsWith('-schema.sql')&&!loaded.has(n)&&!later.has(n)).sort())f.DB.sql.exec(sqlFile(n));
  for(const n of fs.readdirSync(path.join(root,'account-backend/migrations')).filter(n=>n.endsWith('.sql')&&n.slice(0,4)<'0031').sort())f.DB.sql.exec(sqlFile('migrations/'+n));return f;
 }
 export async function bootstrapStaging(DB){
