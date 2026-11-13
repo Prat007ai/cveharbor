@@ -30,14 +30,25 @@ def prepare(out):
     for name in CHANGED:
         original = pkg.git('show', BASE + ':' + name)
         served = (out / 'before' / name).read_bytes()
+        revised = Path(name).read_bytes().replace(b'\r\n', b'\n')
+        if name == 'cvie.js':
+            # Main retains unreleased bounded-history state; production does not.
+            # Insert only cache cleanup into each version's existing cleanup.
+            marker = b'function clearPrivate(){'
+            cleanup = marker+b'merge.cache=null;merge.snapshot=null;'
+            pkg.require(original.count(marker)==1 and served.count(marker)==1 and revised.count(cleanup)==1,
+                        'Unexpected CVIE cleanup structure')
+            revised = revised.replace(cleanup, marker)
+            served = served.replace(marker, cleanup)
         if served.replace(b'\r\n', b'\n') != original:
             # Preserve independently released production overlays. Apply only
             # this reviewed delta to the verified predecessor's serving bytes.
             with tempfile.TemporaryDirectory() as temp:
-                old, new = Path(temp)/'old', Path(temp)/'new'
+                old, new, live = Path(temp)/'old', Path(temp)/'new', Path(temp)/'live'
                 old.write_bytes(original)
-                new.write_bytes(Path(name).read_bytes().replace(b'\r\n', b'\n'))
-                (out/'after'/name).write_bytes(pkg.git('merge-file', '-p', str(out/'before'/name), str(old), str(new)))
+                live.write_bytes(served)
+                new.write_bytes(revised)
+                (out/'after'/name).write_bytes(pkg.git('merge-file', '-p', str(live), str(old), str(new)))
         else:
             pkg.require(served.replace(b'\r\n', b'\n') == original, 'Unexpected predecessor ' + name)
             (out / 'after' / name).write_bytes(Path(name).read_bytes().replace(b'\r\n', b'\n'))
