@@ -1,4 +1,4 @@
-"""Correct grouped Windows Server evidence on the verified PR352 website."""
+"""Exclude incompatible Windows Server families on the verified PR353 website."""
 import os
 from pathlib import Path
 import shutil
@@ -11,8 +11,8 @@ import production_release_checks as checks
 import team_release as team
 import version_picker_release as publisher
 
-BASE = '00481a97da42a8a9172118d3b704fb5fce6a7d85'
-CHANGED = {'inventory-assessment.js'}
+BASE = '5ac8518a2ceb5906eb3c52726795e8e2791cdce9'
+CHANGED = {'inventory-assessment.js', 'inventory-matching.js'}
 
 
 def prepare(out):
@@ -21,7 +21,7 @@ def prepare(out):
         pkg.git('-c', 'core.autocrlf=false', 'worktree', 'add', '--detach', str(prior), BASE)
         try:
             shutil.copytree('collector-app/package', prior / 'collector-app/package', dirs_exist_ok=True)
-            subprocess.run([sys.executable, 'scripts/finding_ai_release.py', 'prepare', str(out)],
+            subprocess.run([sys.executable, 'scripts/finding_ai_warning_release.py', 'prepare', str(out)],
                            cwd=prior, check=True, env={**os.environ, 'GITHUB_SHA': BASE})
         finally:
             pkg.git('worktree', 'remove', '--force', str(prior))
@@ -45,15 +45,15 @@ def ready():
 def run(action, out):
     if action == 'prepare':
         return prepare(out)
-    pr = team.reviewed('fix/finding-ai-family-warning')
+    pr = team.reviewed('fix/windows-server-applicability')
     pkg.require(checks.check_commit(os.environ['GITHUB_SHA']), 'Required application/security checks incomplete')
     if action == 'preflight':
         prod.policy(publisher.ENV)
         ready()
     elif action == 'publish':
         publisher.publish(out, changed=CHANGED, added=set(), reviewed_pr=pr, ready=ready,
-                          previous_version='7cb3aa80-afdf-4fee-af78-54424044c32a',
-                          previous_deployment='38e6995b-990b-49e4-b366-e2520e3938b5',
+                          previous_version='3aef1513-3149-4d4d-944a-624384c281d6',
+                          previous_deployment='2b248af2-838d-4fd3-bff5-72299303a6ca',
                           served_copy=out / 'verified-origin')
     else:
         raise ValueError(action)
