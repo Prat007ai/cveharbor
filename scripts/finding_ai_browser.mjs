@@ -58,12 +58,15 @@ try{for(const width of [1440,390]){
  await page.goto('https://cveharbor.com/customer-reports/?customer=c1');await page.waitForSelector('#customerDashStatus[data-ready="true"]');
  await noLegacy();assert.match(await page.locator('.customer-security-score-panel').textContent(),/Provisional Inventory Review/);assert.doesNotMatch(await page.locator('.customer-security-score-panel').textContent(),/Critical Risk|Monitoring coverage|Assessment confidence/);
  await page.getByLabel('Filter finding applicability',{exact:true}).selectOption('needs_verification');
+ await page.waitForFunction(()=>document.querySelector('#customerDashStatus').dataset.assessing==='false');
  assert.ok(await page.locator('td[data-applicability="needs_verification"]').count());
  assert.equal(await page.locator('td[data-applicability="affected_version"]').count(),0);
  await page.getByLabel('Filter finding applicability',{exact:true}).selectOption('affected_version');
+ await page.waitForFunction(()=>document.querySelector('#customerDashStatus').dataset.assessing==='false');
  assert.ok(await page.locator('td[data-applicability="affected_version"]').count());
  assert.equal(await page.locator('td[data-applicability="needs_verification"]').count(),0);
  await page.getByLabel('Filter finding applicability',{exact:true}).selectOption('all');
+ await page.waitForFunction(()=>document.querySelector('#customerDashStatus').dataset.assessing==='false');
  assert.equal(await page.locator('.customer-print-document').count(),0,'hidden print document must be lazy');
  const started=Date.now();await page.selectOption('#customerDashFilter','c2');await page.selectOption('#customerDashFilter','c1');const selectionMs=Date.now()-started;
  assert.equal(await page.locator('.customer-print-document').count(),0);
