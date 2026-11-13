@@ -77,6 +77,23 @@ def check_inventory_commit(sha, get=github, required_jobs=('collector','workflow
     return set(required_jobs) <= {j['name'] for j in jobs if j['status']=='completed' and j['conclusion']=='success'}
 
 
+def check_capacity_commit(sha, get=github):
+    workflow = '.github/workflows/inventory-capacity.yml'
+    runs = get('/actions/workflows/inventory-capacity.yml/runs?branch=main&event=push&head_sha='+sha+'&per_page=1')['workflow_runs']
+    if not runs:
+        return False
+    run = runs[0]
+    if (run['path'],run['head_sha'],run['head_branch'],run['event'],run['repository']['full_name']) != (workflow,sha,'main','push',REPOSITORY):
+        raise ValueError('Capacity CI provenance mismatch.')
+    if run['status'] != 'completed':
+        return False
+    if run['conclusion'] != 'success':
+        raise ValueError('Capacity CI failed: '+run['html_url'])
+    jobs = get(f"/actions/runs/{run['id']}/jobs?filter=latest&per_page=100")['jobs']
+    required = {'Paginated inventory and 50-session local rehearsal','Reviewed production baseline with capacity delta'}
+    return required <= {j['name'] for j in jobs if j['status']=='completed' and j['conclusion']=='success'}
+
+
 def main():
     if os.environ["GITHUB_REPOSITORY"] != REPOSITORY or os.environ["GITHUB_REF"] != "refs/heads/main":
         raise ValueError("Production releases must run from the repository's main branch.")
@@ -92,7 +109,8 @@ def main():
         ai_release = any(inputs.get(key) == 'organization-ai' for key in ('team_release', 'site_release', 'schema'))
         inventory_release = any(inputs.get(key) in ('windows-inventory','dotnet-mapping','server-security','server-network') for key in ('team_release', 'site_release','schema'))
         inventory_jobs = ('collector','workflow','mapping','network') if any(inputs.get(k)=='server-network' for k in ('team_release','site_release','schema')) else ('collector','workflow','mapping') if inputs.get('team_release') == 'dotnet-mapping' else ('collector','workflow')
-        if check_commit(sha) and (not ai_release or check_ai_commit(sha)) and (not inventory_release or check_inventory_commit(sha, required_jobs=inventory_jobs)):
+        capacity_release = any(inputs.get(key)=='inventory-capacity' for key in ('team_release','site_release','schema'))
+        if check_commit(sha) and (not ai_release or check_ai_commit(sha)) and (not inventory_release or check_inventory_commit(sha, required_jobs=inventory_jobs)) and (not capacity_release or check_capacity_commit(sha) and check_inventory_commit(sha)):
             print(f"Verified production CI for {sha}.")
             return
         time.sleep(10)

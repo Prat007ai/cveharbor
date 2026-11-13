@@ -6,6 +6,7 @@ import {PRODUCTION_DB} from './production_schema_baseline.mjs';
 import {verifyService} from './production_service_health.mjs';
 
 const state=process.env.TEAM_STATE;
+if(state==='inventory-capacity'){await import('./inventory_capacity_check.mjs');process.exit(0);}
 if(state==='finding-ai'){await import('./finding_ai_check.mjs');process.exit(0);}
 if(state==='server-network'){await import('./server_network_check.mjs');process.exit(0);}
 if(['windows-inventory','dotnet-mapping'].includes(state)){await import('./windows_inventory_check.mjs');process.exit(0);}

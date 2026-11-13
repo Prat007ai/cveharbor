@@ -5,7 +5,7 @@ on:
       schema:
         description: Customer assignment storage to activate
         type: choice
-        options: [managed, manual, firewall, team, workspace-history, organization-ai, server-network, personal-ai]
+        options: [managed, manual, firewall, team, workspace-history, organization-ai, server-network, personal-ai, inventory-capacity]
         default: managed
       reviewed_commit:
         description: Exact reviewed main commit
@@ -86,3 +86,12 @@ jobs:
           name: personal-ai-migration-${{ github.run_id }}
           path: personal-ai-migration.json
           if-no-files-found: warn
+
+      - name: Retain capacity migration recovery receipt
+        if: always() && inputs.schema == 'inventory-capacity'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: inventory-capacity-migration-${{ github.run_id }}
+          path: inventory-capacity-migration.json
+          if-no-files-found: warn
+          retention-days: 30

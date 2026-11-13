@@ -55,3 +55,16 @@ class ProductionChecksTest(unittest.TestCase):
         self.run['head_sha'] = 'b' * 40
         with self.assertRaises(ValueError):
             release.check_ai_commit(self.sha, get)
+
+    def test_capacity_requires_both_jobs_on_exact_main(self):
+        self.run['path'] = '.github/workflows/inventory-capacity.yml'
+        self.jobs = [dict(name=name,status='completed',conclusion='success') for name in
+                     ['Paginated inventory and 50-session local rehearsal','Reviewed production baseline with capacity delta']]
+        def get(path):
+            return {'workflow_runs':[self.run]} if '/workflows/' in path else {'jobs':self.jobs}
+        self.assertTrue(release.check_capacity_commit(self.sha,get))
+        self.jobs[1]['conclusion']='skipped'
+        self.assertFalse(release.check_capacity_commit(self.sha,get))
+        self.run['event']='pull_request'
+        with self.assertRaises(ValueError):
+            release.check_capacity_commit(self.sha,get)
