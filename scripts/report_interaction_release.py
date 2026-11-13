@@ -1,4 +1,4 @@
-"""One-script report responsiveness fix on the verified PR372 website."""
+"""Scoped report responsiveness fix on the verified PR372 website."""
 import os
 from pathlib import Path
 import shutil
@@ -13,7 +13,7 @@ import version_picker_release as publisher
 
 BASE = 'e4cc0870615e2d9452f4226813c074688d55fe7c'
 BACKEND = 'f941196f5e69b909bc6697a4b9d195eb9767f56a3761a1c8dfe239e6b65dadd2'
-CHANGED = {'inventory-assessment.js'}
+CHANGED = {'inventory-assessment.js','customer-security.js'}
 
 def prepare(out):
     pkg.require(not out.exists(), 'Use a new package directory')
@@ -28,8 +28,11 @@ def prepare(out):
     shutil.rmtree(out/'before')
     shutil.copytree(out/'after',out/'before')
     for name in CHANGED:
-        pkg.require((out/'before'/name).read_bytes()==pkg.git('show',BASE+':'+name),'Unexpected serving matching script')
-        (out/'after'/name).write_bytes(Path(name).read_bytes().replace(b'\r\n',b'\n'))
+        with tempfile.TemporaryDirectory() as temp:
+            old,new=Path(temp)/'old',Path(temp)/'new'
+            old.write_bytes(pkg.git('show',BASE+':'+name))
+            new.write_bytes(Path(name).read_bytes().replace(b'\r\n',b'\n'))
+            (out/'after'/name).write_bytes(pkg.git('merge-file','-p',str(out/'before'/name),str(old),str(new)))
     pkg.require(pkg.files(out/'before')==pkg.files(out/'after'),'Asset inventory changed')
     pkg.require({name for name in pkg.files(out/'before') if (out/'before'/name).read_bytes()!=(out/'after'/name).read_bytes()}==CHANGED,'Unexpected report release delta')
 

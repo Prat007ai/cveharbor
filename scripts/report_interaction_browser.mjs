@@ -18,6 +18,8 @@ try{for(const width of [1440,390]){
   window.reportTasks=[];window.reportGaps=[];let last=performance.now();
   setInterval(()=>{const now=performance.now();window.reportGaps.push(now-last);last=now;},20);
   new PerformanceObserver(list=>window.reportTasks.push(...list.getEntries().map(x=>({start:x.startTime,duration:x.duration})))).observe({type:'longtask',buffered:true});
+  window.partialReports=0;
+  new MutationObserver(()=>{const root=document.querySelector('#customerReportBody');if(root?.querySelector('h2')&&!root.querySelector('.customer-report-details'))window.partialReports++;}).observe(document,{subtree:true,childList:true});
  });
  await page.route('**/*',async route=>{
   const request=route.request(),url=new URL(request.url());
@@ -67,6 +69,7 @@ try{for(const width of [1440,390]){
  assert.equal(await page.evaluate(async()=>{const before=document.querySelector('#customerReportBody').firstChild;await window.CVEHARBOR_CVIE.refresh(false,true);return before===document.querySelector('#customerReportBody').firstChild;}),true,'progress-only updates preserve the current report');
  assert.deepEqual(errors,[]);
  if(process.env.REPORT_BASELINE!=='true'){
+  assert.equal(await page.evaluate(()=>window.partialReports),0,'Reports publish complete sections rather than partial visible tables');
   assert.ok(metrics.maxGap<500,'Report work must yield to customer input within 500ms');
   assert.ok(switchMs<1200,'Environment selection during incoming CVIE results must settle within 1.2 seconds');
  }

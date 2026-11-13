@@ -33,3 +33,14 @@ test('large repeated products retain exact totals without materializing all pair
  await assert.rejects(engine.evaluateAsync(many,records,5000,{cancelled:()=>cancel}),{name:'AbortError'});
  assert.deepEqual(plain((await engine.evaluateAsync(assets,records,25)).items),plain(fullResult(assets,records).slice(0,25)));
 });
+test('repeated versions reuse current matches after the retained cache fills',()=>{
+ const rows=Array.from({length:250},(_,i)=>({...records[1],id:'CVE-2026-'+(20000+i)}));
+ const hosts=Array.from({length:120},(_,i)=>({id:'repeat'+i,technology:'PHP',version:'8.1.'+(i%60)}));
+ const candidate=engine.candidate;let calls=0;
+ engine.candidate=(...args)=>{calls++;return candidate(...args);};
+ try{
+  const result=engine.evaluate(hosts,rows,150);
+  assert.equal(result.total,30000);assert.equal(result.items.length,150);
+  assert.equal(calls,60*250,'Each unique version is assessed once even beyond the 10,000-finding retained cache');
+ }finally{engine.candidate=candidate;}
+});
