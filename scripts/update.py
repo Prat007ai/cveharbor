@@ -92,7 +92,7 @@ def get_json(url: str, source: str) -> dict | list:
         # One bounded attempt per page. The hourly job owns retries; sleeping
         # repeatedly here holds up every other source in the public snapshot.
         try:
-            with urllib.request.urlopen(urllib.request.Request(url, headers=headers), timeout=8) as resp:
+            with urllib.request.urlopen(urllib.request.Request(url, headers=headers), timeout=22) as resp:
                 return json.loads(resp.read(12_000_000))
         except urllib.error.HTTPError as exc:
             retry = exc.headers.get("Retry-After", "") if exc.headers else ""

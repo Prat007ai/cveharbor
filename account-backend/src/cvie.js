@@ -213,7 +213,7 @@ async function requestNvd(env,path,params,fetcher){
  for(const [key,value] of Object.entries(params))url.searchParams.set(key,String(value));
  let response,raw;
  try{
-  response=await fetcher(url.href,{headers:{Accept:'application/json',...(env.NVD_API_KEY?{apiKey:env.NVD_API_KEY}:{})},signal:AbortSignal.timeout(8000)});
+  response=await fetcher(url.href,{headers:{Accept:'application/json',...(env.NVD_API_KEY?{apiKey:env.NVD_API_KEY}:{})},signal:AbortSignal.timeout(20000)});
   if(response.ok)raw=await response.text();
  }catch{
   // Network failures need the same provider-wide pause as HTTP failures, so

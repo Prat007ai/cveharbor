@@ -27,7 +27,7 @@ class NvdOutageTests(unittest.TestCase):
                 with self.assertRaises(u.NvdUnavailable) as raised:
                     u.get_json(u.SOURCES['nvd'], 'nvd')
                 self.assertEqual(request.call_count, 1)
-                self.assertEqual(request.call_args.kwargs['timeout'], 8)
+                self.assertEqual(request.call_args.kwargs['timeout'], 22)
                 sleep.assert_not_called()
                 status = u.nvd_retry_status({}, raised.exception)
                 self.assertFalse(u.nvd_retry_due(status))
