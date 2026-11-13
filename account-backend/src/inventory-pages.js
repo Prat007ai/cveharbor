@@ -59,15 +59,20 @@ export async function inventoryPage(req,env,user,team=null){
  const guard=team?env.DB.prepare('SELECT customer_id AS id FROM team_visible_customers WHERE org=? AND actor=? AND data_owner=? AND customer_id=?').bind(team.org,team.actor,owner,customer):customer?env.DB.prepare('SELECT id FROM inventory_customers WHERE user_id=? AND id=?').bind(owner,customer):env.DB.prepare('SELECT ? AS id').bind(owner);
  const environmentGuard=environment?env.DB.prepare('SELECT id FROM inventory_environments WHERE user_id=? AND id=?'+(customer?' AND customer_id=?':'')).bind(...[owner,environment,...customer?[customer]:[]]):env.DB.prepare('SELECT 1 AS id');
  const query='SELECT '+def.fields+' FROM '+def.table+' t'+(def.join||'')+' WHERE '+clauses.join(' AND ')+(def.extra||'')+' ORDER BY '+def.keys.map(k=>'t.'+k).join(',')+' LIMIT '+(INVENTORY_PAGE_SIZE+1);
+ // D1 serializes every returned object before sending it to the Worker. A
+ // bounded array payload avoids repeating field names for every software row;
+ // reconstruct the existing public shape here, without caching private data.
+ const fields=def.fields.split(',').map(field=>field.split('.').at(-1));
+ const compact='SELECT json_group_array(json_array('+fields.map(field=>'"'+field+'"').join(',')+')) AS packed FROM ('+query+')';
  let batch;
- try{batch=await env.DB.batch([env.DB.prepare('SELECT version FROM inventory_capacity_schema WHERE version=1'),guard,environmentGuard,env.DB.prepare('SELECT COALESCE((SELECT revision FROM inventory_capacity_revisions WHERE user_id=?),0) AS revision').bind(owner),env.DB.prepare(query).bind(...args)]);}
+ try{batch=await env.DB.batch([env.DB.prepare('SELECT version FROM inventory_capacity_schema WHERE version=1'),guard,environmentGuard,env.DB.prepare('SELECT COALESCE((SELECT revision FROM inventory_capacity_revisions WHERE user_id=?),0) AS revision').bind(owner),env.DB.prepare(compact).bind(...args)]);}
  catch(error){if(/no such (table|column)/i.test([error?.message,error?.cause?.message].join(' ')))fail('Inventory capacity migration is required',503);throw error;}
  const [marker,access,envAccess,revisionRows,page]=batch;
  if(!marker.results?.length)fail('Inventory capacity migration is required',503);
  if(!access.results?.length||!envAccess.results?.length)fail('Customer or environment unavailable',404);
  const revision=Number(revisionRows.results[0].revision);
  if(expected!==null&&revision!==expected)fail('Inventory changed while loading. Refresh and retry.',409);
- const rows=page.results||[],items=rows.slice(0,INVENTORY_PAGE_SIZE),last=items.at(-1);
+ const rows=JSON.parse(page.results[0].packed).map(values=>Object.fromEntries(fields.map((field,i)=>[field,values[i]]))),items=rows.slice(0,INVENTORY_PAGE_SIZE),last=items.at(-1);
  const next=rows.length>INVENTORY_PAGE_SIZE?encode({scope,revision,after:def.keys.map(k=>last[k])}):null;
  for(const row of items){if(resource==='checks'){row.findings=JSON.parse(row.findings_json||'[]');delete row.findings_json;}if(resource==='networks')row.snapshot=JSON.parse(row.snapshot);}
  return {resource,items,revision,next_cursor:next,complete:next===null,page_size:INVENTORY_PAGE_SIZE};

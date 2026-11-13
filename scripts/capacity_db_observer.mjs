@@ -2,6 +2,9 @@
 // Emit closed categories and numeric timings, never SQL, bindings or messages.
 export function classifyDatabaseError(error){
  const message=[error?.message,error?.cause?.message].filter(x=>typeof x==='string').join(' ');
+ if(/too many resources consumed|10 second window/i.test(message))return 'resource_window';
+ if(/too many requests queued/i.test(message))return 'queue_full';
+ if(/queued for too long/i.test(message))return 'queue_wait';
  if(/overload|queued|7429/i.test(message))return 'overloaded';
  if(/quota|daily.*limit|usage.*limit/i.test(message))return 'quota';
  if(/transient|reset|restart|7500|internal error/i.test(message))return 'transient';
