@@ -27,6 +27,12 @@ try{
   const env=capacityFixture({assets:50000}),fixture=securityFixture(),page=await browser.newPage({viewport:{width,height:1000}}),errors=[];let pages=0;
   env.sql.exec("UPDATE inventory_assets SET technology='PHP',version='8.4.1'");
   page.on('pageerror',error=>errors.push(error.message));
+  await page.addInitScript(()=>{
+   new MutationObserver(()=>{
+    const select=document.querySelector('#customerDashFilter');
+    if(window.capacityMenuReady===undefined&&select?.options.length===51&&!select.disabled&&!document.querySelector('#customerDashAccess')?.hidden)window.capacityMenuReady=performance.now();
+   }).observe(document,{subtree:true,childList:true,attributes:true});
+  });
   await page.route('**/*',async route=>{
    const request=route.request(),url=new URL(request.url());
    if(url.hostname==='api.cveharbor.com'){
@@ -46,8 +52,8 @@ try{
   });
   try{
    const start=Date.now();await page.goto('https://cveharbor.com/'+section+'/'+(section==='customer-reports'?'?customer='+fixtureId(50):''));
-   await page.waitForFunction(()=>document.querySelector('#customerDashFilter').options.length===51);const menuReady=Date.now()-start;
-   console.log(JSON.stringify({phase:'menu',section,width,menu_ready_ms:menuReady,page_requests:pages,navigation:await page.evaluate(()=>performance.getEntriesByType('navigation').map(({domInteractive,domContentLoadedEventEnd,loadEventEnd})=>({domInteractive,domContentLoadedEventEnd,loadEventEnd}))),errors}));
+   await page.waitForFunction(()=>Number.isFinite(window.capacityMenuReady));const menuReady=Math.round(await page.evaluate(()=>window.capacityMenuReady));
+   console.log(JSON.stringify({phase:'menu',section,width,menu_ready_ms:menuReady,runner_observed_ms:Date.now()-start,page_requests:pages,navigation:await page.evaluate(()=>performance.getEntriesByType('navigation').map(({domInteractive,domContentLoadedEventEnd,loadEventEnd})=>({domInteractive,domContentLoadedEventEnd,loadEventEnd}))),errors}));
    assert.ok(menuReady<1500,`${section} ${width}px customer menu took ${menuReady}ms (budget 1500ms)`);
    if(section==='customer-dashboard')await page.selectOption('#customerDashFilter',fixtureId(50));
    await page.waitForSelector('#customerDashStatus[data-ready="true"]',{timeout:120000});

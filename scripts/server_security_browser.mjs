@@ -39,7 +39,7 @@ try{for(const org of [false,true])for(const width of [1440,768,390]){
  await page.goto('https://cveharbor.com/customer-dashboard/?customer=c1'+(org?'&org=north':''));
  const panel=page.locator('.server-security');await panel.locator('.server-card').first().waitFor();
  await panel.getByText('Suggested primary IP: 192.0.2.10 · Production LAN',{exact:true}).waitFor();
- const networkDetails=panel.locator('.server-network');assert.equal(await networkDetails.count(),1);assert.equal(await networkDetails.getAttribute('open'),null);
+ const networkDetails=panel.locator('.server-network');await page.waitForFunction(()=>document.querySelectorAll('.server-security .server-network').length===1);assert.equal(await networkDetails.getAttribute('open'),null);
  await networkDetails.locator('summary').click();assert.match(await networkDetails.innerText(),/2001:db8::10/);assert.match(await networkDetails.innerText(),/Backup LAN/);
  if(org)assert.equal(await networkDetails.getByRole('radio').count(),0);
  else{await networkDetails.getByRole('radio',{name:'Backup LAN 198.51.100.20',exact:true}).check();await networkDetails.getByRole('button',{name:'Save primary adapter & IP'}).click();await networkDetails.getByText('Primary adapter and IP saved for this server.',{exact:true}).waitFor();assert.match(await panel.innerText(),/Primary IP: 198.51.100.20/);}
