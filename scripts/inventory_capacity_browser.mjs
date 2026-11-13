@@ -22,11 +22,15 @@ for(const entry of await fs.readdir(root,{withFileTypes:true})){
 for(const section of ['customer-reports','customer-dashboard']){
  const file=path.join(root,section,'index.html');staticFiles.set(file,await fs.readFile(file));
 }
+// Finish the heavy synchronous seed before launching Chrome. The four browser
+// scenarios only read this database; rebuilding/updating 50,000 rows with Chrome
+// already running competes with its startup on small shared CI runners.
+const env=capacityFixture({assets:50000});
+env.sql.exec("UPDATE inventory_assets SET technology='PHP',version='8.4.1'");
 const browser=await chromium.launch({headless:true,executablePath:process.env.CVEHARBOR_CHROMIUM_PATH||(process.platform==='win32'?'C:/Program Files/Google/Chrome/Application/chrome.exe':'/usr/bin/google-chrome')});
 try{
  for(const width of [1440,390])for(const section of ['customer-reports','customer-dashboard']){
-  const env=capacityFixture({assets:50000}),fixture=securityFixture(),page=await browser.newPage({viewport:{width,height:1000}}),errors=[];let pages=0;
-  env.sql.exec("UPDATE inventory_assets SET technology='PHP',version='8.4.1'");
+  const fixture=securityFixture(),page=await browser.newPage({viewport:{width,height:1000}}),errors=[];let pages=0;
   // Serve static fixture bytes through ordinary loopback HTTP. Intercepting
   // every script/CSS request over the browser-control protocol adds test-runner
   // scheduling delay that real CDN requests do not have.
@@ -90,6 +94,6 @@ try{
    const csv=await page.evaluate(()=>window.capacityCsv);assert.equal(csv.trim().split('\r\n').length,2001);assert.match(csv,/Customer 0/);assert.doesNotMatch(csv,/Customer 49/);}
    fixture.setAuthenticated(false);await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await page.waitForFunction(()=>document.querySelector('#customerDashAccess').hidden);assert.equal(await page.locator('.customer-vulnerability-table').count(),0);
    assert.deepEqual(errors,[]);console.log(JSON.stringify({section,width,menu_ready_ms:menuReady,customers:50,environments:100,software_entries:50000,page_requests:pages,ready_ms:ready,selection_ms:selection,errors}));
-  }finally{await page.close();server.closeAllConnections();await new Promise(resolve=>server.close(resolve));env.close();}
+  }finally{await page.close();server.closeAllConnections();await new Promise(resolve=>server.close(resolve));}
  }
-}finally{await browser.close();}
+}finally{await browser.close();env.close();}
