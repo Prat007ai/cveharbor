@@ -1,3 +1,4 @@
+import {inventoryReadDatabase} from './inventory-read-db.js';
 // Recovery is fail-closed when configured. State is read on every entry, never cached.
 export async function recoveryState(env){
  try{
@@ -17,11 +18,17 @@ export const heldResponse=()=>unavailableResponse('CVEHarbor is temporarily paus
 const busyResponse=()=>unavailableResponse('The account service is temporarily unavailable. Please retry shortly.');
 export function recoveryProtected(handler){
  async function execute(kind,input,env,ctx){
+  const url=kind==='fetch'?new URL(input.url):null;
+  const inventoryRead=url&&input.method==='GET'&&url.hostname!=='confirm.cveharbor.com'&&['/v1/inventory/page','/v1/inventory/status'].includes(url.pathname);
+  if(inventoryRead)env={...env,DB:inventoryReadDatabase(env.DB)};
   let state;try{state=await recoveryState(env);}catch{return kind==='fetch'?busyResponse():undefined;}
   if(state?.write_hold)return kind==='fetch'?heldResponse():undefined;
+  // These routes cannot mutate D1: enforce SELECT-only capabilities at runtime.
+  // They still check the current hold and current session on every request.
+  // Omit the background context and avoid creating write leases for pure reads.
+  if(inventoryRead)return handler.fetch(input,env,undefined);
   if(!state)return handler[kind](input,env,ctx);
   // Guest receipt/reviewer GETs remain strictly read-only; they cannot send email.
-  const url=kind==='fetch'?new URL(input.url):null;
   const guestRead=url&&['GET','HEAD'].includes(input.method)&&(/^(?:\/v1)?\/acknowledge\//.test(url.pathname)||url.hostname==='confirm.cveharbor.com'&&url.pathname.startsWith('/assignment/'));
   if(guestRead)return handler.fetch(input,env,ctx);
   const lease=crypto.randomUUID();

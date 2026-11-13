@@ -40,7 +40,6 @@ export async function inventoryPage(req,env,user,team=null){
  if(revisionParam!==null&&!/^\d{1,15}$/.test(revisionParam))fail('Invalid inventory revision');
  const expected=cursor?.revision??(revisionParam===null?null:Number(revisionParam));
  if(cursor&&revisionParam!==null&&Number(revisionParam)!==cursor.revision)fail('Conflicting inventory revision');
- if(!await capacityReady(env.DB))fail('Inventory capacity migration is required',503);
  const clauses=['t.user_id=?'],args=[owner];
  if(customer){clauses.push(def.scope+'=?');args.push(customer);}
  // Restrict indexed keys before joining; a selected customer must not scan
@@ -60,7 +59,11 @@ export async function inventoryPage(req,env,user,team=null){
  const guard=team?env.DB.prepare('SELECT customer_id AS id FROM team_visible_customers WHERE org=? AND actor=? AND data_owner=? AND customer_id=?').bind(team.org,team.actor,owner,customer):customer?env.DB.prepare('SELECT id FROM inventory_customers WHERE user_id=? AND id=?').bind(owner,customer):env.DB.prepare('SELECT ? AS id').bind(owner);
  const environmentGuard=environment?env.DB.prepare('SELECT id FROM inventory_environments WHERE user_id=? AND id=?'+(customer?' AND customer_id=?':'')).bind(...[owner,environment,...customer?[customer]:[]]):env.DB.prepare('SELECT 1 AS id');
  const query='SELECT '+def.fields+' FROM '+def.table+' t'+(def.join||'')+' WHERE '+clauses.join(' AND ')+(def.extra||'')+' ORDER BY '+def.keys.map(k=>'t.'+k).join(',')+' LIMIT '+(INVENTORY_PAGE_SIZE+1);
- const [access,envAccess,revisionRows,page]=await env.DB.batch([guard,environmentGuard,env.DB.prepare('SELECT COALESCE((SELECT revision FROM inventory_capacity_revisions WHERE user_id=?),0) AS revision').bind(owner),env.DB.prepare(query).bind(...args)]);
+ let batch;
+ try{batch=await env.DB.batch([env.DB.prepare('SELECT version FROM inventory_capacity_schema WHERE version=1'),guard,environmentGuard,env.DB.prepare('SELECT COALESCE((SELECT revision FROM inventory_capacity_revisions WHERE user_id=?),0) AS revision').bind(owner),env.DB.prepare(query).bind(...args)]);}
+ catch(error){if(/no such (table|column)/i.test([error?.message,error?.cause?.message].join(' ')))fail('Inventory capacity migration is required',503);throw error;}
+ const [marker,access,envAccess,revisionRows,page]=batch;
+ if(!marker.results?.length)fail('Inventory capacity migration is required',503);
  if(!access.results?.length||!envAccess.results?.length)fail('Customer or environment unavailable',404);
  const revision=Number(revisionRows.results[0].revision);
  if(expected!==null&&revision!==expected)fail('Inventory changed while loading. Refresh and retry.',409);

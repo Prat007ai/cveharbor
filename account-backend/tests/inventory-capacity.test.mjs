@@ -9,20 +9,48 @@ import {readInventory} from '../../inventory-client.js';
 const url='https://api.cveharbor.com/v1/inventory/page?';
 const read=(env,params={},owner='owner-0',team)=>inventoryPage(new Request(url+new URLSearchParams(params)),env,{id:owner},team);
 
-test('full Worker requires current session and enabled MFA, scopes pages and drains recovery leases',async()=>{
+test('full Worker requires current session and enabled MFA, scopes pages and performs no read-side writes',async()=>{
  const f=capacityFixture({owners:2,customers:2,environments:2,assets:1000}),tokens=capacitySessions(f.sql,2);
  const call=(token,query='',origin='https://cveharbor.com')=>worker.fetch(new Request(url+query,{headers:{Origin:origin,...token?{Cookie:'cvh_session='+token}:{}}}),{DB:f.DB,RECOVERY_CONTROL_REQUIRED:'true'});
  try{
   assert.equal((await call()).status,401);
   assert.equal((await call(tokens[0],'','https://foreign.example')).status,403);
   assert.equal((await call(tokens[0],'customer_id='+fixtureId(2))).status,404);
+  const before=f.sql.prepare('SELECT total_changes() n').get().n;
   const r=await call(tokens[0]);assert.equal(r.status,200);const first=await r.json();assert.ok(first.next_cursor);
+  assert.equal(f.sql.prepare('SELECT total_changes() n').get().n,before);
   f.sql.prepare('UPDATE user_totp SET enabled=0 WHERE user_id=?').run('owner-0');
   assert.equal((await call(tokens[0],'cursor='+first.next_cursor)).status,401);
   f.sql.prepare('UPDATE user_totp SET enabled=1 WHERE user_id=?').run('owner-0');
   f.sql.prepare('DELETE FROM sessions WHERE user_id=?').run('owner-0');
   assert.equal((await call(tokens[0],'cursor='+first.next_cursor)).status,401);
   assert.equal(f.sql.prepare('SELECT count(*) n FROM operations_leases').get().n,0);
+ }finally{f.close();}
+});
+
+test('inventory read fast path uses three database round trips and still obeys current maintenance holds',async()=>{
+ const f=capacityFixture({owners:1,customers:1,environments:1,assets:500}),[token]=capacitySessions(f.sql,1);let calls=0;
+ const prepare=f.DB.prepare.bind(f.DB),batch=f.DB.batch.bind(f.DB);
+ f.DB.prepare=sql=>{const wrap=s=>{const result={bind:(...args)=>wrap(s.bind(...args))};for(const method of ['first','all','run'])result[method]=(...args)=>{calls++;return s[method](...args);};result.runSync=s.runSync;return result;};return wrap(prepare(sql));};
+ f.DB.batch=statements=>{calls++;return batch(statements);};
+ const call=()=>worker.fetch(new Request(url,{headers:{Cookie:'cvh_session='+token,Origin:'https://cveharbor.com'}}),{DB:f.DB,RECOVERY_CONTROL_REQUIRED:'true'});
+ try{
+  assert.equal((await call()).status,200);assert.equal(calls,3);
+  f.sql.exec('UPDATE operations_control SET write_hold=1');calls=0;assert.equal((await call()).status,503);assert.equal(calls,1);
+  f.sql.exec('UPDATE operations_control SET database_frozen=1');assert.equal((await call()).status,503);
+  f.sql.exec('DROP TABLE operations_control');assert.equal((await call()).status,503);
+ }finally{f.close();}
+});
+
+test('temporary D1 overload is retried without writes; missing capacity storage still fails closed',async()=>{
+ const f=capacityFixture({owners:1,customers:1,environments:1,assets:500}),[token]=capacitySessions(f.sql,1),batch=f.DB.batch.bind(f.DB);let attempts=0;
+ f.DB.batch=async statements=>{if(++attempts===1)throw new Error('D1 DB is overloaded. Requests queued for too long.');return batch(statements);};
+ const call=()=>worker.fetch(new Request(url,{headers:{Cookie:'cvh_session='+token,Origin:'https://cveharbor.com'}}),{DB:f.DB,RECOVERY_CONTROL_REQUIRED:'true'});
+ try{
+  const before=f.sql.prepare('SELECT total_changes() n').get().n;
+  const response=await call();assert.equal(response.status,200);assert.equal((await response.json()).items.length,250);assert.equal(attempts,2);assert.equal(f.sql.prepare('SELECT total_changes() n').get().n,before);
+  f.sql.exec('DELETE FROM inventory_capacity_schema');assert.equal((await call()).status,503);
+  f.sql.exec('DROP TABLE inventory_capacity_schema');assert.equal((await call()).status,503);
  }finally{f.close();}
 });
 
