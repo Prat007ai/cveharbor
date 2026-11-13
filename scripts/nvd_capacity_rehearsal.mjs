@@ -9,7 +9,7 @@ export async function outageRehearsal({base,tokens,controlKey,site,seconds=30,on
   const samples={},journeys=[],start=performance.now();let active=0,maxActive=0,completed=0,stop=false;
   const step=()=>fetch(base+'/__outage/step?mode='+mode,{method:'POST',headers:{'X-Outage-Control':controlKey},signal:AbortSignal.timeout(45000)}).then(async r=>{assert.equal(r.status,200);return r.json();});
   // Fifty concurrent schedulers must share the durable provider budget.
-  const source=Promise.all(Array.from({length:50},step));
+  const source=Promise.allSettled(Array.from({length:50},step));
   const clients=Promise.all(Array.from({length:50},(_,i)=>(async()=>{
    while(!stop){const began=performance.now();try{
     for(const [label,suffix] of [['customers','/v1/inventory/page?resource=customers'],['environments','/v1/inventory/page?resource=environments'],['workspace','/v1/workspace/summary'],['cvie','/v1/cvie'],['saved_advisories','/v1/cvie/advisories']]){
@@ -31,7 +31,10 @@ export async function outageRehearsal({base,tokens,controlKey,site,seconds=30,on
   try{
    const browser=browserProbe(base,tokens[0],site,mode);
    const outcomes=await Promise.allSettled([source,browser,new Promise(resolve=>setTimeout(resolve,seconds*1000))]);
-   if(outcomes[0].status==='fulfilled')sourceResults=outcomes[0].value;
+   if(outcomes[0].status==='fulfilled'){
+    sourceResults=outcomes[0].value.filter(r=>r.status==='fulfilled').map(r=>r.value);
+    for(const r of outcomes[0].value)if(r.status==='rejected')result.errors.push({mode,component:'scheduler',error:r.reason.message});
+   }
    if(outcomes[1].status==='fulfilled')result.browser.push(...outcomes[1].value);
    for(const [i,outcome] of outcomes.entries())if(outcome.status==='rejected')result.errors.push({mode,component:i===0?'scheduler':'browser',error:outcome.reason.message});
   }finally{stop=true;await clients;}
