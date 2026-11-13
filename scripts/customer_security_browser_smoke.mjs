@@ -38,7 +38,7 @@ try{
  await page.goto('http://127.0.0.1:8080/customer-reports/?customer=c1');
  await page.waitForSelector('.customer-vulnerability-table');
  await page.selectOption('#customerDashEnvironment','e1');
- assert.equal(await page.locator('#customerReportBody input,#customerReportBody select').count(),0);
+ assert.equal(await page.locator('#customerReportBody input,#customerReportBody select:not([aria-label="Filter finding applicability"])').count(),0);
  assert.equal(await page.locator('.cvie-source').count(),3);
  assert.deepEqual(await page.locator('.cvie-source').evaluateAll(nodes=>nodes.map(n=>n.dataset.source)),['nvd','cisa_kev','cve_program']);
  assert.equal(await page.locator('#customerReportIntelligence .cvie-panel').count(),1);

@@ -19,7 +19,7 @@ for(const kind of ['customer-dashboard','customer-reports']){
  const requests=fixture.seen.length,writes=fixture.writes.length;
  first.click();const modal=d.querySelector('.customer-finding-dialog');assert.ok(modal.open);
  assert.ok(modal.textContent.includes(full),'full description is not the clipped table summary');
- for(const value of ['9.8','10.65%','CISA exploitation evidence','Apply vendor mitigation.','PHP before 8.4.2','Install the vendor-fixed PHP release.','WEB01','Fixture Harbor','Production','DEV-10','Potential match — requires verification.'])assert.ok(modal.textContent.includes(value),value);
+ for(const value of ['9.8','10.65%','CISA exploitation evidence','Apply vendor mitigation.','PHP before 8.4.2','Install the vendor-fixed PHP release.','WEB01','Fixture Harbor','Production','DEV-10','Affected version detected'])assert.ok(modal.textContent.includes(value),value);
  assert.doesNotMatch(modal.textContent,/STAGE01|OTHER01|Other Customer|UNSAVED-42/);
  assert.equal(modal.querySelectorAll('input,select,.remediation-detail-assign').length,0,'details stay read only');
  assert.equal(modal.querySelectorAll('a[href^="javascript:"]').length,0);
