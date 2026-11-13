@@ -34,7 +34,9 @@ try{
   });
   try{
    const start=Date.now();await page.goto('https://cveharbor.com/'+section+'/'+(section==='customer-reports'?'?customer='+fixtureId(50):''));
-   await page.waitForFunction(()=>document.querySelector('#customerDashFilter').options.length===51);const menuReady=Date.now()-start;assert.ok(menuReady<1500);
+   await page.waitForFunction(()=>document.querySelector('#customerDashFilter').options.length===51);const menuReady=Date.now()-start;
+   console.log(JSON.stringify({phase:'menu',section,width,menu_ready_ms:menuReady,page_requests:pages,navigation:await page.evaluate(()=>performance.getEntriesByType('navigation').map(({domInteractive,domContentLoadedEventEnd,loadEventEnd})=>({domInteractive,domContentLoadedEventEnd,loadEventEnd}))),errors}));
+   assert.ok(menuReady<1500,`${section} ${width}px customer menu took ${menuReady}ms (budget 1500ms)`);
    if(section==='customer-dashboard')await page.selectOption('#customerDashFilter',fixtureId(50));
    await page.waitForSelector('#customerDashStatus[data-ready="true"]',{timeout:120000});
    assert.match(await page.locator('.customer-finding-pages').first().textContent(),/of 2000 filtered findings/);
@@ -42,7 +44,7 @@ try{
    const ready=Date.now()-start,at=Date.now();await page.selectOption('#customerDashFilter',fixtureId(1));
    await page.waitForFunction(()=>document.querySelector('#customerDashStatus').dataset.assessing==='false');
    assert.match(await page.locator('.customer-finding-pages').first().textContent(),/of 2000 filtered findings/);
-   const selection=Date.now()-at;assert.ok(selection<1200);
+   const selection=Date.now()-at;assert.ok(selection<1200,`${section} ${width}px customer selection took ${selection}ms (budget 1200ms)`);
    await page.locator('.customer-vulnerability-table').evaluate(el=>{for(let p=el;p;p=p.parentElement)if(p.tagName==='DETAILS')p.open=true;});
    await page.getByRole('button',{name:'Next findings',exact:true}).click();
    await page.waitForFunction(()=>document.querySelector('.customer-finding-pages')?.textContent.includes('Showing 51–100'));
