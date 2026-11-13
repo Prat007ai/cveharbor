@@ -64,7 +64,8 @@ function install(){
  // work within a snapshot while assigning every finding to its current asset.
  const assessments=new WeakMap();
  base.candidate=(a,r)=>{const finding=candidate(a,r,original);return finding?base.assessFinding(finding,r):null;};
- base.evaluate=(assets,records,limit=150)=>{
+ function* evaluate(assets,records,limit=150){
+  let work=0;
   const items=[],seen=new Set();
   const advisoryRecords=records||[];
   let cached=assessments.get(advisoryRecords);
@@ -80,7 +81,7 @@ function install(){
    let matches=byProduct.get(key);
    if(!matches){
     matches=[];
-    for(const record of advisoryRecords){const finding=base.candidate(asset,record);if(finding)matches.push(finding);}
+    for(const record of advisoryRecords){const finding=base.candidate(asset,record);if(finding)matches.push(finding);if(++work%128===0)yield;}
     // Bound retained results even for unusually broad advisory matches.
     if(byProduct.size<1000&&cached.findings+matches.length<=10000){
      byProduct.set(key,matches);cached.findings+=matches.length;
@@ -89,12 +90,26 @@ function install(){
    for(const finding of matches){
     const identity=asset.id+'|'+finding.id;
     if(seen.has(identity))continue;
-    seen.add(identity);items.push({...finding,asset_id:asset.id});
+    seen.add(identity);items.push({...finding,asset_id:asset.id});if(++work%128===0)yield;
    }
   }
   const rank={critical:4,high:3,medium:2,low:1};items.sort((a,b)=>Number(b.known_exploited)-Number(a.known_exploited)||(rank[norm(b.severity)]||0)-(rank[norm(a.severity)]||0)||a.id.localeCompare(b.id));
   return {items:items.slice(0,limit),total:items.length,limited:items.length>limit};
- };base.inventoryAssessment=true;
+ }
+ base.evaluate=(...args)=>{const task=evaluate(...args);let step;do{step=task.next();}while(!step.done);return step.value;};
+ base.evaluateAsync=async(assets,records,limit=150,{cancelled=()=>false}={})=>{
+  const task=evaluate(assets,records,limit);
+  const pause=()=>root.scheduler?.yield?root.scheduler.yield():new Promise(resolve=>setTimeout(resolve,0));
+  try{
+   await pause();let started=Date.now();
+   for(;;){
+    if(cancelled()){const error=new Error('Assessment cancelled');error.name='AbortError';throw error;}
+    const step=task.next();if(step.done)return step.value;
+    if(Date.now()-started>=8){await pause();started=Date.now();}
+   }
+  }finally{task.return();}
+ };
+ base.inventoryAssessment=true;
 }
 const el=(tag,text='',cls='')=>{const x=document.createElement(tag);x.textContent=text;if(cls)x.className=cls;return x;};
 function summary(assets,records){

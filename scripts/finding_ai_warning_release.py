@@ -1,4 +1,4 @@
-"""Responsive CVIE updates on verified PR357."""
+"""Cooperative Workspace assessment on verified PR358."""
 import os
 from pathlib import Path
 import shutil
@@ -11,8 +11,8 @@ import production_release_checks as checks
 import team_release as team
 import version_picker_release as publisher
 
-BASE = 'f4128d1a83ad8d1d37f4ae2fc7f2fcb41c2526d4'
-CHANGED = {'cvie.js', 'inventory.js', 'customer-security.js', 'app.js', 'finding-ai.js'}
+BASE = '25f7830e3108509a12d2622b5c8f24a46a2dc1dc'
+CHANGED = {'inventory-assessment.js', 'workspace-ai.js'}
 
 
 def prepare(out):
@@ -31,15 +31,6 @@ def prepare(out):
         original = pkg.git('show', BASE + ':' + name)
         served = (out / 'before' / name).read_bytes()
         revised = Path(name).read_bytes().replace(b'\r\n', b'\n')
-        if name == 'cvie.js':
-            # Main retains unreleased bounded-history state; production does not.
-            # Insert only cache cleanup into each version's existing cleanup.
-            marker = b'function clearPrivate(){'
-            cleanup = marker+b'merge.cache=null;merge.snapshot=null;'
-            pkg.require(original.count(marker)==1 and served.count(marker)==1 and revised.count(cleanup)==1,
-                        'Unexpected CVIE cleanup structure')
-            revised = revised.replace(cleanup, marker)
-            served = served.replace(marker, cleanup)
         if served.replace(b'\r\n', b'\n') != original:
             # Preserve independently released production overlays. Apply only
             # this reviewed delta to the verified predecessor's serving bytes.
@@ -65,15 +56,15 @@ def ready():
 def run(action, out):
     if action == 'prepare':
         return prepare(out)
-    pr = team.reviewed('fix/cvie-ui-performance')
+    pr = team.reviewed('fix/workspace-priority-response')
     pkg.require(checks.check_commit(os.environ['GITHUB_SHA']), 'Required application/security checks incomplete')
     if action == 'preflight':
         prod.policy(publisher.ENV)
         ready()
     elif action == 'publish':
         publisher.publish(out, changed=CHANGED, added=set(), reviewed_pr=pr, ready=ready,
-                          previous_version='ed41a3ef-49c8-4e67-89e5-93af8835028f',
-                          previous_deployment='3cb3b722-b22c-4338-81ec-34689ca9c440',
+                          previous_version='3964dc44-ffe1-4b94-a7c2-65b3662eb729',
+                          previous_deployment='59442905-d85a-4436-aefe-7d5d5613dd50',
                           served_copy=out / 'verified-origin')
     else:
         raise ValueError(action)
