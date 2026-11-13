@@ -8,7 +8,9 @@ const require=createRequire(new URL('../staging/package.json',import.meta.url)),
 const root=path.resolve(process.env.INVENTORY_TEST_SITE||'.');
 const browser=await chromium.launch({headless:true,executablePath:process.env.CVEHARBOR_CHROMIUM_PATH||(process.platform==='win32'?'C:/Program Files/Google/Chrome/Application/chrome.exe':'/usr/bin/google-chrome')});
 try{for(const width of [1440,390]){
- const fixture=securityFixture();let revision=1;
+ const fixture=securityFixture();let revision=1,oldHistoryRequested=false,releaseOldHistory,oldHistoryFinished;
+ const oldHistoryGate=new Promise(resolve=>{releaseOldHistory=resolve;});
+ const oldHistoryResponse=new Promise(resolve=>{oldHistoryFinished=resolve;});
  fixture.inventory.assets=Array.from({length:200},(_,i)=>({id:'a'+i,environment_id:i<100?'e1':i<180?'e2':'e3',name:'HOST-'+i,technology:'Windows Server',version:'10.0.20348.5761'}));
  const affected=Array.from({length:10},(_,i)=>'Windows Server 2022 for x64-based Systems (installation option '+i+')').join('; ');
  const records=()=>Array.from({length:2500},(_,i)=>({id:'CVE-2026-'+(100000+i),categories:['Windows Server'],cvie_products:['Windows Server'],affected,summary:'Fictional Windows Server vulnerability '+revision+'. '+('An authenticated deployment check is required. '.repeat(30)),severity:i%3?'high':'critical',sources:[{label:'Fictional vendor',url:'https://example.test/'+i}]}));
@@ -25,12 +27,14 @@ try{for(const width of [1440,390]){
   const request=route.request(),url=new URL(request.url());
   if(url.hostname==='api.cveharbor.com'){
    assert.ok(request.method()==='GET'||url.pathname==='/v1/cvie/sync','Unexpected mutation');
+   const lateHistory=url.pathname==='/v1/inventory/software-history'&&url.searchParams.get('customer_id')==='c2'&&!url.searchParams.get('environment_id');
+   if(lateHistory){oldHistoryRequested=true;await oldHistoryGate;}
    let body,status=200;
    if(url.pathname==='/v1/cvie'||url.pathname==='/v1/cvie/progress')body={ready:true,account_id:'fixture',products:Array.from({length:132},(_,i)=>({id:'p'+i,name:i?'Product '+i:'Windows Server',status:'scanning',last_success_at:revision,progress:{windows_complete:revision,windows_total:100}})),evidence:{sources:[]}};
    else if(url.pathname==='/v1/cvie/advisories')body={account_id:'fixture',advisories:records(),next:null};
    else if(url.pathname==='/v1/finding-assignments')body={ready:true,assignments:[]};
    else{const result=await fixture.request(url.href,{method:request.method()});body=await result.json();status=result.status;}
-   return route.fulfill({status,json:body});
+   await route.fulfill({status,json:body});if(lateHistory)oldHistoryFinished();return;
   }
   if(url.hostname!=='cveharbor.com')return route.abort();
   if(url.pathname==='/data.js'||url.pathname==='/catalog.js')return route.fulfill({contentType:'text/javascript',body:'window.'+(url.pathname==='/data.js'?'CVEHARBOR_DATA':'CVEHARBOR_CATALOG')+'={advisories:[]}'});
@@ -60,12 +64,18 @@ try{for(const width of [1440,390]){
  revision++;
  const nextRefresh=page.evaluate(()=>window.CVEHARBOR_CVIE.refresh());
  await page.selectOption('#customerDashFilter','c2');
+ await page.waitForFunction(()=>document.querySelector('#customerDashStatus').dataset.assessing==='false'&&document.querySelector('#customerReportBody .customer-report-details')?.textContent.includes('Other Customer'));
+ assert.equal(oldHistoryRequested,true);
  await page.selectOption('#customerDashEnvironment','e3');
  await nextRefresh;
- await page.waitForFunction(()=>document.querySelector('#customerDashStatus').dataset.assessing==='false'&&!window.CVEHARBOR_CVIE.loading&&document.querySelector('#customerReportBody .customer-report-details')?.textContent.includes('Other Customer'));
+ await page.waitForFunction(()=>document.querySelector('#customerDashStatus').dataset.assessing==='false'&&!window.CVEHARBOR_CVIE.loading&&document.querySelector('#customerReportBody .customer-report-details')?.textContent.includes('Other Customer')&&document.querySelector('#customerReportBody').textContent.includes('Fictional Windows Server vulnerability 3.')&&document.querySelector('.customer-upgrade-history .customer-section-count')?.textContent==='0 recorded changes');
  const finalReport=await page.locator('#customerReportBody').innerText();
  assert.match(finalReport,/Other Customer/);assert.doesNotMatch(finalReport,/Fixture Harbor/);
  assert.equal(await page.locator('#customerDashEnvironment').inputValue(),'e3');
+ await page.evaluate(()=>{window.completedReport=document.querySelector('#customerReportBody').firstChild;});
+ releaseOldHistory();await oldHistoryResponse;
+ await page.waitForTimeout(200);
+ assert.equal(await page.evaluate(()=>window.completedReport===document.querySelector('#customerReportBody').firstChild),true,'late history from a previous environment must not redraw the current report');
  assert.equal(await page.evaluate(async()=>{const before=document.querySelector('#customerReportBody').firstChild;await window.CVEHARBOR_CVIE.refresh(false,true);return before===document.querySelector('#customerReportBody').firstChild;}),true,'progress-only updates preserve the current report');
  assert.deepEqual(errors,[]);
  if(process.env.REPORT_BASELINE!=='true'){

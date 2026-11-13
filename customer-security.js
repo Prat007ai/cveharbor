@@ -1300,7 +1300,7 @@ async function loadUpgradeHistory(customer=$('customerDashFilter').value,environ
   }catch(error){state.error=error.status===404?'Software upgrade history is not available yet.':error.message}
   finally{
    state.loading=false;state.pending=null;
-   if(epoch===customerDataEpoch&&upgradeHistory.get(key)===state&&customerReady&&document?.getElementById('customerDashAccess'))redraw();
+   if(epoch===customerDataEpoch&&upgradeHistory.get(key)===state&&customerReady&&$('customerDashFilter').value===customer&&$('customerDashEnvironment').value===environment)redraw();
   }
   return state;
  })();
