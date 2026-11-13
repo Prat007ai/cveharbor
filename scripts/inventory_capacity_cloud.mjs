@@ -19,6 +19,22 @@ export function validateRetainedDatabase(database){
 }
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
 const stats=values=>{const rows=[...values].sort((a,b)=>a-b),q=p=>Math.round(rows[Math.min(rows.length-1,Math.floor(rows.length*p))]||0);return {count:rows.length,p50_ms:q(.5),p95_ms:q(.95),p99_ms:q(.99),max_ms:q(1)};};
+export function previewDiagnostics(output){
+ const text=String(output).replace(/\u001b\[[0-9;]*m/g,'');
+ const categories=[
+  ['authentication',/authentication error|unauthorized|invalid.*token|token.*expired/i],
+  ['permission',/permission denied|not authorized|forbidden/i],
+  ['dependency',/ETARGET|ENOTFOUND|EAI_AGAIN|npm error|cannot find module/i],
+  ['build',/build failed|could not resolve|syntaxerror|referenceerror|typeerror/i],
+  ['startup_resource',/startup.*(?:CPU|memory)|CPU.*limit|memory.*limit/i],
+  ['preview_configuration',/workers\.dev.*(?:disabled|register)|preview.*(?:disabled|not enabled)/i],
+  ['provider_api',/request to.*Cloudflare API.*failed/i],
+  ['transport',/fetch failed|ECONNRESET|ETIMEDOUT|service unavailable/i],
+  ['port',/EADDRINUSE|address already in use/i]
+ ].filter(([,pattern])=>pattern.test(text)).map(([name])=>name);
+ const codes=[...new Set([...text.matchAll(/\[code:\s*(\d{4,6})\]/g)].map(match=>Number(match[1])))].slice(0,10);
+ return {categories:categories.length?categories:['unknown'],provider_codes:codes};
+}
 export function validateCloudRun(env){
  assert.equal(env.GITHUB_REPOSITORY,'Prat007ai/cveharbor');assert.equal(env.GITHUB_REF,'refs/heads/main');assert.equal(env.GITHUB_EVENT_NAME,'workflow_dispatch');assert.equal(env.GITHUB_RUN_ATTEMPT,'1');
  assert.equal(env.GITHUB_WORKFLOW_REF,'Prat007ai/cveharbor/.github/workflows/inventory-capacity-cloud.yml@refs/heads/main');
@@ -65,15 +81,18 @@ export async function cloudRehearsal(env=process.env){
   const childEnv=Object.fromEntries(['PATH','HOME','TMPDIR','HTTPS_PROXY','HTTP_PROXY','NODE_EXTRA_CA_CERTS'].filter(k=>env[k]).map(k=>[k,env[k]]));
   Object.assign(childEnv,{CI:'true',CLOUDFLARE_ACCOUNT_ID:account,CLOUDFLARE_API_TOKEN:env.CLOUDFLARE_API_TOKEN,WRANGLER_SEND_METRICS:'false',CLOUDFLARE_LOAD_DEV_VARS_FROM_DOT_ENV:'false',XDG_CONFIG_HOME:path.join(root,'wrangler-state')});
   child=spawn('npx',['--yes','wrangler@4.156.0','dev','--remote','--config',configPath,'--ip','127.0.0.1','--port','8787','--log-level','error'],{env:childEnv,stdio:['ignore','pipe','pipe']});
-  // Preview URLs/tokens and fictional sessions stay out of logs and artifacts.
-  child.stdout.on('data',()=>{});child.stderr.on('data',()=>{});let spawnError=false;child.on('error',()=>{spawnError=true;});
+  // Keep only a bounded in-memory tail. Persist closed categories/numeric codes,
+  // never raw output, preview URLs/tokens, session values or provider messages.
+  let previewOutput='';const capture=chunk=>{previewOutput=(previewOutput+String(chunk)).slice(-32768);};
+  child.stdout.on('data',capture);child.stderr.on('data',capture);let spawnError=false;child.on('error',()=>{spawnError=true;});
   const base='http://127.0.0.1:8787';let ready=false;
   for(let i=0;i<90&&!ready;i++){
-   assert.ok(!spawnError&&child.exitCode===null,'Remote preview failed; account exposure must not be changed to make it work');
+   if(spawnError||child.exitCode!==null){receipt.status='preview_startup_failed';receipt.preview={...previewDiagnostics(previewOutput),spawn_error:spawnError,exit_code:child.exitCode};save();throw Error('Remote preview failed; inspect the closed startup categories. Account exposure must not be changed.');}
    try{const r=await fetch(base+'/v1/me',{signal:AbortSignal.timeout(2000)});ready=r.status===401;}catch{}
    if(!ready)await new Promise(resolve=>setTimeout(resolve,1000));
   }
-  assert.ok(ready,'Remote preview did not start');
+  if(!ready){receipt.status='preview_startup_timeout';receipt.preview=previewDiagnostics(previewOutput);save();throw Error('Remote preview did not start');}
+  previewOutput='';child.stdout.removeListener('data',capture);child.stderr.removeListener('data',capture);child.stdout.on('data',()=>{});child.stderr.on('data',()=>{});
   const headers=i=>({Cookie:'cvh_session='+tokens[i],Origin:'https://cveharbor.com'});
   const unauth=await fetch(base+'/v1/inventory/page');assert.equal(unauth.status,401);
   const foreign=await fetch(base+'/v1/inventory/page?customer_id='+fixtureId(2),{headers:headers(0)});assert.equal(foreign.status,404);
