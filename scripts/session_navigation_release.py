@@ -154,6 +154,10 @@ def readiness():
 
 
 if __name__ == "__main__":
+    if os.environ.get("CVEHARBOR_SITE_RELEASE") == "report-interaction":
+        import report_interaction_release
+        report_interaction_release.run(sys.argv[1],Path(sys.argv[2]).resolve() if len(sys.argv)>2 else None)
+        sys.exit(0)
     if os.environ.get("CVEHARBOR_SITE_RELEASE") == "inventory-capacity":
         import inventory_capacity_release
         inventory_capacity_release.run(sys.argv[1],Path(sys.argv[2]).resolve() if len(sys.argv)>2 else None)
