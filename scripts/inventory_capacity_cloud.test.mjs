@@ -20,9 +20,10 @@ test('database observer retains native statements, bindings, results and failure
  const {binding,state}=observeDatabase(db),s=binding.prepare('SELECT private_value FROM sessions').bind('fictional-session');
  assert.equal(await s.all(),result);assert.deepEqual(await binding.batch([s]),[result]);
  await assert.rejects(s.first(),error=>error===failure);
- assert.deepEqual(state.errors,[{operation:'session_auth',category:'overloaded'}]);assert.equal(state.calls,3);assert.equal(state.rows_read,4);assert.equal(state.rows_written,2);
+ assert.deepEqual(state.errors,[{operation:'session_auth',category:'queue_wait'}]);assert.equal(state.calls,3);assert.equal(state.rows_read,4);assert.equal(state.rows_written,2);
  assert.doesNotMatch(JSON.stringify(state),/fictional|private|SELECT|D1_ERROR/);
 });
 test('database diagnostics use closed error classes and suppress unknown text',()=>{
+ for(const [message,category]of [['D1 DB is overloaded. Too many resources consumed within a 10 second window','resource_window'],['D1 DB is overloaded. Too many requests queued','queue_full'],['D1 DB is overloaded. Requests queued for too long','queue_wait'],['D1 DB is overloaded','overloaded']])assert.equal(classifyDatabaseError(new Error('D1_ERROR',{cause:new Error(message)})),category);
  for(const [message,category]of [['daily usage limit exceeded','quota'],['Cannot resolve D1 DB due to transient issue on remote node.','transient'],['no such table: private','schema'],['UNIQUE constraint failed','constraint'],['fetch failed','transport'],['request timed out','timeout'],['secret text','unknown']])assert.equal(classifyDatabaseError(new Error(message)),category);
 });

@@ -9,6 +9,20 @@ import {readInventory} from '../../inventory-client.js';
 const url='https://api.cveharbor.com/v1/inventory/page?';
 const read=(env,params={},owner='owner-0',team)=>inventoryPage(new Request(url+new URLSearchParams(params)),env,{id:owner},team);
 
+test('compact database pages preserve text and empty values while reducing the transferred payload',async()=>{
+ const f=capacityFixture({owners:1,customers:1,environments:1,assets:500}),batch=f.DB.batch.bind(f.DB);let packed;
+ f.DB.batch=async statements=>{const results=await batch(statements);packed=results.at(-1).results;return results;};
+ try{
+  f.sql.prepare("UPDATE inventory_assets SET notes=?,version=''").run('Quotes " and newlines\nUnicode 日本語 and literal [null]');
+  const page=await read(f);
+  const expected=f.sql.prepare('SELECT id,environment_id,name,asset_type,technology,version,notes FROM inventory_assets ORDER BY environment_id,id LIMIT 251').all().map(row=>({...row}));
+  assert.deepEqual(page.items,expected.slice(0,250));assert.ok(page.next_cursor);
+  assert.equal(packed.length,1);assert.equal(JSON.parse(packed[0].packed).length,251);
+  assert.ok(Buffer.byteLength(JSON.stringify(packed))<Buffer.byteLength(JSON.stringify(expected))*.85);
+  assert.deepEqual((await read(f,{},'absent-owner')).items,[]);
+ }finally{f.close();}
+});
+
 test('full Worker requires current session and enabled MFA, scopes pages and performs no read-side writes',async()=>{
  const f=capacityFixture({owners:2,customers:2,environments:2,assets:1000}),tokens=capacitySessions(f.sql,2);
  const call=(token,query='',origin='https://cveharbor.com')=>worker.fetch(new Request(url+query,{headers:{Origin:origin,...token?{Cookie:'cvh_session='+token}:{}}}),{DB:f.DB,RECOVERY_CONTROL_REQUIRED:'true'});
@@ -58,7 +72,7 @@ test('a selected customer uses environment index seeks within a 50,000-entry MSP
  const f=capacityFixture({assets:50000}),prepare=f.DB.prepare,plans=[];
  f.DB.prepare=query=>{
   const statement=prepare(query);
-  if(!query.startsWith('SELECT t.'))return statement;
+  if(!query.includes('FROM inventory_assets t'))return statement;
   const bind=statement.bind;statement.bind=(...args)=>{plans.push(...f.sql.prepare('EXPLAIN QUERY PLAN '+query).all(...args).map(r=>r.detail));return bind(...args);};return statement;
  };
  try{
