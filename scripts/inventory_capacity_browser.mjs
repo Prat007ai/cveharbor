@@ -100,10 +100,16 @@ try{
   });
   await cdp.send('Fetch.enable',{patterns:[{urlPattern:'https://*',requestStage:'Request'}]});
   try{
+   await cdp.send('Profiler.enable');await cdp.send('Profiler.setSamplingInterval',{interval:10000});await cdp.send('Profiler.start');
    const start=Date.now();await page.goto(site+'/'+section+'/'+(section==='customer-reports'?'?customer='+fixtureId(50):''));
    await page.waitForFunction(()=>Number.isFinite(window.capacityMenuReady));const menuReady=Math.round(await page.evaluate(()=>window.capacityMenuReady));
+   const {profile}=await cdp.send('Profiler.stop');await cdp.send('Profiler.disable');
    console.log(JSON.stringify({phase:'menu',section,width,menu_ready_ms:menuReady,runner_observed_ms:Date.now()-start,page_requests:pages,navigation:await page.evaluate(()=>performance.getEntriesByType('navigation').map(({domInteractive,domContentLoadedEventEnd,loadEventEnd})=>({domInteractive,domContentLoadedEventEnd,loadEventEnd}))),errors}));
-   if(menuReady>=1500)console.log(JSON.stringify({phase:'slow_menu_diagnostics',resources:await page.evaluate(()=>performance.getEntriesByType('resource').map(r=>({path:new URL(r.name).pathname,start:Math.round(r.startTime),duration:Math.round(r.duration),transfer:r.transferSize}))),long_tasks:await page.evaluate(()=>window.capacityLongTasks)}));
+   if(menuReady>=1500){
+    const nodes=new Map(profile.nodes.map(n=>[n.id,n.callFrame])),timings=new Map();
+    for(let i=0;i<(profile.samples||[]).length;i++){const frame=nodes.get(profile.samples[i]),key=(frame?.functionName||'(anonymous)')+' '+(frame?.url?.split('/').at(-1)||'');timings.set(key,(timings.get(key)||0)+(profile.timeDeltas?.[i]||0));}
+    console.log(JSON.stringify({phase:'slow_menu_diagnostics',cpu_samples:[...timings].sort((a,b)=>b[1]-a[1]).slice(0,15).map(([frame,us])=>({frame,ms:Math.round(us/1000)})),resources:await page.evaluate(()=>performance.getEntriesByType('resource').map(r=>({path:new URL(r.name).pathname,start:Math.round(r.startTime),duration:Math.round(r.duration),transfer:r.transferSize}))),long_tasks:await page.evaluate(()=>window.capacityLongTasks)}));
+   }
    assert.ok(menuReady<1500,`${section} ${width}px customer menu took ${menuReady}ms (budget 1500ms)`);
    if(section==='customer-dashboard')await page.selectOption('#customerDashFilter',fixtureId(50));
    await page.waitForSelector('#customerDashStatus[data-ready="true"]',{timeout:120000});
