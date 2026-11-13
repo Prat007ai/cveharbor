@@ -58,6 +58,7 @@ try{
    new MutationObserver(()=>{
     const select=document.querySelector('#customerDashFilter');
     if(window.capacityMenuReady===undefined&&select?.options.length===51&&!select.disabled&&!document.querySelector('#customerDashAccess')?.hidden)window.capacityMenuReady=performance.now();
+    if(window.capacityCvieVisible===undefined&&document.querySelector('.cvie-panel:not([hidden])'))window.capacityCvieVisible=performance.now();
    }).observe(document,{subtree:true,childList:true,attributes:true});
   });
   // Playwright page.route enables Fetch interception with urlPattern='*',
@@ -113,6 +114,8 @@ try{
    assert.ok(menuReady<1500,`${section} ${width}px customer menu took ${menuReady}ms (budget 1500ms)`);
    if(section==='customer-dashboard')await page.selectOption('#customerDashFilter',fixtureId(50));
    await page.waitForSelector('#customerDashStatus[data-ready="true"]',{timeout:120000});
+   await page.waitForFunction(()=>Number.isFinite(window.capacityCvieVisible));
+   assert.ok(await page.evaluate(()=>window.capacityCvieVisible>=window.capacityMenuReady),'initial CVIE panel rendering must follow customer menu readiness');
    assert.match(await page.locator('.customer-finding-pages').first().textContent(),/of 2000 filtered findings/);
    assert.equal(await page.locator('.customer-vulnerability-table tbody tr').count(),50);
    const ready=Date.now()-start,at=Date.now();await page.selectOption('#customerDashFilter',fixtureId(1));

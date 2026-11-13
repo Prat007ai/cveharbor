@@ -1449,6 +1449,7 @@ async function init(){
     actions.append(cancel,send);dialog.append(addressLabel,fileLabel,confirmation,message,actions);shade.append(dialog);document.body.append(shade);address.focus();
    });
   }
+  window.dispatchEvent(new Event('cveharbor:customer-menus-ready'));
   await settledRedraw();lastInventoryRefresh=Date.now();
   $('customerDashStatus').dataset.ready='true';
   $('customerDashStatus').textContent=inventory.customers.length+' customer records loaded privately. Advisory matching is preliminary.';
@@ -1476,6 +1477,7 @@ async function init(){
    changes.onmessage=event=>{if(event.data?.changed)void (inventoryRefresh||Promise.resolve()).catch(()=>{}).then(()=>refreshCurrent(true))};
   }
  }catch(e){$('customerDashLogin').hidden=false;$('customerDashStatus').textContent=(e.status===404||e.status===503)?'Customer inventory backend is not active. The D1 migration and updated Cloudflare Worker must be deployed.':'Could not reach account data. Please sign in or check the service. '+e.message}
+ finally{window.dispatchEvent(new Event('cveharbor:customer-menus-ready'));}
 }
 for(const eventName of ['cveharbor:account-state','cveharbor-auth-change'])window.addEventListener(eventName,event=>{
  if(customerReady&&(!event.detail?.authenticated||event.detail?.email&&event.detail.email!==accountEmail))invalidateSession();

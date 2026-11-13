@@ -11,6 +11,13 @@ let products=[],records=[],months=3,error='',ready=false,signedIn=false,timer=nu
 const panels=[];
 let lastSignature='',signatureInputs=[];
 const panelState=new WeakMap();
+// Customer navigation gets the first paint. Source fetching and evidence remain
+// active; defer only the initial secondary panel rendering until menus settle.
+let initialPanelPending=/^\/customer-(dashboard|reports)(\/|$)/.test(location.pathname)&&!!document.getElementById('customerDashAccess');
+if(initialPanelPending)window.addEventListener('cveharbor:customer-menus-ready',()=>{
+ const show=()=>{initialPanelPending=false;draw();};
+ if(typeof requestAnimationFrame==='function')requestAnimationFrame(()=>setTimeout(show,0));else setTimeout(show,0);
+},{once:true});
 let evidence={sources:[]},withdrawn=new Set();
 let excluded=[],accountId='',accountEmail='',authEpoch=0;
 let lastFullAt=0,recordsMonths=0,checkingProgress=false;
@@ -240,6 +247,7 @@ function mount(){
  }
 }
 function draw(){
+ if(signedIn&&initialPanelPending)return;
  for(const panel of panels){
   panel.hidden=!signedIn;if(!signedIn){const prior=panelState.get(panel);prior?.select.parentElement?.remove();prior?.button.remove();panel.replaceChildren();panelState.delete(panel);continue;}
   let state=panelState.get(panel);
