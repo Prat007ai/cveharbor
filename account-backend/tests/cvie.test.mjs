@@ -113,6 +113,44 @@ test('rate limits back off globally and never claim a failed source window was c
  const p=await first(e);assert.equal(p.last_success_at,null);assert.equal(p.recent_complete_at,null);assert.ok(p.next_attempt_at>=NOW+120000);
  let calls=0;await runCvieStep(e,async()=>{calls++;return Response.json({});},NOW+7000);assert.equal(calls,0);
 });
+
+test('NVD network and body timeouts pause all accounts and retain saved evidence',async()=>{
+ for(const fetcher of [async()=>{throw new DOMException('timeout','TimeoutError');},async()=>{throw new TypeError('network');},async()=>({ok:true,text:async()=>{throw new TypeError('body interrupted');}})]){
+  const e=env();await subscribeProducts(e,'a',[{name:'Apache Tomcat'}]);await complete(e,provider([cve()]));
+  const saved=await rows(e,'SELECT * FROM cvie_advisories'),at=NOW+7*3600000;
+  await runCvieStep(e,fetcher,at);
+  assert.equal((await first(e)).status,'retrying');
+  assert.deepEqual(await rows(e,'SELECT * FROM cvie_advisories'),saved);
+  await subscribeProducts(e,'b',[{name:'PHP'}]);
+  let calls=0;await runCvieStep(e,async()=>{calls++;return Response.json({});},at+7000,'b');
+  assert.equal(calls,0,'another account respects the shared outage pause');
+  assert.equal((await e.DB.prepare("SELECT next_request_at FROM cvie_provider_budget WHERE provider='nvd'").first()).next_request_at,at+300000);
+  assert.equal((await runCvieStep(e,provider([cve()]),at+300001,'a')).retrying,undefined);
+ }
+});
+
+test('a slow NVD request does not block saved advisory reads or another account',async t=>{
+ t.mock.timers.enable({apis:['Date'],now:NOW});
+ const e=env();await subscribeProducts(e,'a',[{name:'Apache Tomcat'}]);await complete(e,provider([cve()]));
+ let fail,started;const began=new Promise(resolve=>started=resolve);
+ const work=runCvieStep(e,async()=>{started();return new Promise((_,reject)=>fail=reject);},NOW+7*3600000);
+ await began;
+ try{
+  const read=async id=>(await cvieRoute(new Request('https://api.cveharbor.com/v1/cvie/advisories?months=12'),e,{id})).json();
+  let timer;const timeout=new Promise((_,reject)=>timer=setTimeout(()=>reject(Error('saved reads waited for NVD')),1000));
+  try{const [a,b]=await Promise.race([Promise.all([read('a'),read('b')]),timeout]);assert.equal(a.advisories.length,1);assert.equal(b.advisories.length,0);}
+  finally{clearTimeout(timer);}
+ }finally{fail(new DOMException('timeout','TimeoutError'));await work;}
+});
+
+test('an NVD server outage honors a long retry interval across accounts',async()=>{
+ const e=env();await subscribeProducts(e,'a',[{name:'Apache Tomcat'}]);
+ await subscribeProducts(e,'b',[{name:'PHP'}]);
+ await runCvieStep(e,async()=>new Response('Unavailable',{status:503,headers:{'Retry-After':'7200'}}),NOW,'a');
+ let calls=0;const fetcher=async()=>{calls++;return Response.json({});};
+ await runCvieStep(e,fetcher,NOW+3600001,'b');assert.equal(calls,0);
+ assert.equal((await e.DB.prepare("SELECT next_request_at FROM cvie_provider_budget WHERE provider='nvd'").first()).next_request_at,NOW+7200000);
+});
 test('an incomplete empty provider page is retried rather than reported as zero vulnerabilities',async()=>{
  const e=env();await subscribeProducts(e,'a',[{name:'Apache Tomcat'}]);
  await runCvieStep(e,async()=>Response.json({startIndex:0,totalResults:10,vulnerabilities:[]}),NOW);

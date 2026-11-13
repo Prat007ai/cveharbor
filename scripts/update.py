@@ -88,6 +88,21 @@ def get_json(url: str, source: str) -> dict | list:
         headers["X-GitHub-Api-Version"] = "2022-11-28"
     if source == "nvd" and os.getenv("NVD_API_KEY"):
         headers["apiKey"] = os.environ["NVD_API_KEY"]
+    if source == "nvd":
+        # One bounded attempt per page. The hourly job owns retries; sleeping
+        # repeatedly here holds up every other source in the public snapshot.
+        try:
+            with urllib.request.urlopen(urllib.request.Request(url, headers=headers), timeout=22) as resp:
+                return json.loads(resp.read(12_000_000))
+        except urllib.error.HTTPError as exc:
+            retry = exc.headers.get("Retry-After", "") if exc.headers else ""
+            try:
+                delay = float(retry) if retry.isdigit() else (parsedate_to_datetime(retry) - NOW).total_seconds()
+            except (ValueError, TypeError, OverflowError):
+                delay = 0
+            raise NvdUnavailable(f"NVD unavailable (HTTP {exc.code}); saved observations retained", max(0, delay)) from exc
+        except (urllib.error.URLError, TimeoutError, json.JSONDecodeError, ValueError, OSError) as exc:
+            raise NvdUnavailable("NVD request timed out or returned an invalid response; saved observations retained") from exc
     last = None
     for i in range(3):
         try:
@@ -100,6 +115,28 @@ def get_json(url: str, source: str) -> dict | list:
             if i < 2:
                 time.sleep(2 + i * 3)
     raise RuntimeError(f"{source} endpoint failed: {type(last).__name__}: {str(last)[:170]}")
+
+
+class NvdUnavailable(RuntimeError):
+    def __init__(self, message, retry_after=0):
+        super().__init__(message)
+        self.retry_after = retry_after
+
+
+def nvd_retry_status(old, error):
+    failures = min(10, int(old.get("consecutive_failures") or 0) + 1)
+    # Persist across hourly runners; healthy sources continue during the pause.
+    delay = max(min(6 * 3600, 900 * 2 ** (failures - 1)), getattr(error, "retry_after", 0))
+    delay = min(delay, 7 * 86400)  # Untrusted upstream headers cannot overflow timestamps.
+    return {"consecutive_failures": failures,
+            "next_retry_at": (NOW + timedelta(seconds=delay)).isoformat(timespec="seconds").replace("+00:00", "Z")}
+
+
+def nvd_retry_due(status):
+    try:
+        return NOW >= datetime.fromisoformat(status["next_retry_at"].replace("Z", "+00:00"))
+    except (KeyError, ValueError, TypeError):
+        return True
 
 
 def classify(*, product: str = "", ecosystem: str = "", text: str = "", cpes: list[str] | None = None) -> list[str]:
@@ -1134,6 +1171,9 @@ def run() -> int:
     sources={name:sources.get(name,{}) for name in [*(name for name,_,_ in operations),"epss"]}
     good = 0
     for name, fetch, transform in operations:
+        if name == "nvd" and not nvd_retry_due(sources.get(name, {})):
+            print("nvd: retry scheduled; keeping saved observations and collecting other sources", flush=True)
+            continue
         try:
             batch = fetch()
             # Commit a source only after its complete response validates.
@@ -1147,6 +1187,8 @@ def run() -> int:
         except Exception as e:
             old = sources.get(name, {})
             sources[name] = {**old, "ok": False, "last_attempt": utc_iso(), "error": crop(e, 200), "url": SOURCES[name]}
+            if name == "nvd":
+                sources[name].update(nvd_retry_status(old, e))
             print(f"WARNING: {name}: {e}", file=sys.stderr, flush=True)
     if not good:
         # A failed sync must not publish a new green successful timestamp.
@@ -1197,7 +1239,7 @@ def publish(data: dict):
             counts[category] += 1
     sources = {}
     for name, source in (data.get("sources") or {}).items():
-        sources[name] = {key:source.get(key) for key in ("ok","last_attempt","last_success","items_processed","error")}
+        sources[name] = {key:source.get(key) for key in ("ok","last_attempt","last_success","items_processed","error","consecutive_failures","next_retry_at")}
     health = {"mode":data.get("mode"),"last_checked_at":data.get("last_checked_at"),
               "last_successful_update":data.get("last_successful_update"),
               "records_indexed":len(entries),"candidate_records":data.get("candidate_records"),
