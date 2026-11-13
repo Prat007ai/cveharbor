@@ -67,9 +67,10 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: '22'
-      - name: Test exact mapping package with fictional inventory and AI paused
+      - name: Verify historical mapping and test the current outage package with AI paused
         run: |
-          python scripts/dotnet_mapping_release.py build "$RUNNER_TEMP/mapping-worker"
+          python -c "import os,sys;from pathlib import Path;sys.path.insert(0,'scripts');import team_release as t;t.previous('04ada0f76a35e61c01fdce198b1df0fd6c7edfd9','dotnet_mapping_release.py','build',Path(os.environ['RUNNER_TEMP'])/'mapping-baseline')"
+          python scripts/nvd_outage_release.py backend "$RUNNER_TEMP/mapping-worker"
           rsync --archive --delete "$RUNNER_TEMP/mapping-worker/account-backend/src/" account-backend/src/
           cp "$RUNNER_TEMP/mapping-worker/account-backend/wrangler.toml" account-backend/wrangler.toml
           node --test account-backend/tests/dotnet-inventory-mapping.test.mjs account-backend/tests/cvie.test.mjs account-backend/tests/cvie-dotnet.test.mjs account-backend/tests/cvie-evidence.test.mjs account-backend/tests/cvie-shared.test.mjs account-backend/tests/product-chooser.test.mjs account-backend/tests/inventory-import.test.mjs account-backend/tests/team-access.test.mjs account-backend/tests/ai-*.test.mjs account-backend/tests/azure-connection.test.mjs
