@@ -152,13 +152,19 @@ export async function cloudRehearsal(env=process.env){
   })()));
   Object.assign(receipt,{environment:'Cloudflare remote Worker preview and dedicated D1; single GitHub runner, authenticated reads',concurrent_sessions:50,customers:50,environments:100,host_names:10000,software_entries:50000,duration_seconds:Math.round((performance.now()-start)/1000),request_latency:stats(samples),complete_customer_load:stats(journeys),completed_journeys:completed,errors,cvie_background_tested:false});
   receipt.database={calls:databaseSamples.reduce((n,s)=>n+s.calls,0),rows_read:databaseSamples.reduce((n,s)=>n+s.rows_read,0),rows_written:databaseSamples.reduce((n,s)=>n+s.rows_written,0),primary_results:databaseSamples.reduce((n,s)=>n+s.primary_results,0),replica_results:databaseSamples.reduce((n,s)=>n+s.replica_results,0),request_db_elapsed:stats(databaseSamples.map(s=>s.elapsed_ms)),request_sql_time:stats(databaseSamples.map(s=>s.query_ms))};
-  receipt.status='measured';save();assert.equal(errors.length,0);assert.ok(completed>=50);assert.ok(receipt.request_latency.p95_ms<1000,'Request p95 exceeds 1 second');assert.ok(receipt.complete_customer_load.p95_ms<3000,'Complete customer read p95 exceeds 3 seconds');
+  receipt.status='measured';save();
   const {outageRehearsal}=await import('./nvd_capacity_rehearsal.mjs');
   receipt.status='outage_rehearsal';save();
+  // Separate the measured scenarios by a fixed recovery window; retain every
+  // baseline failure. This is not a retry of a failed customer request.
+  await new Promise(resolve=>setTimeout(resolve,15000));
   receipt.outage=await outageRehearsal({base,tokens,controlKey,site:'verification/capacity-site/after',seconds:60,onProgress:result=>{receipt.outage=result;save();}});
   receipt.cvie_background_tested=true;
   assert.equal((await query('SELECT count(*) n FROM cvie_shared_advisories'))[0].results[0].n,200);
   assert.equal((await query('SELECT count(*) n FROM operations_leases'))[0].results[0].n,receipt.leases_before);
+  // Preserve the failed baseline, but collect outage evidence before applying
+  // the unchanged overall success criteria. A diagnostic run never hides errors.
+  assert.equal(errors.length,0);assert.ok(completed>=50);assert.ok(receipt.request_latency.p95_ms<1000,'Request p95 exceeds 1 second');assert.ok(receipt.complete_customer_load.p95_ms<3000,'Complete customer read p95 exceeds 3 seconds');
   receipt.status='passed';receipt.completed_at=new Date().toISOString();save();console.log(JSON.stringify(receipt));
  }finally{
   try{await stopPreview(child);receipt.preview_stopped=true;save();}finally{fixture.close();}

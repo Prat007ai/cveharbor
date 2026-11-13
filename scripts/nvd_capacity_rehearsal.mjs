@@ -27,17 +27,25 @@ export async function outageRehearsal({base,tokens,controlKey,site,seconds=30,on
     }while(cursor);assert.equal(ids.size,1000);completed++;journeys.push(performance.now()-began);
    }catch(error){result.errors.push({mode,session:i,error:error.message});break;}}
   })()));
-  let sourceResults;
+  let sourceResults=[];
   try{
    const browser=outageBrowser(base,tokens[0],site,mode);
-   [sourceResults]=await Promise.all([source,browser.then(rows=>{result.browser.push(...rows);onProgress(result);}),new Promise(resolve=>setTimeout(resolve,seconds*1000))]);
-  }catch(error){result.errors.push({mode,error:error.message});onProgress(result);throw error;}finally{stop=true;await clients;}
-  const attempts=sourceResults.reduce((n,r)=>n+r.calls,0);assert.equal(attempts,1,'Shared budget must admit exactly one NVD request');
-  const blocked=await Promise.all(Array.from({length:50},step));assert.equal(blocked.reduce((n,r)=>n+r.calls,0),0,'Outage cooldown must prevent repeat requests');
-  const phase={mode,duration_seconds:Math.round((performance.now()-start)/1000),max_active_read_requests:maxActive,completed_journeys:completed,nvd_attempts:attempts,cooldown_attempts:0,source_wait_ms:Math.max(...sourceResults.map(r=>r.elapsed_ms)),latencies:Object.fromEntries(Object.entries(samples).map(([k,v])=>[k,stats(v)])),whole_journey:stats(journeys)};
+   const outcomes=await Promise.allSettled([source,browser,new Promise(resolve=>setTimeout(resolve,seconds*1000))]);
+   if(outcomes[0].status==='fulfilled')sourceResults=outcomes[0].value;
+   if(outcomes[1].status==='fulfilled')result.browser.push(...outcomes[1].value);
+   for(const [i,outcome] of outcomes.entries())if(outcome.status==='rejected')result.errors.push({mode,component:i===0?'scheduler':'browser',error:outcome.reason.message});
+  }finally{stop=true;await clients;}
+  const attempts=sourceResults.reduce((n,r)=>n+r.calls,0);
+  const blocked=await Promise.allSettled(Array.from({length:50},step));
+  const cooldownAttempts=blocked.reduce((n,r)=>n+(r.status==='fulfilled'?r.value.calls:0),0);
+  for(const r of blocked)if(r.status==='rejected')result.errors.push({mode,component:'cooldown',error:r.reason.message});
+  if(attempts!==1||cooldownAttempts!==0)result.errors.push({mode,error:'Expected one provider attempt and zero cooldown attempts',attempts,cooldownAttempts});
+  const phase={mode,duration_seconds:Math.round((performance.now()-start)/1000),max_active_read_requests:maxActive,completed_journeys:completed,nvd_attempts:attempts,cooldown_attempts:cooldownAttempts,source_wait_ms:Math.max(0,...sourceResults.map(r=>r.elapsed_ms)),latencies:Object.fromEntries(Object.entries(samples).map(([k,v])=>[k,stats(v)])),whole_journey:stats(journeys)};
   result.phases.push(phase);onProgress(result);console.log(JSON.stringify(phase));
-  assert.ok(completed>=50);assert.equal(result.errors.length,0,JSON.stringify(result.errors));
-  assert.ok(Object.values(phase.latencies).every(s=>s.p95_ms<1000),'Read p95 exceeds 1 second');
+  if(completed<50)result.errors.push({mode,error:'Fewer than 50 completed journeys'});
+  if(!Object.values(phase.latencies).every(s=>s.p95_ms<1000))result.errors.push({mode,error:'Read p95 exceeds 1 second'});
  }
+ onProgress(result);
+ assert.equal(result.errors.length,0,JSON.stringify(result.errors));
  return result;
 }
