@@ -92,7 +92,14 @@ test('public errors do not log raw tokens and private routes still require MFA s
 });
 
 test('concurrent sends serialize and existing sender/recipient quotas still apply',async t=>{
- const f=await setup(t);const results=await Promise.all([assign(f),assign(f)]);assert.deepEqual(results.map(r=>r.status).sort(),[200,409]);assert.equal(f.emails.length,1);
+ const f=await setup(t),originalFetch=globalThis.fetch,entered=Promise.withResolvers(),release=Promise.withResolvers();let gated=false;
+ // Keep the first fictional provider submission in flight. Promise.all alone
+ // can run both fast mock sends sequentially after async session hashing.
+ globalThis.fetch=async(url,options)=>{if(url==='https://api.smtp2go.com/v3/email/send'&&!gated){gated=true;entered.resolve();await release.promise;}return originalFetch(url,options);};
+ const first=assign(f);let second;
+ try{await Promise.race([entered.promise,first.then(()=>{throw Error('First assignment completed before the provider barrier');})]);second=await assign(f);}
+ finally{release.resolve();globalThis.fetch=originalFetch;}
+ const results=[await first,second];assert.deepEqual(results.map(r=>r.status).sort(),[200,409]);assert.equal(f.emails.length,1);
  f.DB.sql.prepare("UPDATE remediation_assignment_limits SET count=10 WHERE key='assignment-sender:a'").run();assert.equal((await assign(f,'third@example.net')).status,429);assert.equal(f.emails.length,1);
  f.DB.sql.prepare("UPDATE remediation_assignment_limits SET count=0 WHERE key='assignment-sender:a'").run();f.DB.sql.prepare('UPDATE remediation_assignment_limits SET count=20 WHERE key=?').run('assignment-target:'+await hashToken('reviewer@example.net'));assert.equal((await assign(f,'reviewer@example.net',{resend:true})).status,429);assert.equal(f.emails.length,1);
 });
