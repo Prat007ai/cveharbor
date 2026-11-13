@@ -211,13 +211,21 @@ class ProviderError extends Error{constructor(message,delay=60000){super(message
 async function requestNvd(env,path,params,fetcher){
  const url=new URL('https://services.nvd.nist.gov/rest/json/'+path+'/2.0');
  for(const [key,value] of Object.entries(params))url.searchParams.set(key,String(value));
- const response=await fetcher(url.href,{headers:{Accept:'application/json',...(env.NVD_API_KEY?{apiKey:env.NVD_API_KEY}:{})},signal:AbortSignal.timeout(20000)});
+ let response,raw;
+ try{
+  response=await fetcher(url.href,{headers:{Accept:'application/json',...(env.NVD_API_KEY?{apiKey:env.NVD_API_KEY}:{})},signal:AbortSignal.timeout(8000)});
+  if(response.ok)raw=await response.text();
+ }catch{
+  // Network failures need the same provider-wide pause as HTTP failures, so
+  // another customer's job cannot immediately retry an unavailable source.
+  throw new ProviderError('NVD could not be reached. Saved results remain available; retry is scheduled.',300000);
+ }
  if(!response.ok){
   const retry=response.headers.get('Retry-After');
   const seconds=/^\d+$/.test(retry||'')?Number(retry)*1000:Date.parse(retry||'')-Date.now();
-  throw new ProviderError(response.status===429?'NVD rate limit reached. CVIE will retry automatically.':'NVD is unavailable (HTTP '+response.status+'). Saved results remain available.',Math.max(60000,Math.min(3600000,seconds||60000)));
+  throw new ProviderError(response.status===429?'NVD rate limit reached. CVIE will retry automatically.':'NVD is unavailable (HTTP '+response.status+'). Saved results remain available.',Math.max(response.status>=500?300000:60000,Math.min(86400000,seconds||60000)));
  }
- const raw=await response.text();if(raw.length>12000000)throw new ProviderError('NVD response exceeded the safe response size');
+ if(raw.length>12000000)throw new ProviderError('NVD response exceeded the safe response size');
  let data;try{data=JSON.parse(raw);}catch{throw new ProviderError('NVD returned an invalid response');}
  return data;
 }
@@ -388,7 +396,7 @@ export async function dispatchCvie(env){
  // Cron continues unfinished scans even after all browsers close. Budget is global.
  for(let i=0;i<(sharedScans(env)?5:6);i++){
   const result=await runCvieStep(env);
-  if(result.idle||result.waiting||result.ready===false)break;
+  if(result.idle||result.waiting||result.retrying||result.ready===false)break;
   if(result.seeded!==undefined)break;
   if(sharedScans(env)&&result.resolved!==undefined)break;
   if(i<5)await new Promise(resolve=>setTimeout(resolve,env.NVD_API_KEY?1050:6600));
