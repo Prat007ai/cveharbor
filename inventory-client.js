@@ -9,12 +9,14 @@ async function json(url,options){
  if(!response.ok){const error=Error(data.error||'Unable to load complete inventory.');error.status=response.status;throw error;}
  return data;
 }
-export async function readInventory(path='inventory',{signal,customer='',environment='',fetchPage,resourceList,metadataUnscoped=false}={}){
+export async function readInventory(path='inventory',{signal,customer='',environment='',fetchPage,resourceList,metadataUnscoped=false,pagination}={}){
  const [base,query='']=path.split('?'),list=resourceList||resources[base];
  if(!list)throw Error('Unsupported inventory resource');
  const oldParams=new URLSearchParams(query);customer||=oldParams.get('customer_id')||'';environment||=oldParams.get('environment_id')||'';
  // Allows a website-first rollout while the protected backend release waits.
- const flags=fetchPage?{pagination:true}:await json(origin+'inventory/status',{signal});
+ // A caller may reuse the capability it just checked for this page. This is
+ // not authorization: every inventory request still checks the current session.
+ const flags=fetchPage||pagination===true?{pagination:true}:await json(origin+'inventory/status',{signal});
  if(!flags.pagination)return json(origin+path,{signal});
  for(let attempt=0;attempt<3;attempt++){
   let revision=null;const result={ready:true,append_ready:true};
@@ -35,7 +37,13 @@ export async function readInventory(path='inventory',{signal,customer='',environ
     }while(cursor);
     return rows;
    }
-   for(const resource of list){
+   const parallelMetadata=list.length===2&&list.includes('customers')&&list.includes('environments');
+   if(parallelMetadata){
+    const loaded=await Promise.allSettled(list.map(resource=>readResource(resource)));
+    const failed=loaded.find(row=>row.status==='rejected');if(failed)throw failed.reason;
+    list.forEach((resource,i)=>{result[resource]=loaded[i].value;});
+   }
+   for(const resource of parallelMetadata?[]:list){
     // Disjoint environment pages let a large workspace use four bounded reads
     // in flight. The environment list and every page share one revision; a
     // changed/missing partition discards the entire attempt.

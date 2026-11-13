@@ -15,15 +15,26 @@ BASE = '3ce02f24cbcdfd33cd776c6fdd3e4e7a245ed97a'
 PREDECESSOR = '0b15e96eb98e5d1a2f7e2961e858886c62c632f7eaed1b02d7241a0e7ff34a34'
 WORKER = {'account-backend/src/inventory.js', 'account-backend/src/team-data.js', 'account-backend/src/recovery-control.js'}
 ADDED_WORKER = {'account-backend/src/inventory-pages.js', 'account-backend/src/inventory-read-db.js', 'account-backend/inventory-capacity-schema.sql'}
-SITE = {'customer-security.js', 'inventory.js', 'workspace-ai.js', 'team-ui.js'}
+SITE = {'customer-security.js', 'inventory.js', 'workspace-ai.js', 'team-ui.js', 'cvie.js'}
 ADDED_SITE = {'inventory-client.js'}
 
 def overlay(out, names):
     with tempfile.TemporaryDirectory() as temp:
         old, new = Path(temp)/'old', Path(temp)/'new'
         for name in sorted(names):
-            old.write_bytes(pkg.git('show', BASE+':'+name))
-            new.write_bytes(Path(name).read_bytes().replace(b'\r\n', b'\n'))
+            before = pkg.git('show', BASE+':'+name)
+            after = Path(name).read_bytes().replace(b'\r\n', b'\n')
+            if name == 'customer-security.js':
+                # This unchanged main-only tracker link is absent from the
+                # serving package. Exclude it on both sides before merging an
+                # adjacent menu optimization; never reintroduce held UI.
+                held = [line for line in before.splitlines(keepends=True)
+                        if line.startswith(b" let tracker=$('customerRemediationLink');")]
+                pkg.require(len(held)==1 and held[0] in after, 'Held tracker line changed')
+                pkg.require(b'customerRemediationLink' not in (out/name).read_bytes(), 'Unexpected serving tracker')
+                before, after = before.replace(held[0],b''), after.replace(held[0],b'')
+            old.write_bytes(before)
+            new.write_bytes(after)
             (out/name).write_bytes(pkg.git('merge-file', '-p', str(out/name), str(old), str(new)))
 
 def backend(out, check=True):

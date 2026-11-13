@@ -3,6 +3,10 @@
 const $=id=>document.getElementById(id);
 if(!$('customerDashStatus')||new URLSearchParams(location.search).has('org'))return;
 const reporting=!!$('customerReportBody');
+// Fetch public reader code alongside the session check, before menu data needs it.
+// Handle preload failure here; the awaited reader still reports the original error.
+const inventoryReader=window.CVEHARBOR_INVENTORY_CLIENT?Promise.resolve(window.CVEHARBOR_INVENTORY_CLIENT):import('/inventory-client.js');
+void inventoryReader.catch(()=>{});
 let paginatedInventory=false,reportScopeSequence=0,reportScopeLoading=null,reportScopeAbort=null;
 const reportCustomer=()=>customerReady?$('customerDashFilter').value:new URLSearchParams(location.search).get('customer')||'';
 let inventory={customers:[],environments:[],assets:[]},records=[],customerReady=false,accountEmail='';
@@ -403,12 +407,12 @@ const text=(tag,value,cls)=>{const el=document.createElement(tag);el.textContent
 const api=async (path,method='GET',payload)=>{
  if(method==='GET'&&['inventory','finding-statuses','finding-tickets','plugin-sources','plugin-installation-status','plugin-monitor','inventory/server-network','inventory/packages'].includes(path.split('?')[0])){
   const customer=paginatedInventory?reportCustomer():'';
-  const {readInventory}=window.CVEHARBOR_INVENTORY_CLIENT||await import('/inventory-client.js');
+  const {readInventory}=await inventoryReader;
   if(paginatedInventory){
-   if(path==='inventory'){const metadataOnly=!customerReady||(reporting&&!customer);return {assets:[],...await readInventory(path,{customer,metadataUnscoped:true,resourceList:metadataOnly?['customers','environments']:undefined}),scopeCustomer:!customerReady?null:customer};}
+   if(path==='inventory'){const metadataOnly=!customerReady||(reporting&&!customer);return {assets:[],...await readInventory(path,{customer,metadataUnscoped:true,pagination:true,resourceList:metadataOnly?['customers','environments']:undefined}),scopeCustomer:!customerReady?null:customer};}
    if(!customerReady||(reporting&&!customer))return {ready:true,append_ready:true,statuses:[],tickets:[],sources:[],checks:[],networks:[],packages:[]};
   }
-  return readInventory(path,{customer});
+  return readInventory(path,{customer,pagination:paginatedInventory});
  }
  const r=await fetch('https://api.cveharbor.com/v1/'+path,{method,credentials:'include',cache:'no-store',headers:{Accept:'application/json',...(payload?{'Content-Type':'application/json'}:{})},...(payload?{body:JSON.stringify(payload)}:{})});
  const d=await r.json().catch(()=>({}));if(r.status===401)return {authenticated:false};if(!r.ok){const error=new Error(d.error||'Account service unavailable');error.status=r.status;throw error}return d;
@@ -422,8 +426,8 @@ function loadReportScope(){
  for(const id of ['customerReportBody','customerReportAssessment','customerDashboardCves','customerDashFindings','customerDashboardAssessment','customerDashboardServers','customerDashRows'])$(id)?.replaceChildren();
  $('customerDashStatus').dataset.assessing='true';$('customerDashStatus').textContent='Loading the selected customer… You can choose another customer.';
  const promise=(async()=>{
-  const {readInventory}=window.CVEHARBOR_INVENTORY_CLIENT||await import('/inventory-client.js');
-  const settings={customer,signal};
+  const {readInventory}=await inventoryReader;
+  const settings={customer,signal,pagination:paginatedInventory};
   const next={...inventory,assets:[],...(loadData?await readInventory('inventory',{...settings,resourceList:customer?['assets']:['environments','assets']}):{}),scopeCustomer:customer};
   const [saved,tickets,installed,sources]=loadData?await Promise.all(['finding-statuses','finding-tickets','plugin-installation-status','plugin-sources'].map(path=>readInventory(path,settings))):Array.from({length:4},()=>({ready:true,append_ready:true}));
   if(signal.aborted||sequence!==reportScopeSequence||epoch!==customerDataEpoch||!customerReady)return;
@@ -452,20 +456,22 @@ function compute(customerId,environmentId=''){
 
 function filters(){
  const chosen=$('customerDashFilter').value;
- $('customerDashFilter').replaceChildren();option($('customerDashFilter'),reporting?'Choose a customer':'All customers','');
- for(const c of inventory.customers)option($('customerDashFilter'),c.name,c.id);
+ const choices=document.createDocumentFragment();option(choices,reporting?'Choose a customer':'All customers','');
+ for(const c of inventory.customers)option(choices,c.name,c.id);
+ $('customerDashFilter').replaceChildren(choices);
  if(inventory.customers.some(c=>c.id===chosen))$('customerDashFilter').value=chosen;
  environments();
 }
 function environments(){
  const customer=$('customerDashFilter').value,previous=$('customerDashEnvironment').value;
  let tracker=$('customerRemediationLink');if(!tracker){tracker=text('a','Open Remediation Tracker','ops-link');tracker.id='customerRemediationLink';$('customerDashFilter').parentElement.append(tracker);}tracker.href='/remediation/'+(customer?'?customer_id='+encodeURIComponent(customer):'');
- const select=$('customerDashEnvironment');select.replaceChildren();
- option(select,'All environments','');
+ const select=$('customerDashEnvironment'),choices=document.createDocumentFragment(),customers=new Map(inventory.customers.map(c=>[c.id,c.name]));
+ option(choices,'All environments','');
  for(const env of inventory.environments.filter(e=>!customer||e.customer_id===customer)){
-  const customerName=inventory.customers.find(c=>c.id===env.customer_id)?.name||'Customer';
-  option(select,(reporting?'':customerName+' / ')+env.name+' ('+env.kind+')',env.id);
+  const customerName=customers.get(env.customer_id)||'Customer';
+  option(choices,(reporting?'':customerName+' / ')+env.name+' ('+env.kind+')',env.id);
  }
+ select.replaceChildren(choices);
  if([...select.options].some(x=>x.value===previous))select.value=previous;
 }
 function metric(label,value){const box=text('div','','customer-dash-metric');box.append(text('strong',value),text('span',label));return box}
@@ -1336,12 +1342,12 @@ function csvReport(){
 }
 async function init(){
  try{
-  const session=await api('me');
+  const [session,flags]=await Promise.all([api('me'),api('inventory/status')]);
   if(!session.authenticated){$('customerDashLogin').hidden=false;$('customerDashStatus').textContent='Sign in required to access private customer records.';return}
   accountEmail=session.email;
-  const flags=await api('inventory/status');
   paginatedInventory=flags.pagination===true;
   if(!flags.ready){$('customerDashStatus').textContent='Customer inventory database migration is pending. No private records can be loaded yet.';return}
+  const assignmentsRequest=api('finding-assignments').catch(()=>({ready:false}));
   inventory=await api('inventory');
   records=advisories();
   {
@@ -1349,7 +1355,7 @@ async function init(){
     api('finding-tickets').catch(()=>({ready:false,tickets:[]})),
     api('plugin-installation-status').catch(()=>({ready:false,statuses:[]})),
     api('plugin-sources').catch(()=>({ready:false,sources:[]})),
-    api('finding-assignments').catch(()=>({ready:false})),
+    assignmentsRequest,
     api('finding-statuses').catch(()=>({ready:false,statuses:[]}))
    ]);
    ticketReady=!!tickets.ready;
@@ -1447,6 +1453,7 @@ async function init(){
     actions.append(cancel,send);dialog.append(addressLabel,fileLabel,confirmation,message,actions);shade.append(dialog);document.body.append(shade);address.focus();
    });
   }
+  window.dispatchEvent(new Event('cveharbor:customer-menus-ready'));
   await settledRedraw();lastInventoryRefresh=Date.now();
   $('customerDashStatus').dataset.ready='true';
   $('customerDashStatus').textContent=inventory.customers.length+' customer records loaded privately. Advisory matching is preliminary.';
@@ -1474,6 +1481,7 @@ async function init(){
    changes.onmessage=event=>{if(event.data?.changed)void (inventoryRefresh||Promise.resolve()).catch(()=>{}).then(()=>refreshCurrent(true))};
   }
  }catch(e){$('customerDashLogin').hidden=false;$('customerDashStatus').textContent=(e.status===404||e.status===503)?'Customer inventory backend is not active. The D1 migration and updated Cloudflare Worker must be deployed.':'Could not reach account data. Please sign in or check the service. '+e.message}
+ finally{window.dispatchEvent(new Event('cveharbor:customer-menus-ready'));}
 }
 for(const eventName of ['cveharbor:account-state','cveharbor-auth-change'])window.addEventListener(eventName,event=>{
  if(customerReady&&(!event.detail?.authenticated||event.detail?.email&&event.detail.email!==accountEmail))invalidateSession();
