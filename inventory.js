@@ -597,7 +597,7 @@ function render(){
   toggle.append(arrow,title);heading.append(toggle);header.append(heading);
   const body=make('div','inventory-customer-body');body.id='inventory-customer-'+customer.id;body.hidden=!expandedCustomers.has(customer.id);
   toggle.setAttribute('aria-controls',body.id);toggle.setAttribute('aria-expanded',String(!body.hidden));
-  toggle.addEventListener('click',()=>{body.hidden=!body.hidden;toggle.setAttribute('aria-expanded',String(!body.hidden));if(body.hidden)expandedCustomers.delete(customer.id);else expandedCustomers.add(customer.id);});
+  toggle.addEventListener('click',()=>{body.hidden=!body.hidden;toggle.setAttribute('aria-expanded',String(!body.hidden));if(body.hidden)expandedCustomers.delete(customer.id);else{expandedCustomers.add(customer.id);populateCustomer();}});
   const editCustomer=make('button','ops-remove inventory-edit-customer','Edit customer');editCustomer.type='button';
   editCustomer.addEventListener('click',()=>{
    newCustomerSetup=false;setupCustomerId=customer.id;expandedCustomers.add(customer.id);
@@ -622,7 +622,15 @@ function render(){
   deleteCustomer.addEventListener('click',()=>remove('customers',customer.id,customer.name));
   customerActions.append(deleteCustomer);header.append(customerActions);card.append(header);
   card.append(body);
+  let populated=false;
+  function populateCustomer(){if(populated)return;populated=true;
   if(!envs.length)body.append(make('p','ops-note','No environments added yet.'));
+  function pagedEntries(items,size,label,draw){
+   const box=make('div'),content=make('div'),pager=make('div','inventory-record-actions');let page=0;
+   const previous=make('button','ops-remove','Previous '+label),next=make('button','ops-remove','Next '+label),count=make('span','ops-note');previous.type=next.type='button';
+   function show(){content.replaceChildren(draw(items.slice(page*size,(page+1)*size)));count.textContent='Showing '+(page*size+1)+'–'+Math.min((page+1)*size,items.length)+' of '+items.length;previous.disabled=page===0;next.disabled=(page+1)*size>=items.length;pager.hidden=items.length<=size;}
+   previous.onclick=()=>{page--;show()};next.onclick=()=>{page++;show()};pager.append(previous,count,next);box.append(content,pager);show();return box;
+  }
   for(const env of envs){
    const group=make('section','inventory-environment');
    const h=make('div','ops-result-top inventory-environment-header');h.append(make('strong','',env.name+' · '+env.kind));
@@ -667,12 +675,14 @@ function render(){
     if(!groups.has(key))groups.set(key,[]);
     groups.get(key).push(asset);
    }
-   for(const entries of groups.values()){
+   group.append(pagedEntries([...groups.values()],10,'assets in '+env.name,batch=>{const list=make('div');
+   for(const entries of batch){
     const groupCard=make('div','inventory-asset-group');
     const first=entries[0];
     groupCard.append(make('strong','inventory-asset-group-title',first.name+' · '+first.asset_type));
     groupCard.append(make('p','ops-note',entries.length+' technology '+(entries.length===1?'entry':'entries')));
-    for(const asset of entries){
+    groupCard.append(pagedEntries(entries,50,'software for '+first.name,batch=>{const list=make('div');
+    for(const asset of batch){
     const row=make('div','inventory-asset ops-result-top');
     const info=make('div','');
     const pluginPrefix='WordPress Plugin: ';
@@ -707,12 +717,16 @@ function render(){
     });
     const removeAsset=make('button','ops-remove','Remove');removeAsset.type='button';
     removeAsset.addEventListener('click',()=>remove('assets',asset.id,asset.name));
-    actions.classList.add('inventory-record-actions');actions.append(edit,removeAsset);row.append(info,actions);groupCard.append(row);
+    actions.classList.add('inventory-record-actions');actions.append(edit,removeAsset);row.append(info,actions);list.append(row);
     }
-    group.append(groupCard);
+    return list;}));
+    list.append(groupCard);
    }
+   return list;}));
    body.append(group);
   }
+  }
+  if(!body.hidden)populateCustomer();
   root.append(card);
  }
  if(!data.customers.length)root.append(make('p','ops-note','Start by adding a customer, then create an environment and register its installed technologies.'));

@@ -16,23 +16,23 @@ async function page(kind){
  const dom=new JSDOM(fs.readFileSync(kind+'/index.html','utf8'),{url:'https://cveharbor.com/'+kind+'/?customer=c1',runScripts:'outside-only'}),w=dom.window;
  w.fetch=async(url,opts)=>new URL(url).pathname==='/v1/plugin-monitor'?{ok:true,json:async()=>({ready:true,checks:[structuredClone(staleCheck)]})}:f.request(url,opts);
  w.alert=message=>{w.lastAlert=message};w.CVEHARBOR_DATA={advisories:f.advisories};
- for(const s of ['inventory-matching.js','customer-score.js','advisory-details.js','customer-security.js'])w.eval(fs.readFileSync(s,'utf8'));
- await until(()=>w.document.querySelector('.customer-vulnerability-table'));
- const select=w.document.getElementById('customerDashEnvironment');select.value='e1';select.dispatchEvent(new w.Event('change'));
+ for(const s of ['inventory-matching.js','inventory-assessment.js','customer-score.js','advisory-details.js','customer-security.js'])w.eval(fs.readFileSync(s,'utf8'));
+ await until(()=>w.document.getElementById('customerDashStatus').dataset.ready==='true');
+ const select=w.document.getElementById('customerDashEnvironment');select.value='e1';select.dispatchEvent(new w.Event('change'));await until(()=>w.document.getElementById('customerDashStatus').dataset.assessing==='false');
  return dom;
 }
 const report=await page('customer-reports'),dashboard=await page('customer-dashboard');
-const text=dom=>dom.window.document.querySelector('.customer-vulnerability-table').textContent;
-const refresh=dom=>dom.window.dispatchEvent(new dom.window.Event('focus'));
+const text=dom=>dom.window.document.querySelector('.customer-vulnerability-table')?.textContent||'';
+const refresh=dom=>{const now=dom.window.Date.now();dom.window.Date.now=()=>now+61000;dom.window.dispatchEvent(new dom.window.Event('focus'));};
 async function edit(asset,version){return f.request('https://api.cveharbor.com/v1/inventory/assets/'+asset.id,{method:'PUT',body:JSON.stringify({...asset,version})})}
 try{
  assert.match(text(report),/70001/);assert.match(text(report),/70003/);assert.match(text(report),/80001/);
  await edit(core,'6.6.2');assert.match(text(report),/70001/,'test response is an independent JSON snapshot');
  refresh(report);refresh(dashboard);
- await until(()=>!text(report).includes('70001')&&!text(dashboard).includes('70001'));
+ await until(()=>report.window.document.getElementById('customerDashStatus').dataset.assessing==='false'&&dashboard.window.document.getElementById('customerDashStatus').dataset.assessing==='false'&&!text(report).includes('70001')&&!text(dashboard).includes('70001'));
  assert.match(text(report),/70002/,'new version still within another affected range remains visible');
  await edit(plugin,'3.2.0');refresh(report);refresh(dashboard);
- await until(()=>!text(report).includes('70003')&&!text(report).includes('80001')&&!text(dashboard).includes('80001'));
+ await until(()=>report.window.document.getElementById('customerDashStatus').dataset.assessing==='false'&&dashboard.window.document.getElementById('customerDashStatus').dataset.assessing==='false'&&!text(report).includes('70003')&&!text(report).includes('80001')&&!text(dashboard).includes('80001'));
  assert.match(text(report),/70004/,'ambiguous advisory is not silently declared fixed');
  assert.equal(report.window.document.querySelectorAll('.customer-update-indicator').length,0,'stale release does not claim the new version needs updating');
  await until(()=>report.window.document.querySelector('.customer-upgrade-history').textContent.includes('3.2.0'));
@@ -50,7 +50,7 @@ try{
  assert.match(w.document.querySelector('.customer-print-document').textContent,/Software Upgrade History.*6\.6\.2.*6\.8\.0/);
  w.dispatchEvent(new w.Event('afterprint'));
  const env=w.document.getElementById('customerDashEnvironment');env.value='e2';env.dispatchEvent(new w.Event('change'));
- await until(()=>w.document.querySelector('.customer-upgrade-history').textContent.includes('No software version changes'));
+ await until(()=>w.document.querySelector('.customer-upgrade-history')?.textContent.includes('No software version changes'));
  assert.doesNotMatch(w.document.querySelector('.customer-upgrade-history').textContent,/6\.8\.0|3\.2\.0/);
  // Existing structured range comparisons exclude only proven out-of-range versions.
  const matcher=w.CVEHARBOR_INVENTORY_MATCH;
