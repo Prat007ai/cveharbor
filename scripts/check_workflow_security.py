@@ -112,12 +112,14 @@ def validate(doc, filename):
             allowed_secrets = azure_runtime_secrets if azure_connection else {'CVEHARBOR_AZURE_OPENAI_CLIENT_SECRET'} if azure_verification else SECRET_BOUNDARIES.get(env, set())
             require(requested <= allowed_secrets, label + ': credential is outside the environment boundary')
             prefix = REPAIR_WRITE if filename == 'production-compatibility-repair.yml' and name == 'change' else (CANDIDATE_STAGING if name == 'customer-candidate' else SIMPLE_STAGING if name == 'automatic-staging' else STAGING_RECOVERY if name == 'recovery' else STAGING_NORMAL) if env == 'cloudflare-cvie-staging' else MANUAL if filename == 'recovery-write-hold.yml' and name == 'control' else MAIN + " && vars.FEED_PUBLICATION_ENABLED == 'true'" if env == 'cloudflare-intelligence-data' else MANUAL if env in {'cloudflare-production-audit','cloudflare-notifications-production','cloudflare-phase1-staging'} else RELEASE
-            capacity_load = filename == 'inventory-capacity-cloud.yml' and name == 'cloud-load'
+            capacity_load = filename in {'inventory-capacity-cloud.yml','inventory-capacity-coordinator.yml'} and name == 'cloud-load'
             if capacity_load:
                 prefix = CAPACITY_LOAD
                 require(condition == CAPACITY_LOAD and env == 'cloudflare-cvie-staging' and job.get('needs') == 'prepare', label + ': capacity test requires exact reviewed main and protected staging approval')
                 require(requested == {'CF_STAGING_API_TOKEN'} and job.get('timeout-minutes') == 45 and job.get('concurrency') == {'group':'cveharbor-capacity-load','cancel-in-progress':False}, label + ': capacity test has one staging credential, a fixed timeout and its own lock')
                 expected = {'CLOUDFLARE_ACCOUNT_ID':'9706b4d98ad72884e67fd1eb875c8a61', 'CLOUDFLARE_API_TOKEN':'${{ secrets.CF_STAGING_API_TOKEN }}', 'CAPACITY_REVIEWED_COMMIT':'${{ inputs.reviewed_commit }}', 'CAPACITY_BACKEND_DIR':'verification/capacity-backend'}
+                if filename == 'inventory-capacity-coordinator.yml':
+                    expected['CAPACITY_AUTHORITY_COORDINATOR'] = 'true'
                 credential_steps = [step for step in job.get('steps',[]) if SENSITIVE.search(json.dumps(step))]
                 require(len(credential_steps) == 1 and credential_steps[0].get('env') == expected and credential_steps[0].get('run') == 'node scripts/inventory_capacity_cloud.mjs' and not credential_steps[0].get('continue-on-error') and not SENSITIVE.search(json.dumps(job.get('env',{}))), label + ': capacity credential restricted to isolated executor')
             if azure_verification:
@@ -190,7 +192,7 @@ def validate(doc, filename):
             # The only extra ORs allowed are bootstrap's grouped event allowlist.
             require('||' not in condition or env == 'cloudflare-cvie-staging' and filename == 'cvie-staging.yml' and name in {'release','recovery','automatic-staging','customer-candidate'} and condition == (CANDIDATE_STAGING if name == 'customer-candidate' else SIMPLE_STAGING if name == 'automatic-staging' else STAGING_RECOVERY if name == 'recovery' else STAGING_NORMAL) or filename == 'bootstrap.yml' and name == 'sync' and condition == RELEASE + " && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.deploy == true && !inputs.catalogue_commit))", label + ': guard may not be bypassed with OR')
         if env == 'cloudflare-cvie-staging':
-            require((filename == 'inventory-capacity-cloud.yml' and name == 'cloud-load' and condition == CAPACITY_LOAD) or (filename == 'cvie-staging.yml' and name in {'release','recovery','automatic-staging','customer-candidate'} and condition == (CANDIDATE_STAGING if name == 'customer-candidate' else SIMPLE_STAGING if name == 'automatic-staging' else STAGING_RECOVERY if name == 'recovery' else STAGING_NORMAL)), label + ': only reviewed staging release or isolated capacity caller is permitted')
+            require((filename in {'inventory-capacity-cloud.yml','inventory-capacity-coordinator.yml'} and name == 'cloud-load' and condition == CAPACITY_LOAD) or (filename == 'cvie-staging.yml' and name in {'release','recovery','automatic-staging','customer-candidate'} and condition == (CANDIDATE_STAGING if name == 'customer-candidate' else SIMPLE_STAGING if name == 'automatic-staging' else STAGING_RECOVERY if name == 'recovery' else STAGING_NORMAL)), label + ': only reviewed staging release or isolated capacity caller is permitted')
             require(job.get('needs') == 'prepare', label + ': credential-free preparation required first')
             require('scripts/provision.mjs' not in raw and 'create-database' not in raw, label + ': initial provisioning is retired')
             if name == 'customer-candidate':

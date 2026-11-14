@@ -18,18 +18,18 @@ const operation=sql=>/operations_control/.test(sql)?'recovery_state':/INSERT INT
 export function queryFingerprint(sql){let n=2166136261;for(const ch of sql)n=Math.imul(n^ch.charCodeAt(0),16777619);return (n>>>0).toString(16).padStart(8,'0');}
 export function mergeQueryProfiles(target,source){for(const [key,value] of Object.entries(source||{})){if(!/^[a-z_]+:[a-f0-9]{8}$/.test(key))continue;const row=target[key]??={};for(const [field,n] of Object.entries(value)){if(typeof n!=='number'||!Number.isFinite(n))continue;row[field]=field.startsWith('max_')?Math.max(row[field]||0,n):(row[field]||0)+n;}}return target;}
 const nativeObservations=new WeakMap();
-export function observeDatabase(db,{detailed=false}={}){
+export function observeDatabase(db,{detailed=false,bindingIdentity=db}={}){
  const native=new WeakMap(),state={calls:0,elapsed_ms:0,rows_read:0,rows_written:0,query_ms:0,primary_results:0,replica_results:0,session_constraints:{primary:0,bookmark:0,unconstrained:0},bookmark_present:0,bookmark_missing:0,errors:[]};
  const seenBookmarks=new Set();let firstBookmark=true,previous;
- if(detailed){state.queries={};state.binding_seen_before=Number(nativeObservations.has(db));previous=nativeObservations.get(db)||{};nativeObservations.set(db,previous);state.first_bookmark_reused=0;state.distinct_bookmarks=0;}
+ if(detailed){state.queries={};state.binding_seen_before=Number(nativeObservations.has(bindingIdentity));previous=nativeObservations.get(bindingIdentity)||{};nativeObservations.set(bindingIdentity,previous);state.first_bookmark_reused=0;state.distinct_bookmarks=0;}
  async function call(kind,fn,fingerprint='00000000'){
   const start=Date.now();let finished;state.calls++;
-  const detail=detailed?(state.queries[kind+':'+fingerprint]??={calls:0,errors:0,elapsed_ms:0,sql_ms:0,rows_read:0,result_bytes:0,max_sql_ms:0,max_result_bytes:0,primary:0,replica:0}):null;
+  const detail=detailed?(state.queries[kind+':'+fingerprint]??={calls:0,errors:0,elapsed_ms:0,sql_ms:0,rows_read:0,result_bytes:0,max_sql_ms:0,max_result_bytes:0,primary:0,replica:0,native_queries:0,max_authority_batch:0}):null;
   if(detail)detail.calls++;
   try{const result=await fn();finished=Date.now();for(const row of Array.isArray(result)?result:[result])if(row?.meta){
    const reads=Number(row.meta.rows_read)||0,ms=Number(row.meta.duration)||0;state.rows_read+=reads;state.rows_written+=Number(row.meta.rows_written)||0;state.query_ms+=ms;
    if(row.meta.served_by_primary===true)state.primary_results++;if(row.meta.served_by_primary===false)state.replica_results++;
-   if(detail){const bytes=new TextEncoder().encode(JSON.stringify(row.results??[])).byteLength;detail.rows_read+=reads;detail.sql_ms+=ms;detail.result_bytes+=bytes;detail.max_sql_ms=Math.max(detail.max_sql_ms,ms);detail.max_result_bytes=Math.max(detail.max_result_bytes,bytes);detail.primary+=Number(row.meta.served_by_primary===true);detail.replica+=Number(row.meta.served_by_primary===false);}
+   if(detail){const bytes=new TextEncoder().encode(JSON.stringify(row.results??[])).byteLength;detail.native_queries+=row.meta.capacity_authority_native_queries??1;detail.max_authority_batch=Math.max(detail.max_authority_batch,row.meta.capacity_authority_batch_size||0);detail.rows_read+=reads;detail.sql_ms+=ms;detail.result_bytes+=bytes;detail.max_sql_ms=Math.max(detail.max_sql_ms,ms);detail.max_result_bytes=Math.max(detail.max_result_bytes,bytes);detail.primary+=Number(row.meta.served_by_primary===true);detail.replica+=Number(row.meta.served_by_primary===false);}
   }return result;}
   catch(error){if(detail)detail.errors++;state.errors.push({operation:kind,category:classifyDatabaseError(error)});throw error;}
   finally{const elapsed=(finished??Date.now())-start;state.elapsed_ms+=elapsed;if(detail)detail.elapsed_ms+=elapsed;}
