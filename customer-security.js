@@ -1492,6 +1492,8 @@ async function init(){
    return focusCheck;
   };
   window.addEventListener('focus',refreshCurrent);
+  window.addEventListener('cveharbor-agent-inventory-changed',()=>refreshCurrent(true));
+  if(!reporting){const agentHost=document.createElement('div');$('customerDashboardServers')?.before(agentHost);import('/agent-ui.js').then(({mountAgents})=>mountAgents(agentHost,{setup:false,scope:()=>({customer:$('customerDashFilter').value,environment:$('customerDashEnvironment').value})})).catch(()=>{});}
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refreshCurrent()});
   if(typeof BroadcastChannel==='function'){
    const changes=new BroadcastChannel('cveharbor-inventory-changed');

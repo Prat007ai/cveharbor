@@ -4,6 +4,7 @@ export const INVENTORY_CAPACITY=50000;
 export const INVENTORY_PAGE_SIZE=250;
 import {WorkflowError} from './remediation-workflow.js';
 import {cachedRead,rememberRead} from './versioned-read-cache.js';
+import {activeAssets} from './agent-validation.js';
 export class InventoryPageError extends WorkflowError{
  constructor(message,status=400){super(message,status);}
 }
@@ -45,6 +46,8 @@ export async function inventoryPage(req,env,user,team=null){
  // Avoid repeating an environment index lookup for every software row.
  const directAssets=resource==='assets'&&!team;
  const clauses=['t.user_id=?'],args=[owner];
+ const agents=resource==='assets'&&env.AGENT_INVENTORY_SCHEMA==='1';
+ if(agents)clauses.push(activeAssets('t'));
  if(customer&&!directAssets){clauses.push(def.scope+'=?');args.push(customer);}
  if(directAssets&&!customer){clauses.push('t.environment_id IN (SELECT id FROM inventory_environments WHERE user_id=?)');args.push(owner);}
  // Restrict indexed keys before joining; a selected customer must not scan
@@ -65,14 +68,17 @@ export async function inventoryPage(req,env,user,team=null){
  const guardArgs=team?[team.org,team.actor,owner,customer]:customer?[owner,customer]:[];
  const environmentGuard=environment?'SELECT id FROM inventory_environments WHERE user_id=? AND id=?'+(customer?' AND customer_id=?':''):'SELECT 1';
  const environmentArgs=environment?[owner,environment,...customer?[customer]:[]]:[];
- // Every reused personal asset page rechecks revision, scope and row ownership
+ // Only manual personal asset pages are reused; agent metadata remains live.
+ // Every reused page rechecks revision, scope and row ownership
  // on the primary. Ownership checks also cover transfers that only bump the new owner.
  const cacheIdentity=directAssets?env.INVENTORY_READ_CACHE_IDENTITY:null;
  const cacheVersion=env.INVENTORY_READ_CONTROL_REVISION;
- const cacheQuery=JSON.stringify(['inventory-assets',scope,cursor,expected]);
+ const cacheQuery=JSON.stringify(['inventory-assets',scope,cursor,expected,agents]);
+ const selected=def.fields+(agents?',ag.id AS agent_device_id,ag.primary_ip AS agent_primary_ip,ag.state AS agent_state,ag.last_sync AS agent_last_sync':'');
+ const agentJoin=agents?' LEFT JOIN inventory_agent_assets aa ON aa.asset_id=t.id LEFT JOIN inventory_agents ag ON ag.id=aa.device_id AND ag.user_id=t.user_id AND ag.environment_id=t.environment_id':'';
  const cached=cacheIdentity&&cachedRead(cacheIdentity,cacheVersion,cacheQuery)?.value;
  if(cached){
-  const validation='SELECT EXISTS(SELECT 1 FROM inventory_capacity_schema WHERE version=1) AS schema_ready, EXISTS('+guard+') AS access_ready, EXISTS('+environmentGuard+') AS environment_ready, COALESCE((SELECT revision FROM inventory_capacity_revisions WHERE user_id=?),0) AS revision, (SELECT count(*) FROM inventory_assets t WHERE '+clauses.join(' AND ')+' AND t.id IN (SELECT value FROM json_each(?))) AS owned_count';
+  const validation='SELECT EXISTS(SELECT 1 FROM inventory_capacity_schema WHERE version=1) AS schema_ready, EXISTS('+guard+') AS access_ready, EXISTS('+environmentGuard+') AS environment_ready, COALESCE((SELECT revision FROM inventory_capacity_revisions WHERE user_id=?),0) AS revision, (SELECT count(*) FROM inventory_assets t WHERE '+clauses.join(' AND ')+(agents?' AND NOT EXISTS(SELECT 1 FROM inventory_agent_assets aa WHERE aa.asset_id=t.id)':'')+' AND t.id IN (SELECT value FROM json_each(?))) AS owned_count';
   let checked;
   try{checked=await env.DB.prepare(validation).bind(...guardArgs,...environmentArgs,owner,...args,JSON.stringify(cached.items.map(row=>row.id))).first();}
   catch(error){if(/no such (table|column)/i.test([error?.message,error?.cause?.message].join(' ')))fail('Inventory capacity migration is required',503);throw error;}
@@ -81,11 +87,11 @@ export async function inventoryPage(req,env,user,team=null){
   if(expected!==null&&Number(checked.revision)!==expected)fail('Inventory changed while loading. Refresh and retry.',409);
   if(Number(checked.revision)===cached.revision&&Number(checked.owned_count)===cached.items.length)return cached;
  }
- const query='SELECT '+def.fields+' FROM '+def.table+' t'+(directAssets?'':def.join||'')+' WHERE '+clauses.join(' AND ')+(def.extra||'')+' ORDER BY '+def.keys.map(k=>'t.'+k).join(',')+' LIMIT '+(INVENTORY_PAGE_SIZE+1);
+ const query='SELECT '+selected+' FROM '+def.table+' t'+(directAssets?'':def.join||'')+agentJoin+' WHERE '+clauses.join(' AND ')+(def.extra||'')+' ORDER BY '+def.keys.map(k=>'t.'+k).join(',')+' LIMIT '+(INVENTORY_PAGE_SIZE+1);
  // D1 serializes every returned object before sending it to the Worker. A
  // bounded array payload avoids repeating field names for every software row;
- // reconstruct the existing public shape here.
- const fields=def.fields.split(',').map(field=>field.split('.').at(-1));
+ // reconstruct the existing public shape here, without caching private data.
+ const fields=selected.split(',').map(field=>field.split(' AS ').at(-1).split('.').at(-1));
  const compact='SELECT json_group_array(json_array('+fields.map(field=>'"'+field+'"').join(',')+')) AS packed FROM ('+query+')';
  const statement='SELECT EXISTS(SELECT 1 FROM inventory_capacity_schema WHERE version=1) AS schema_ready, EXISTS('+guard+') AS access_ready, EXISTS('+environmentGuard+') AS environment_ready, COALESCE((SELECT revision FROM inventory_capacity_revisions WHERE user_id=?),0) AS revision, ('+compact+') AS packed';
  let page;
@@ -99,6 +105,6 @@ export async function inventoryPage(req,env,user,team=null){
  const next=rows.length>INVENTORY_PAGE_SIZE?encode({scope,revision,after:def.keys.map(k=>last[k])}):null;
  for(const row of items){if(resource==='checks'){row.findings=JSON.parse(row.findings_json||'[]');delete row.findings_json;}if(resource==='networks')row.snapshot=JSON.parse(row.snapshot);}
  const result={resource,items,revision,next_cursor:next,complete:next===null,page_size:INVENTORY_PAGE_SIZE};
- if(cacheIdentity)rememberRead(cacheIdentity,cacheVersion,cacheQuery,result);
+ if(cacheIdentity&&(!agents||items.every(row=>row.agent_device_id===null)))rememberRead(cacheIdentity,cacheVersion,cacheQuery,result);
  return result;
 }

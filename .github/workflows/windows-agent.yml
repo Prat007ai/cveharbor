@@ -1,0 +1,91 @@
+name: Windows agent security and integration
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  backend:
+    permissions:
+      contents: read
+      actions: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - run: node --test account-backend/tests/agents.test.mjs account-backend/tests/inventory-capacity.test.mjs account-backend/tests/inventory-history.test.mjs
+      - name: Rehearse additive agent storage
+        run: node scripts/windows_agent_schema.mjs --rehearse
+      - name: Reproduce and test the exact agent backend
+        run: |
+          python -c "import sys;from pathlib import Path;sys.path.insert(0,'scripts');import team_release as t;t.previous('f00b4c4939ddf3d304fe525738d6fdbfedb57956','windows_agent_release.py','backend',Path(sys.argv[1]))" "$RUNNER_TEMP/agent-backend"
+          rsync --archive --delete "$RUNNER_TEMP/agent-backend/account-backend/src/" account-backend/src/
+          cp "$RUNNER_TEMP/agent-backend/account-backend/wrangler.toml" account-backend/wrangler.toml
+          node --test account-backend/tests/agents.test.mjs account-backend/tests/inventory-capacity.test.mjs account-backend/tests/workspace-history.test.mjs account-backend/tests/workspace-summary.test.mjs account-backend/tests/team-access.test.mjs account-backend/tests/ai-*.test.mjs account-backend/tests/azure-connection.test.mjs
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: windows-collector-package
+          path: collector-app/package
+          run-id: 43264633230
+          github-token: ${{ github.token }}
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: windows-agent-evaluation
+          path: windows-agent/package/release
+          run-id: 43535697624
+          github-token: ${{ github.token }}
+      - name: Verify the exact website and installer package
+        run: |
+          python scripts/windows_agent_release.py prepare "$RUNNER_TEMP/agent-site"
+          npm install --prefix staging --ignore-scripts --no-package-lock
+          AGENT_TEST_SITE="$RUNNER_TEMP/agent-site/after" node scripts/agent_browser.mjs
+          INVENTORY_TEST_SITE="$RUNNER_TEMP/agent-site/after" node scripts/inventory_experience_browser.mjs
+          SERVER_TEST_SITE="$RUNNER_TEMP/agent-site/after" node scripts/server_security_browser.mjs
+  windows:
+    runs-on: windows-2022
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - name: Build and validate real Windows payloads with fictional data
+        shell: pwsh
+        run: |
+          ./windows-agent/build.ps1
+          ./windows-agent/test.ps1
+      - name: Build isolated test installers
+        shell: pwsh
+        run: |
+          ./windows-agent/package.ps1 -OutputDirectory windows-agent/package/base
+          ./windows-agent/package.ps1 -OutputDirectory windows-agent/package/upgrade -Version 1.0.1
+      - name: Verify service permissions and installer lifecycle on disposable runner
+        shell: pwsh
+        run: ./windows-agent/test-installer.ps1 -Installer windows-agent/package/base/CVEHarbor-Agent.msi -UpgradeInstaller windows-agent/package/upgrade/CVEHarbor-Agent.msi
+      - name: Record unsigned evaluation artifact
+        run: node windows-agent/receipt.mjs
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: windows-agent-evaluation
+          path: |
+            windows-agent/package/base/CVEHarbor-Agent.msi
+            windows-agent/package/base/agent-release.json
+          if-no-files-found: error
+          retention-days: 90
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: failure()
+        with:
+          name: windows-agent-fictional-installer-test-log
+          path: ${{ runner.temp }}/agent-install.log
+          retention-days: 7

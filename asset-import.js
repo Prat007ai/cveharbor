@@ -56,6 +56,8 @@ function dashboardURL(scope){return '/customer-dashboard/?'+new URLSearchParams(
 function mount(host,{scope,readAssets,saveAsset,saveNetwork,afterImport=async()=>{}}){
  if(!document.querySelector('link[href^="/inventory-import.css"]')){const css=document.createElement('link');css.rel='stylesheet';css.href='/inventory-import.css?v=windows-inventory-1';document.head.append(css);}
  const panel=el('section','','inventory-plugin-import inventory-bulk-import');
+ const agentSlot=el('div');host.append(agentSlot);
+ import('/agent-ui.js').then(({mountAgents})=>mountAgents(agentSlot,{scope,afterImport})).catch(()=>{agentSlot.textContent='Agent connection controls could not load. Refresh to retry.';});
  panel.append(el('h3','Import server inventory and assess vulnerabilities'),el('p','Upload one CSV per server (up to 10 MB / 10,000 rows). We import in small batches and keep you on this customer. No AI is used. Existing identical rows are skipped; older versions are not removed.','ops-note'));
  const download=anchor('Download Windows PowerShell collector','/collectors/Export-CVEHarborInventory.ps1');download.download='Export-CVEHarborInventory.ps1';
  const app=anchor('Download Windows Collector app (ZIP)','/collectors/windows/CVEHarbor-Collector.zip');app.download='CVEHarbor-Collector.zip';

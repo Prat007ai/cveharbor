@@ -1,14 +1,14 @@
 // Fictional outage rehearsal inputs. Never read customer data or call a provider.
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
-export const extraSchemas=['migrations/0019_cvie.sql','migrations/0020_cvie_evidence.sql','migrations/0022_cvie_shared_scans.sql','remediation-schema.sql','software-upgrade-history-schema.sql','customer-score-schema.sql','alert-schema.sql','lifecycle-schema.sql','migrations/0016_website_monitor.sql'];
+export const extraSchemas=['agent-schema.sql','migrations/0019_cvie.sql','migrations/0020_cvie_evidence.sql','migrations/0022_cvie_shared_scans.sql','remediation-schema.sql','software-upgrade-history-schema.sql','customer-score-schema.sql','alert-schema.sql','lifecycle-schema.sql','migrations/0016_website_monitor.sql'];
 export function addOutageSchema(fixture){
  for(const file of extraSchemas)fixture.sql.exec(fs.readFileSync(new URL('../account-backend/'+file,import.meta.url),'utf8'));
  fixture.sql.exec('CREATE TABLE IF NOT EXISTS user_technology_catalogue(user_id TEXT PRIMARY KEY,preferences_json TEXT,updated_at INTEGER)');
 }
 export async function seedOutage(fixture,cvie,now=Date.now()){
  addOutageSchema(fixture);
- const env={DB:fixture.DB,CVIE_SHARED_SCANS_ENABLED:'true'};
+ const env={DB:fixture.DB,CVIE_SHARED_SCANS_ENABLED:'true',AGENT_INVENTORY_SCHEMA:'1'};
  const cpe='cpe:2.3:a:microsoft:.net_core:*:*:*:*:*:*:*:*';
  for(let i=0;i<50;i++){
   const id=(900000+i).toString(16).padStart(8,'0')+'-1111-4111-8111-111111111111';

@@ -3,7 +3,7 @@
 export function inventoryReadDatabase(db,{sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms)),random=Math.random}={}){
  const native=new WeakMap();let bookmark=null,replicaUnavailable=false;
  const pageQuery=sql=>sql.startsWith('SELECT EXISTS(SELECT 1 FROM inventory_capacity_schema WHERE version=1) AS schema_ready,')&&sql.endsWith(' AS packed');
- const transient=error=>/overload|queued for too long|transient issue|object.*reset|7500/.test([error?.message,error?.cause?.message].join(' ').toLowerCase());
+ const transient=error=>/overload|too many resources consumed|10 second window|queued for too long|transient issue|object.*reset|7500/.test([error?.message,error?.cause?.message].join(' ').toLowerCase());
  async function read(fn){
   for(let attempt=0;;attempt++){
    try{return await fn(attempt);}catch(error){

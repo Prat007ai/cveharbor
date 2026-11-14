@@ -15,7 +15,7 @@ export function dashboardReadDatabase(db,{sleep=ms=>new Promise(resolve=>setTime
  let bookmark=null,replicaUnavailable=false;const statements=new WeakMap();
  const authority=sql=>/\b(operations_control|sessions|user_totp|users|team_\w+)\b/i.test(sql);
  const authentication=sql=>/\bFROM\s+sessions\b/i.test(sql)&&/\buser_totp\b/i.test(sql);
- const transient=e=>/overload|queued for too long|transient issue|object.*reset|7500/.test([e?.message,e?.cause?.message].join(' ').toLowerCase());
+ const transient=e=>/overload|too many resources consumed|10 second window|queued for too long|transient issue|object.*reset|7500/.test([e?.message,e?.cause?.message].join(' ').toLowerCase());
  async function execute(specs,method,options=[]){
   for(let attempt=0;;attempt++){
    const authorityRead=!bookmark||specs.some(s=>authority(s.sql));
