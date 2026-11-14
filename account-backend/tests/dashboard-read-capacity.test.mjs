@@ -7,6 +7,8 @@ import {capacityFixture,capacitySessions,fixtureId} from './helpers/capacity-db.
 import {seedOutage} from '../../scripts/nvd_capacity_fixture.mjs';
 import * as cvie from '../src/cvie.js';
 import worker from '../src/index.js';
+import {evidenceContext} from '../src/cvie-records.js';
+import {ownedProductSql} from '../src/shared-scopes.js';
 
 test('dashboard capability rejects mutations, disguised CTE writes and foreign batches before reaching D1',async()=>{
  let touched=0;const db=dashboardReadDatabase({prepare:()=>{touched++;throw Error('Unexpected D1 access');}});
@@ -76,4 +78,21 @@ test('only public source metadata shares a cache identity across read capabiliti
  assert.deepEqual(await publicSourceStatus(env,100,()=>{loads++;return {public:true};}),{public:true});
  await publicSourceStatus(read,101,()=>{loads++;return {};});assert.equal(loads,1);
  invalidatePublicSourceStatus(env);await publicSourceStatus(read,102,()=>{loads++;return {};});assert.equal(loads,2);
+});
+
+
+test('CVIE status reuses only its own scoped products and retains counts and source outage evidence',async()=>{
+ const f=capacityFixture({owners:50,customers:50,environments:100,assets:1000}),tokens=capacitySessions(f.sql),seed=await seedOutage(f,cvie);
+ const owned=ownedProductSql(seed.env,'p.*','all');let productReads=0;
+ const binding={prepare(sql){if(sql===owned)productReads++;return f.DB.prepare(sql);}};
+ const env={...seed.env,DB:binding,RECOVERY_CONTROL_REQUIRED:'true'};
+ try{
+  f.sql.exec("UPDATE cvie_shared_scopes SET status='retrying',error='Fictional NVD outage',next_attempt_at=9999999999999");
+  const response=await worker.fetch(new Request('https://api.cveharbor.com/v1/cvie',{headers:{Cookie:'cvh_session='+tokens[0]}}),env,{});
+  assert.equal(response.status,200);const body=await response.json();
+  assert.equal(productReads,1);assert.equal(body.products.length,1);assert.equal(body.products[0].history_count,200);assert.equal(body.products[0].status,'retrying');
+  assert.equal(body.evidence.sources.find(s=>s.id==='nvd').status,'unavailable');
+  assert.equal(body.account_id,'owner-0');
+  await assert.rejects(evidenceContext(seed.env,'owner-0','all',[{id:'other',user_id:'owner-1'}]),/current account/);
+ }finally{f.close();}
 });

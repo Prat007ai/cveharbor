@@ -516,7 +516,15 @@ export async function cvieRoute(req,env,user,ctx,data={}){
    (SELECT COUNT(*) FROM cvie_advisories a WHERE a.product_id=p.id AND a.published>=?) AS history_count
    FROM cvie_products p WHERE p.user_id=? AND ${activeSubscription('p',scope)} ORDER BY p.name`,iso(monthsAgo(now,3)),iso(monthsAgo(now,12)),user.id).all();
   const result=await loadProducts(); // GET is strictly read-only; repairs run on sync/scan work.
-  const evidenceCtx=await evidenceContext(env,user.id,scope),counts=evidenceCtx?await combinedCounts(env,user.id,iso(monthsAgo(now,3)),iso(monthsAgo(now,12)),now,evidenceCtx):null;
+  const evidenceCtx=await evidenceContext(env,user.id,scope,result.results||[]);
+  // These independent read results share the already authenticated scope.
+  // Fetching them together avoids serial network waits during a provider outage.
+  const [counts,evidence,withdrawn,excluded]=await Promise.all([
+   evidenceCtx?combinedCounts(env,user.id,iso(monthsAgo(now,3)),iso(monthsAgo(now,12)),now,evidenceCtx):null,
+   productSourceHealth(env,(result.results||[]).map(p=>savedProgress(p,now)),now),
+   withdrawnIds(env,Boolean(evidenceCtx)),
+   evidenceCtx?excludedProductCves(env,user.id,evidenceCtx):[]
+  ]);
   const products=(result.results||[]).map(p=>{
    return {...savedProgress(p,now),icon_slug:logoFor(p.name,p.cpe),
     component_scope:coveragePlan(p).component||'verified_product',coverage:coverageSummary(p),identity_label:coveragePlan(p).label,
@@ -527,8 +535,7 @@ export async function cvieRoute(req,env,user,ctx,data={}){
     directory_complete:JSON.parse(p.cursor_json||'{}').directory_complete===true,directory_limited:JSON.parse(p.cursor_json||'{}').directory_limited===true,
     candidates:!p.cpe?JSON.parse(p.candidates_json):[]};
   });
-  const evidence=await productSourceHealth(env,products,now),withdrawn=await withdrawnIds(env);
-  return json({ready:true,engine:'CVIE',topic_history:env.CVIE_TOPIC_HISTORY_ENABLED==='true',account_id:user.id,products,evidence,withdrawn_ids:withdrawn,excluded_product_cves:await excludedProductCves(env,user.id,evidenceCtx),default_months:3});
+  return json({ready:true,engine:'CVIE',topic_history:env.CVIE_TOPIC_HISTORY_ENABLED==='true',account_id:user.id,products,evidence,withdrawn_ids:withdrawn,excluded_product_cves:excluded,default_months:3});
  }
  if(path==='/v1/cvie/advisories'&&req.method==='GET'){
   const months=Number(url.searchParams.get('months')||3),after=url.searchParams.get('after')||'';
