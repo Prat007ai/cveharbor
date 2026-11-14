@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {validateCloudRun,validateRetainedDatabase,previewDiagnostics,enableRetainedReadReplication,stopPreview} from './inventory_capacity_cloud.mjs';
-import {classifyDatabaseError,observeDatabase} from './capacity_db_observer.mjs';
+import {classifyDatabaseError,observeDatabase,queryFingerprint,mergeQueryProfiles} from './capacity_db_observer.mjs';
 import {ensureCapacityReplication} from './inventory_capacity_replication.mjs';
 const valid={GITHUB_REPOSITORY:'Prat007ai/cveharbor',GITHUB_REF:'refs/heads/main',GITHUB_EVENT_NAME:'workflow_dispatch',GITHUB_RUN_ATTEMPT:'1',GITHUB_WORKFLOW_REF:'Prat007ai/cveharbor/.github/workflows/inventory-capacity-cloud.yml@refs/heads/main',GITHUB_RUN_ID:'12345678901',GITHUB_SHA:'a'.repeat(40),CAPACITY_REVIEWED_COMMIT:'a'.repeat(40),CLOUDFLARE_ACCOUNT_ID:'9706b4d98ad72884e67fd1eb875c8a61',CLOUDFLARE_API_TOKEN:'fictional-only'};
 
@@ -76,4 +76,15 @@ test('database observer retains native statements, bindings, results and failure
 test('database diagnostics use closed error classes and suppress unknown text',()=>{
  for(const [message,category]of [['D1 DB is overloaded. Too many resources consumed within a 10 second window','resource_window'],['D1 DB is overloaded. Too many requests queued','queue_full'],['D1 DB is overloaded. Requests queued for too long','queue_wait'],['D1 DB is overloaded','overloaded']])assert.equal(classifyDatabaseError(new Error('D1_ERROR',{cause:new Error(message)})),category);
  for(const [message,category]of [['daily usage limit exceeded','quota'],['Cannot resolve D1 DB due to transient issue on remote node.','transient'],['no such table: private','schema'],['UNIQUE constraint failed','constraint'],['fetch failed','transport'],['request timed out','timeout'],['secret text','unknown']])assert.equal(classifyDatabaseError(new Error(message)),category);
+});
+
+
+test('detailed observer captures first-row metadata in one native query without exporting SQL or values',async()=>{
+ let calls=0;const result={results:[{id:'private-owner',email:'private@example.test'}],meta:{served_by_primary:true,rows_read:4,rows_written:0,duration:0.25}};
+ const {binding,state}=observeDatabase({prepare(sql){assert.equal(sql,'SELECT private_column FROM sessions');return {bind:()=>this,first:()=>assert.fail('Do not discard metadata'),all:async()=>{calls++;return result;}};}},{detailed:true});
+ const statement=binding.prepare('SELECT private_column FROM sessions');assert.deepEqual(await statement.first(),result.results[0]);assert.equal(await statement.first('id'),'private-owner');
+ assert.equal(calls,2);assert.equal(state.primary_results,2);assert.equal(state.rows_read,8);assert.equal(state.query_ms,0.5);
+ const key='session_auth:'+queryFingerprint('SELECT private_column FROM sessions'),row=state.queries[key];assert.equal(row.calls,2);assert.equal(row.rows_read,8);assert.equal(row.max_sql_ms,0.25);assert.ok(row.result_bytes>0);
+ assert.doesNotMatch(JSON.stringify(state),/private|SELECT|sessions|example/);
+ const merged=mergeQueryProfiles({},state.queries);mergeQueryProfiles(merged,state.queries);assert.equal(merged[key].calls,4);assert.equal(merged[key].max_sql_ms,0.25);
 });

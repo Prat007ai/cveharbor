@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import {fixtureId} from '../account-backend/tests/helpers/capacity-db.mjs';
+import {mergeQueryProfiles} from './capacity_db_observer.mjs';
 import {outageBrowser} from './nvd_capacity_browser.mjs';
 const stats=values=>{const sorted=[...values].sort((a,b)=>a-b),q=p=>Math.round(sorted[Math.min(sorted.length-1,Math.floor(sorted.length*p))]||0);return {count:sorted.length,p50_ms:q(.5),p95_ms:q(.95),p99_ms:q(.99),max_ms:q(1)};};
 export async function outageRehearsal({base,tokens,controlKey,site,seconds=30,onProgress=()=>{},browserProbe=outageBrowser}){
@@ -8,6 +9,7 @@ export async function outageRehearsal({base,tokens,controlKey,site,seconds=30,on
  const get=async(i,suffix)=>{const start=performance.now(),r=await fetch(base+suffix,{headers:{Cookie:'cvh_session='+tokens[i],Origin:'https://cveharbor.com'},signal:AbortSignal.timeout(15000)});
   const observed=r.headers.get('X-Capacity-Database');
   if(observed){const data=JSON.parse(observed),key=new URL(suffix,'http://localhost').pathname,totals=database[key]??={requests:0,calls:0,rows_read:0,rows_written:0,primary_results:0,replica_results:0,bookmark_present:0,bookmark_missing:0,session_constraints:{primary:0,bookmark:0,unconstrained:0},errors:{}};totals.requests++;
+   if(data.queries)mergeQueryProfiles(totals.queries??={},data.queries);
    for(const name of ['calls','rows_read','rows_written','primary_results','replica_results','bookmark_present','bookmark_missing'])totals[name]+=Number(data[name])||0;
    for(const name of ['primary','bookmark','unconstrained'])totals.session_constraints[name]+=Number(data.session_constraints?.[name])||0;
    for(const e of data.errors||[]){const category=e.operation+':'+e.category;totals.errors[category]=(totals.errors[category]||0)+1;}
