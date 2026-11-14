@@ -69,8 +69,8 @@ export async function agentDeviceRoute(req,env){
   installed(env);if(req.headers.has('origin')||req.headers.has('cookie'))fail('Agent credentials required',403);
   const path=new URL(req.url).pathname;
   if(req.method!=='POST'||!['/v1/agent/enroll','/v1/agent/poll','/v1/agent/upload'].includes(path))return reply({error:'Not found'},404);
-  if(!env.AGENT_RATE_LIMITER)fail('Agent protection unavailable',503);
-  const ip=await hash(req.headers.get('CF-Connecting-IP')||'unknown');if(!(await env.AGENT_RATE_LIMITER.limit({key:'source:'+ip})).success)fail('Request limit exceeded',429);
+  if(!env.AGENT_RATE_LIMITER||!env.AGENT_SOURCE_RATE_LIMITER)fail('Agent protection unavailable',503);
+  const ip=await hash(req.headers.get('CF-Connecting-IP')||'unknown');if(!(await env.AGENT_SOURCE_RATE_LIMITER.limit({key:'source:'+ip})).success)fail('Request limit exceeded',429);
   if(path.endsWith('/enroll')){
    const data=await readBody(req,4096);exact(data,['code','hostname','agent_version']);
    if(!/^[a-f0-9]{64}$/.test(data.code||''))fail('Enrollment unavailable',401);

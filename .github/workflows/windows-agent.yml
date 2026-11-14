@@ -19,7 +19,9 @@ jobs:
       - run: node --test account-backend/tests/agents.test.mjs account-backend/tests/inventory-capacity.test.mjs account-backend/tests/inventory-history.test.mjs
   windows:
     runs-on: windows-2022
-    timeout-minutes: 20
+    timeout-minutes: 15
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:

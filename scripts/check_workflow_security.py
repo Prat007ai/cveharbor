@@ -86,7 +86,7 @@ def validate(doc, filename):
         env = job.get('environment')
         env = env.get('name') if isinstance(env, dict) else env
         condition = job.get('if', '')
-        native_collector = filename == 'session-navigation.yml' and name == 'collector-build'
+        native_collector = (filename == 'session-navigation.yml' and name == 'collector-build') or (filename == 'windows-agent.yml' and name == 'windows')
         require(job.get('runs-on') == ('windows-2022' if native_collector else 'ubuntu-latest'), label + ': use an isolated hosted runner')
         if native_collector:
             require(not env and 'secrets.' not in raw and 'secrets[' not in raw and job.get('permissions') == {'contents':'read'}, label + ': native build must be credential-free and read-only')

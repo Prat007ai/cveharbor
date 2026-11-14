@@ -54,3 +54,8 @@ command = "node ../scripts/build_release_identity.mjs"
 name = "AGENT_RATE_LIMITER"
 namespace_id = "23502"
 simple = { limit = 60, period = 60 }
+
+[[ratelimits]]
+name = "AGENT_SOURCE_RATE_LIMITER"
+namespace_id = "23503"
+simple = { limit = 600, period = 60 }

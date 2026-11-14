@@ -13,4 +13,4 @@ foreach ($target in @(@{Name='CVEHarbor-Agent';Source='Service';Gui=$false;Admin
  if ($LASTEXITCODE -ne 0) { throw "Failed to compile $($target.Name)" }
  '<configuration><startup><supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.8" /></startup><runtime><loadFromRemoteSources enabled="false" /></runtime></configuration>' | Set-Content -LiteralPath (Join-Path $OutputDirectory ($target.Name+'.exe.config')) -Encoding UTF8
 }
-Write-Output 'Built Windows Agent binaries. Trusted publisher signing is required before distribution.'
+Write-Output 'Built unsigned Windows Agent evaluation binaries for testing and demos. Sign future production releases with the verified publisher certificate.'

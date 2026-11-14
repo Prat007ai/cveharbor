@@ -11,7 +11,7 @@ const customer=fixtureId(1),environment=fixtureId(1000);
 function setup(){
  const f=capacityFixture({customers:2,environments:2,assets:0,owners:2});f.sql.exec(fs.readFileSync(new URL('../agent-schema.sql',import.meta.url),'utf8'));
  f.sql.exec("ALTER TABLE team_visible_customers ADD COLUMN role TEXT; CREATE TABLE team_members(org TEXT,user_id TEXT,email TEXT,role TEXT);");
- const env={DB:f.DB,WINDOWS_AGENT_ENABLED:'true',AGENT_INVENTORY_SCHEMA:'1',AGENT_INSTALLER_SHA256:'a'.repeat(64),AGENT_RATE_LIMITER:{limit:async()=>({success:true})}};
+ const env={DB:f.DB,WINDOWS_AGENT_ENABLED:'true',AGENT_INVENTORY_SCHEMA:'1',AGENT_INSTALLER_SHA256:'a'.repeat(64),AGENT_SOURCE_RATE_LIMITER:{limit:async()=>({success:true})},AGENT_RATE_LIMITER:{limit:async()=>({success:true})}};
  const management=(suffix='',data=null,user={id:'owner-0'},params={})=>agentManagement(new Request('https://api.cveharbor.com/v1/agents'+suffix+'?'+new URLSearchParams({customer_id:customer,environment_id:environment,...params}),{method:data?'POST':'GET',headers:data?{'Content-Type':'application/json'}:{},body:data?JSON.stringify(data):undefined}),env,user);
  const device=(action,data,credential)=>agentDeviceRoute(new Request('https://api.cveharbor.com/v1/agent/'+action,{method:'POST',headers:{'Content-Type':'application/json',...(credential?{Authorization:'Bearer '+credential}:{})},body:JSON.stringify(data)}),env);
  const enroll=async()=>{const {code}=await management('/enrollment',{evaluation_accepted:true});const response=await device('enroll',{code,hostname:'TEST-WEB01',agent_version:'1.0.0'});assert.equal(response.status,201);return response.json();};
