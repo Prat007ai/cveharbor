@@ -9,6 +9,7 @@ import {createHash,randomBytes} from 'node:crypto';
 import {capacityFixture,capacitySessions,fixtureId} from '../account-backend/tests/helpers/capacity-db.mjs';
 import {restBatch} from './cvie_rest_batch.mjs';
 import {mergeQueryProfiles} from './capacity_db_observer.mjs';
+import {deployCapacityCoordinator,coordinatorName} from './capacity_authority_deploy.mjs';
 import {seedOutage,extraSchemas} from './nvd_capacity_fixture.mjs';
 const account='9706b4d98ad72884e67fd1eb875c8a61';
 const blocked=new Set(['46710e51-7ca4-4571-b89c-921b9969de0b','fac61562-fc31-426d-8032-550aba63b7f6']);
@@ -56,6 +57,7 @@ export function previewDiagnostics(output){
 }
 export function validateCloudRun(env){
  assert.equal(env.GITHUB_REPOSITORY,'Prat007ai/cveharbor');assert.equal(env.GITHUB_REF,'refs/heads/main');assert.equal(env.GITHUB_EVENT_NAME,'workflow_dispatch');assert.equal(env.GITHUB_RUN_ATTEMPT,'1');
+ assert.ok(env.CAPACITY_AUTHORITY_COORDINATOR===undefined||['true','false'].includes(env.CAPACITY_AUTHORITY_COORDINATOR));
  assert.equal(env.GITHUB_WORKFLOW_REF,'Prat007ai/cveharbor/.github/workflows/inventory-capacity-cloud.yml@refs/heads/main');
  assert.match(env.GITHUB_RUN_ID||'',/^\d{8,20}$/);assert.match(env.GITHUB_SHA||'',/^[a-f0-9]{40}$/);assert.equal(env.CAPACITY_REVIEWED_COMMIT,env.GITHUB_SHA);
  assert.equal(env.CLOUDFLARE_ACCOUNT_ID,account);assert.ok(env.CLOUDFLARE_API_TOKEN);
@@ -107,14 +109,16 @@ export async function cloudRehearsal(env=process.env){
   const scope=fixture.sql.prepare('SELECT id FROM cvie_shared_scopes').get().id;
   await query(restBatch([{sql:"UPDATE cvie_shared_scopes SET status='queued',next_attempt_at=0,lease_until=0 WHERE id=?",params:[scope]},{sql:"UPDATE cvie_provider_budget SET next_request_at=0 WHERE provider='nvd'",params:[]}]).sql);
   receipt.outage_fixture={shared_scopes:1,subscribers:50,saved_advisories:200,epoch:seed.epoch};save();
-  const entry=path.join(root,'entry.mjs');
+  const entry=path.join(root,'entry.mjs'),coordinated=env.CAPACITY_AUTHORITY_COORDINATOR==='true';
   // This adapter limits the temporary preview to actual application reads.
   // It never bypasses application authentication and never invokes AI or mail.
-  fs.writeFileSync(entry,`import worker from ${JSON.stringify(path.join(backend,'account-backend/src/index.js').replaceAll('\\','/'))};\nimport {runCvieStep} from ${JSON.stringify(path.join(backend,'account-backend/src/cvie.js').replaceAll('\\','/'))};\nimport {outageAdapter} from ${JSON.stringify(path.resolve('scripts/nvd_capacity_fixture.mjs').replaceAll('\\','/'))};\nimport {observeDatabase} from ${JSON.stringify(path.resolve('scripts/capacity_db_observer.mjs').replaceAll('\\','/'))};\nimport {publicSourceCacheKey} from ${JSON.stringify(path.join(backend,'account-backend/src/public-source-status-cache.js').replaceAll('\\','/'))};\nconst adapter=outageAdapter(worker,runCvieStep,${seed.epoch},${JSON.stringify(controlKey)});\nexport default {async fetch(req,env,ctx){const publicCacheIdentity=publicSourceCacheKey(env),observed=observeDatabase(env.DB,{detailed:true}),original=await adapter.fetch(req,{...env,DB:observed.binding,CVIE_PUBLIC_CACHE_KEY:publicCacheIdentity},ctx),r=new Response(original.body,original);r.headers.set('X-Capacity-Application','true');r.headers.set('X-Capacity-Database',JSON.stringify(observed.state));return r;}};\n`);
+  fs.writeFileSync(entry,`import worker from ${JSON.stringify(path.join(backend,'account-backend/src/index.js').replaceAll('\\','/'))};\nimport {runCvieStep} from ${JSON.stringify(path.join(backend,'account-backend/src/cvie.js').replaceAll('\\','/'))};\nimport {outageAdapter} from ${JSON.stringify(path.resolve('scripts/nvd_capacity_fixture.mjs').replaceAll('\\','/'))};\nimport {observeDatabase} from ${JSON.stringify(path.resolve('scripts/capacity_db_observer.mjs').replaceAll('\\','/'))};\nimport {publicSourceCacheKey} from ${JSON.stringify(path.join(backend,'account-backend/src/public-source-status-cache.js').replaceAll('\\','/'))};\n${coordinated?'import {coordinatedAuthority} from '+JSON.stringify(path.resolve('scripts/capacity_authority_coordinator.mjs').replaceAll('\\','/'))+';':''}\nconst adapter=outageAdapter(worker,runCvieStep,${seed.epoch},${JSON.stringify(controlKey)});\nexport default {async fetch(req,env,ctx){const publicCacheIdentity=publicSourceCacheKey(env),observed=observeDatabase(${coordinated?"coordinatedAuthority(env.DB,env.CAPACITY_AUTHORITY.get(env.CAPACITY_AUTHORITY.idFromName('retained-fictional-v1')))":'env.DB'},{detailed:true,bindingIdentity:env.DB}),original=await adapter.fetch(req,{...env,DB:observed.binding,CVIE_PUBLIC_CACHE_KEY:publicCacheIdentity},ctx),r=new Response(original.body,original);r.headers.set('X-Capacity-Application','true');r.headers.set('X-Capacity-Database',JSON.stringify(observed.state));return r;}};\n`);
   const config={name,account_id:account,main:entry,compatibility_date:'2026-10-28',compatibility_flags:['nodejs_compat'],workers_dev:false,preview_urls:false,routes:[],vars:{RECOVERY_CONTROL_REQUIRED:'true',CVIE_SHARED_SCANS_ENABLED:'true',AGENT_INVENTORY_SCHEMA:'1',AI_ENABLED:'false'},d1_databases:[{binding:'DB',database_name:retained.name,database_id:database.uuid,preview_database_id:database.uuid}]};
+  if(coordinated)config.durable_objects={bindings:[{name:'CAPACITY_AUTHORITY',class_name:'CapacityAuthorityCoordinator',script_name:coordinatorName}]};
   const configPath=path.join(root,'wrangler.json');fs.writeFileSync(configPath,JSON.stringify(config));receipt.config_sha256=sha(fs.readFileSync(configPath));save();
   const childEnv=Object.fromEntries(['PATH','HOME','TMPDIR','HTTPS_PROXY','HTTP_PROXY','NODE_EXTRA_CA_CERTS'].filter(k=>env[k]).map(k=>[k,env[k]]));
   Object.assign(childEnv,{CI:'true',CLOUDFLARE_ACCOUNT_ID:account,CLOUDFLARE_API_TOKEN:env.CLOUDFLARE_API_TOKEN,WRANGLER_SEND_METRICS:'false',CLOUDFLARE_LOAD_DEV_VARS_FROM_DOT_ENV:'false',XDG_CONFIG_HOME:path.join(root,'wrangler-state')});
+  if(coordinated){receipt.authority_coordinator=await deployCapacityCoordinator(env,root,childEnv,api);save();}
   // Give npx and its Wrangler descendants a dedicated Linux process group so
   // successful measurements can terminate the entire temporary preview tree.
   child=spawn('npx',['--yes','wrangler@4.156.0','dev','--remote','--config',configPath,'--ip','127.0.0.1','--port','8787','--log-level','error'],{env:childEnv,stdio:['ignore','pipe','pipe'],detached:process.platform==='linux'});

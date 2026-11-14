@@ -7,6 +7,10 @@ on:
       - 'customer-security.js'
       - 'team-ui.js'
       - 'scripts/inventory_capacity*'
+      - 'scripts/capacity_authority*'
+      - 'scripts/capacity_db_observer.mjs'
+      - 'scripts/nvd_capacity*'
+      - '.github/workflows/inventory-capacity-cloud.yml'
       - '.github/workflows/inventory-capacity.yml'
   push:
     branches: [main]
@@ -25,7 +29,7 @@ jobs:
         with:
           node-version: '24'
       - name: Verify completeness, revisions, limits and customer isolation
-        run: node --test scripts/inventory_capacity_cloud.test.mjs scripts/nvd_capacity.test.mjs account-backend/tests/inventory-capacity.test.mjs account-backend/tests/inventory-history.test.mjs account-backend/tests/inventory-import.test.mjs
+        run: node --test scripts/capacity_authority_coordinator.test.mjs scripts/inventory_capacity_cloud.test.mjs scripts/nvd_capacity.test.mjs account-backend/tests/inventory-capacity.test.mjs account-backend/tests/inventory-history.test.mjs account-backend/tests/inventory-import.test.mjs
       - name: Rehearse 50 concurrent sessions against loopback only
         env:
           CAPACITY_OUTPUT: capacity-local.json

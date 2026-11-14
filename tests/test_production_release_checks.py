@@ -89,6 +89,9 @@ class ProductionChecksTest(unittest.TestCase):
             if '/workflows/' in path:return {'workflow_runs':[self.run]}
             return {'artifacts':artifacts} if '/artifacts?' in path else {'jobs':self.jobs}
         self.assertTrue(release.check_capacity_cloud_commit(self.sha,get))
+        artifacts[1]['name']='capacity-coordinator-result'
+        self.assertFalse(release.check_capacity_cloud_commit(self.sha,get), 'An experimental coordinator result cannot qualify the unmodified production package')
+        artifacts[1]['name']='capacity-cloud-result'
         self.run['conclusion']='cancelled'
         with self.assertRaises(ValueError):release.check_capacity_cloud_commit(self.sha,get)
         self.run['conclusion']='success'

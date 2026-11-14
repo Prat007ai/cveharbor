@@ -7,6 +7,11 @@ on:
         description: Exact reviewed main commit
         required: true
         type: string
+      authority_coordinator:
+        description: Include the private retained fictional authority coordinator
+        required: false
+        default: false
+        type: boolean
 permissions:
   contents: read
 jobs:
@@ -42,7 +47,7 @@ jobs:
           github-token: ${{ github.token }}
       - run: python scripts/dashboard_read_release.py backend verification/capacity-backend
       - run: python scripts/windows_agent_release.py prepare verification/capacity-site
-      - run: node --test account-backend/tests/versioned-read-cache.test.mjs account-backend/tests/dashboard-read-capacity.test.mjs account-backend/tests/inventory-capacity.test.mjs scripts/inventory_capacity_cloud.test.mjs scripts/nvd_capacity.test.mjs
+      - run: node --test account-backend/tests/versioned-read-cache.test.mjs account-backend/tests/dashboard-read-capacity.test.mjs account-backend/tests/inventory-capacity.test.mjs scripts/inventory_capacity_cloud.test.mjs scripts/nvd_capacity.test.mjs scripts/capacity_authority_coordinator.test.mjs
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: capacity-backend
@@ -59,6 +64,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     environment: cloudflare-cvie-staging
+    env:
+      CAPACITY_AUTHORITY_COORDINATOR: ${{ inputs.authority_coordinator }}
     concurrency:
       group: cveharbor-capacity-load
       cancel-in-progress: false
@@ -88,6 +95,6 @@ jobs:
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
-          name: capacity-cloud-result
+          name: ${{ inputs.authority_coordinator && 'capacity-coordinator-result' || 'capacity-cloud-result' }}
           path: capacity-cloud-result.json
           retention-days: 14
