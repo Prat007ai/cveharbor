@@ -61,3 +61,10 @@ Snapshots expire after five seconds without renewal. This bounds clock-derived s
 Validation: 126 scoped package tests and 13 test-harness tests pass. The local timeout/503 rehearsal passes unchanged gates: 50/50 sessions in both phases, 5,385 journeys, worst endpoint p95 247 ms, workspace tab 459/456 ms. No Cloudflare capacity conclusion is drawn from the local approximation. The cloud probe now records whether unchanged primary literal reads return equal bookmarks (boolean only; no bookmark or private value is exported). The cloud gate and production release remain pending.
 
 The cloud observer now derives the cache identity from the original native D1 binding before wrapping it for measurements. It no longer substitutes a constant test identity, so a cloud pass must reflect the production binding lifetime as well as bookmark behavior.
+
+
+## Query-cost investigation after PR387
+
+Cloud run 43549119081 failed (artifact 14095553764; SHA-256 47accfefab5c840e3c8636ae6fe60771e108c57e07d41b0fc6fc749bd180740a). Unchanged primary bookmarks were equal and response reuse reduced database calls, but only 2/50 sessions survived timeout and 6/50 survived HTTP 503. All six browser probes completed with controls at or below 199 ms, which does not compensate for failed customer sessions. Production remains unchanged.
+
+The next isolated run adds numeric per-query profiles: a fingerprint of SQL structure (never SQL or bindings), native execution time, returned byte count, rows read, primary/replica routing and error counts. The diagnostic observer implements native first() via all() followed by row-zero selection so metadata discarded by first() is measured without issuing another query. Successful-result observation time is recorded before diagnostic serialization. Authentication and application results remain unchanged. Existing workload, failed-session handling and timing gates remain intact; this is an investigation of the same held backend, not a new production candidate. Fourteen observer/outage harness tests pass, including no exported SQL, credentials or values.
