@@ -5,7 +5,7 @@ on:
       schema:
         description: Customer assignment storage to activate
         type: choice
-        options: [managed, manual, firewall, team, workspace-history, organization-ai, server-network, personal-ai, inventory-capacity]
+        options: [managed, manual, firewall, team, workspace-history, organization-ai, server-network, personal-ai, inventory-capacity, windows-agent]
         default: managed
       reviewed_commit:
         description: Exact reviewed main commit
@@ -93,5 +93,14 @@ jobs:
         with:
           name: inventory-capacity-migration-${{ github.run_id }}
           path: inventory-capacity-migration.json
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Retain agent migration recovery receipt
+        if: always() && inputs.schema == 'windows-agent'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: windows-agent-migration-${{ github.run_id }}
+          path: windows-agent-migration.json
           if-no-files-found: warn
           retention-days: 30

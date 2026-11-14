@@ -131,7 +131,10 @@ def site(action,out):
 if __name__=='__main__':
     action=sys.argv[1]
     output=Path(sys.argv[2]).resolve() if len(sys.argv)>2 else None
-    if action == 'dashboard-read-capacity':
+    if action == 'windows-agent':
+        from windows_agent_release import backend
+        backend(output)
+    elif action == 'dashboard-read-capacity':
         from dashboard_read_release import backend
         backend(output)
     elif action == 'nvd-outage':

@@ -9,6 +9,7 @@ import {verifyService} from './production_service_health.mjs';
 
 const account='aa99b9b15e0492302e4f6484b8d27bc2';
 const schema=process.env.CUSTOMER_SCHEMA||'managed';
+if(schema==='windows-agent'){await import('./windows_agent_schema.mjs');process.exit(0);}
 if(schema==='inventory-capacity'){await import('./inventory_capacity_schema.mjs');process.exit(0);}
 if(schema==='personal-ai'){await import('./personal_ai_schema.mjs');process.exit(0);}
 if(schema==='server-network'){await import('./server_network_schema.mjs');process.exit(0);}

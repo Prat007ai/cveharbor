@@ -47,7 +47,7 @@ jobs:
           github-token: ${{ github.token }}
       - name: Verify the isolated website using fictional inventory
         run: |
-          python scripts/inventory_capacity_release.py prepare "$RUNNER_TEMP/inventory-site"
+          python scripts/report_interaction_release.py prepare "$RUNNER_TEMP/inventory-site"
           SERVER_TEST_SITE="$RUNNER_TEMP/inventory-site/after" SERVER_SCREENSHOTS="$RUNNER_TEMP/inventory-screens" node scripts/server_security_browser.mjs
           INVENTORY_TEST_SITE="$RUNNER_TEMP/inventory-site/after" INVENTORY_SCREENSHOTS="$RUNNER_TEMP/inventory-screens" node scripts/inventory_browser.mjs
           INVENTORY_TEST_SITE="$RUNNER_TEMP/inventory-site/after" INVENTORY_SCREENSHOTS="$RUNNER_TEMP/inventory-screens" node scripts/inventory_experience_browser.mjs
@@ -89,7 +89,7 @@ jobs:
       - run: node scripts/server_network_schema.mjs --rehearse
       - name: Verify exact network package and paused AI
         run: |
-          python scripts/dashboard_read_release.py backend "$RUNNER_TEMP/network-worker"
+          python -c "import sys;from pathlib import Path;sys.path.insert(0,'scripts');import team_release as t;t.previous('da927ac147b130930a870be1a65f4e80b9ae4450','dashboard_read_release.py','backend',Path(sys.argv[1]))" "$RUNNER_TEMP/network-worker"
           rsync --archive --delete "$RUNNER_TEMP/network-worker/account-backend/src/" account-backend/src/
           cp "$RUNNER_TEMP/network-worker/account-backend/wrangler.toml" account-backend/wrangler.toml
           node --test account-backend/tests/server-network.test.mjs account-backend/tests/inventory-import.test.mjs account-backend/tests/team-access.test.mjs account-backend/tests/ai-*.test.mjs account-backend/tests/azure-connection.test.mjs

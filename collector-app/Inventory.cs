@@ -43,6 +43,7 @@ namespace CVEHarbor.Collector
         public string Hostname { get; set; }
         public string CollectedUtc { get; set; }
         public bool Demo { get; set; }
+        public bool Incomplete { get; set; }
         public List<Product> Products = new List<Product>();
         public List<Adapter> Adapters = new List<Adapter>();
         public List<string> Warnings = new List<string>();
@@ -51,7 +52,7 @@ namespace CVEHarbor.Collector
             name = Exporter.Safe(name); version = Exporter.Safe(version);
             if (name.Length == 0) return;
             if (name.Length > 120 || version.Length > 80)
-            { Warnings.Add("An overlong product name or version was excluded. Review the source inventory."); return; }
+            { Incomplete=true; Warnings.Add("An overlong product name or version was excluded. Review the source inventory."); return; }
             if (Products.Any(p => String.Equals(p.Technology, name, StringComparison.OrdinalIgnoreCase) && String.Equals(p.Version, version, StringComparison.OrdinalIgnoreCase))) return;
             Products.Add(new Product { Technology = name, Version = version, Details = Exporter.Safe(details) });
             if (version.Length == 0) Warnings.Add("Version unavailable: " + name);
@@ -87,14 +88,14 @@ namespace CVEHarbor.Collector
             s.Add(name, version, "Publisher: "+publisher+"; source: "+source+"; installed: "+date+"; collected UTC: "+s.CollectedUtc);
         }
         static string Read(RegistryKey k,string name) { return Convert.ToString(k.GetValue(name, "")); }
-        static void Software(Snapshot s)
+        static void Software(Snapshot s, bool machineOnly)
         {
-            foreach (RegistryHive hive in new[]{RegistryHive.LocalMachine,RegistryHive.CurrentUser})
+            foreach (RegistryHive hive in machineOnly?new[]{RegistryHive.LocalMachine}:new[]{RegistryHive.LocalMachine,RegistryHive.CurrentUser})
             foreach (RegistryView view in new[]{RegistryView.Registry64,RegistryView.Registry32})
             {
                 try { using(var root=RegistryKey.OpenBaseKey(hive,view)) using(var key=root.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"))
-                { if(key==null)continue; foreach(string child in key.GetSubKeyNames()) try { using(var item=key.OpenSubKey(child)) if(item!=null) Installed(s,Read(item,"DisplayName"),Read(item,"DisplayVersion"),Read(item,"Publisher"),Read(item,"InstallDate"),hive+"/"+view+" Programs and Features"); } catch(Exception ex) { s.Warnings.Add("An installed-software record could not be read: "+ex.GetType().Name); } }
-                } catch(Exception ex){s.Warnings.Add("Software registry view unavailable: "+hive+"/"+view+" ("+ex.GetType().Name+")");}
+                { if(key==null)continue; foreach(string child in key.GetSubKeyNames()) try { using(var item=key.OpenSubKey(child)) if(item!=null) Installed(s,Read(item,"DisplayName"),Read(item,"DisplayVersion"),Read(item,"Publisher"),Read(item,"InstallDate"),hive+"/"+view+" Programs and Features"); } catch(Exception ex) { s.Incomplete=true; s.Warnings.Add("An installed-software record could not be read: "+ex.GetType().Name); } }
+                } catch(Exception ex){s.Incomplete=true;s.Warnings.Add("Software registry view unavailable: "+hive+"/"+view+" ("+ex.GetType().Name+")");}
             }
         }
         static void WalkFramework(Snapshot s, RegistryKey key, bool modern, string path)
@@ -106,24 +107,24 @@ namespace CVEHarbor.Collector
                 s.Add(".NET Framework",Read(key,"Version"),"Framework registry version; verify patch applicability.");
             foreach(string sub in key.GetSubKeyNames()) using(var child=key.OpenSubKey(sub)) if(child!=null) WalkFramework(s,child,modern,path==""?sub:path+"\\"+sub);
         }
-        static void Frameworks(Snapshot s)
+        static void Frameworks(Snapshot s, bool machineOnly)
         {
             try { using(var root=RegistryKey.OpenBaseKey(RegistryHive.LocalMachine,RegistryView.Registry64)) using(var ndp=root.OpenSubKey(@"SOFTWARE\Microsoft\NET Framework Setup\NDP"))
                 if(ndp!=null) { bool modern; using(var full=ndp.OpenSubKey(@"v4\Full")) modern=full!=null && full.GetValue("Release")!=null; WalkFramework(s,ndp,modern,""); }
-            } catch(Exception ex){s.Warnings.Add(".NET Framework inventory incomplete: "+ex.GetType().Name);}
+            } catch(Exception ex){s.Incomplete=true;s.Warnings.Add(".NET Framework inventory incomplete: "+ex.GetType().Name);}
             var roots=new List<string>();
             foreach(string variable in new[]{"ProgramW6432","ProgramFiles","ProgramFiles(x86)"}) {string v=Environment.GetEnvironmentVariable(variable);if(!String.IsNullOrEmpty(v))roots.Add(Path.Combine(v,"dotnet"));}
-            roots.Add(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),".dotnet"));
+            if(!machineOnly)roots.Add(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),".dotnet"));
             string custom=Environment.GetEnvironmentVariable("DOTNET_ROOT");if(!String.IsNullOrEmpty(custom))roots.Add(custom);
             string[] folders={@"shared\Microsoft.NETCore.App",@"shared\Microsoft.AspNetCore.App",@"shared\Microsoft.WindowsDesktop.App","sdk"};
             string[] names={".NET Runtime","ASP.NET Core Runtime",".NET Desktop Runtime",".NET SDK"};
             foreach(string root in roots.Distinct(StringComparer.OrdinalIgnoreCase))
             {
-                if(root.StartsWith(@"\\") || !Path.IsPathRooted(root)){s.Warnings.Add("Non-local .NET path skipped.");continue;}
+                if(root.StartsWith(@"\\") || !Path.IsPathRooted(root)){s.Incomplete=true;s.Warnings.Add("Non-local .NET path skipped.");continue;}
                 for(int i=0;i<folders.Length;i++) try {
                     string path=Path.Combine(root,folders[i]);if(!Directory.Exists(path))continue;
                     foreach(string dir in Directory.GetDirectories(path)) {string v=Path.GetFileName(dir);if(Regex.IsMatch(v,@"^\d+\.\d+\.\d+(?:-[a-zA-Z0-9.-]+)?$"))s.Add(names[i],v,"Discovered .NET installation directory; verify active usage.");}
-                }catch(Exception ex){s.Warnings.Add("A .NET installation directory could not be read: "+ex.GetType().Name);}
+                }catch(Exception ex){s.Incomplete=true;s.Warnings.Add("A .NET installation directory could not be read: "+ex.GetType().Name);}
             }
         }
         static void Network(Snapshot s)
@@ -138,26 +139,27 @@ namespace CVEHarbor.Collector
                     adapter.addresses.Add(new Address{ip=ip,prefix=a.PrefixLength,state=a.DuplicateAddressDetectionState.ToString(),skip_source=false});
                 }
                 s.Adapters.Add(adapter);
-            }catch(Exception ex){s.Warnings.Add("An adapter could not be fully collected: "+ex.GetType().Name);}
-            }catch(Exception ex){s.Warnings.Add("Network inventory unavailable: "+ex.GetType().Name);}
+            }catch(Exception ex){s.Incomplete=true;s.Warnings.Add("An adapter could not be fully collected: "+ex.GetType().Name);}
+            }catch(Exception ex){s.Incomplete=true;s.Warnings.Add("Network inventory unavailable: "+ex.GetType().Name);}
         }
-        public static Snapshot Collect(Action<string> progress)
+        static ManagementObjectCollection TimedResults(ManagementObjectSearcher search){search.Options.Timeout=TimeSpan.FromSeconds(30);search.Options.ReturnImmediately=true;return search.Get();}
+        public static Snapshot Collect(Action<string> progress, bool machineOnly=false)
         {
             var s=new Snapshot{Hostname=Environment.MachineName,CollectedUtc=DateTime.UtcNow.ToString("o")};
             progress("Reading Windows edition and build...");
-            try { using(var search=new ManagementObjectSearcher("SELECT Caption,Version,OSArchitecture FROM Win32_OperatingSystem")) using(var results=search.Get())
+            try { using(var search=new ManagementObjectSearcher("SELECT Caption,Version,OSArchitecture FROM Win32_OperatingSystem")) using(var results=TimedResults(search))
                 foreach(ManagementObject os in results) using(os) {
                     string caption=Convert.ToString(os["Caption"]),version=Convert.ToString(os["Version"]),display="";
                     using(var root=RegistryKey.OpenBaseKey(RegistryHive.LocalMachine,RegistryView.Registry64)) using(var cv=root.OpenSubKey(@"SOFTWARE\Microsoft\Windows NT\CurrentVersion"))
                     if(cv!=null){string ubr=Read(cv,"UBR");if(ubr!="")version+="."+ubr;display=Read(cv,"DisplayVersion");}
                     s.Add(caption.IndexOf("Windows Server",StringComparison.OrdinalIgnoreCase)>=0?"Windows Server":"Windows",version,"Edition: "+caption+"; display version: "+display+"; architecture: "+os["OSArchitecture"]+"; collected UTC: "+s.CollectedUtc);
                 }
-            }catch(Exception ex){s.Warnings.Add("Operating system inventory incomplete: "+ex.GetType().Name);}
-            progress("Reading installed software (Programs and Features)..."); Software(s);
-            progress("Reading .NET runtimes, SDKs and IIS..."); Frameworks(s);
+            }catch(Exception ex){s.Incomplete=true;s.Warnings.Add("Operating system inventory incomplete: "+ex.GetType().Name);}
+            progress("Reading installed software (Programs and Features)..."); Software(s,machineOnly);
+            progress("Reading .NET runtimes, SDKs and IIS..."); Frameworks(s,machineOnly);
             try {using(var root=RegistryKey.OpenBaseKey(RegistryHive.LocalMachine,RegistryView.Registry64)) using(var iis=root.OpenSubKey(@"SOFTWARE\Microsoft\InetStp"))
                 if(iis!=null && Read(iis,"MajorVersion")!="")s.Add("IIS",Read(iis,"MajorVersion")+"."+Read(iis,"MinorVersion"),"IIS version; Windows build and patch evidence are also required.");
-            }catch(Exception ex){s.Warnings.Add("IIS inventory unavailable: "+ex.GetType().Name);}
+            }catch(Exception ex){s.Incomplete=true;s.Warnings.Add("IIS inventory unavailable: "+ex.GetType().Name);}
             progress("Reading network adapters and addresses..."); Network(s);
             s.Products=s.Products.OrderBy(p=>p.Technology,StringComparer.OrdinalIgnoreCase).ThenBy(p=>p.Version,StringComparer.OrdinalIgnoreCase).ToList();return s;
         }

@@ -31,7 +31,7 @@ jobs:
           node --test account-backend/tests/workspace-history.test.mjs account-backend/tests/workspace-summary.test.mjs
       - name: Validate the exact backend package without credentials
         run: |
-          python scripts/workspace_history_package.py "$RUNNER_TEMP/history-worker"
+          python -c "import sys;from pathlib import Path;sys.path.insert(0,'scripts');import team_release as t;t.previous('94c479d22355bd8f0b2545550bb5a8bd6383add9','team_release.py','workspace-history',Path(sys.argv[1]))" "$RUNNER_TEMP/history-worker"
           rsync --archive --delete "$RUNNER_TEMP/history-worker/account-backend/src/" account-backend/src/
           cp "$RUNNER_TEMP/history-worker/account-backend/wrangler.toml" account-backend/wrangler.toml
           node --test account-backend/tests/azure-connection.test.mjs account-backend/tests/workspace-history.test.mjs account-backend/tests/workspace-summary.test.mjs account-backend/tests/team-access.test.mjs account-backend/tests/cvie-evidence.test.mjs account-backend/tests/cvie-shared.test.mjs
