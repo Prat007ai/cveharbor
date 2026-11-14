@@ -136,7 +136,7 @@ def main():
         ai_release = any(inputs.get(key) == 'organization-ai' for key in ('team_release', 'site_release', 'schema'))
         inventory_release = any(inputs.get(key) in ('windows-inventory','dotnet-mapping','server-security','server-network') for key in ('team_release', 'site_release','schema'))
         inventory_jobs = ('collector','workflow','mapping','network') if any(inputs.get(k)=='server-network' for k in ('team_release','site_release','schema')) else ('collector','workflow','mapping') if inputs.get('team_release') == 'dotnet-mapping' else ('collector','workflow')
-        capacity_release = any(inputs.get(key)=='inventory-capacity' for key in ('team_release','site_release','schema'))
+        capacity_release = any(inputs.get(key) in ('inventory-capacity','dashboard-read-capacity') for key in ('team_release','site_release','schema'))
         if check_commit(sha) and (not ai_release or check_ai_commit(sha)) and (not inventory_release or check_inventory_commit(sha, required_jobs=inventory_jobs)) and (not capacity_release or check_capacity_commit(sha) and check_inventory_commit(sha) and check_capacity_cloud_commit(sha)):
             print(f"Verified production CI for {sha}.")
             return
