@@ -99,17 +99,22 @@ async function loadSourceHealth(env,now){
   retry_at:row.record_retry_at||row.next_attempt_at,
  }))};
 }
-export async function evidenceContext(env,userId,scope='all'){
+export async function evidenceContext(env,userId,scope='all',currentProducts=null){
  if(!await evidenceReady(env))return null;
- const products=((await q(env.DB,ownedProductSql(env,'p.*',scope),userId).all()).results||[]).map(overlaySharedProduct);
+ // Reuse this request's already scoped product query, never another account's
+ // cached catalogue. Public source metadata can be fetched alongside products.
+ if(currentProducts?.some(p=>p.user_id!==userId))throw Error('Evidence products must belong to the current account');
+ const [products,sourceRows]=await Promise.all([
+  currentProducts??q(env.DB,ownedProductSql(env,'p.*',scope),userId).all().then(r=>(r.results||[]).map(overlaySharedProduct)),
+  env.DB.prepare('SELECT * FROM cvie_sources').all()
+ ]);
  const families=products.flatMap(p=>{
   const scope=isHyperV(p)?'windows_hyperv':'';
   const keys=scope&&!hyperVHost(p.cpe)?['scope:windows_hyperv']:productFamilies(p);
   const rawLabels=coveragePlan(p).families.length?coveragePlan(p).families.flatMap(cpe=>rawProductLabels({...p,cpe})):rawProductLabels(p);
   return keys.map(key=>({product_id:p.id,key,labels:productLabels(p),raw_labels:rawLabels,scope}));
  });
- const sources=(await env.DB.prepare('SELECT * FROM cvie_sources').all()).results||[];
- return {products,scope,families:JSON.stringify(families),sources:Object.fromEntries(sources.map(s=>[s.id,s]))};
+ return {products,scope,families:JSON.stringify(families),sources:Object.fromEntries((sourceRows.results||[]).map(s=>[s.id,s]))};
 }
 // SQL keyset pagination limits both public evidence and private data to the requested page.
 function familiesCte(pageOnly=false){
@@ -241,8 +246,8 @@ export async function combinedCounts(env,userId,recent,history,now=Date.now(),co
   SUM(CASE WHEN published<? AND kev_json IS NOT NULL THEN 1 ELSE 0 END) AS older_kev_history_count
   FROM unified WHERE published<=? GROUP BY product_id`,ctx.families,JSON.stringify(ctx.products.map(p=>p.id)),userId,recent,history,recent,history,new Date(now).toISOString()).all()).results||[];
 }
-export async function withdrawnIds(env){
- if(!await evidenceReady(env))return [];
+export async function withdrawnIds(env,evidenceAvailable=null){
+ if(!(evidenceAvailable??await evidenceReady(env)))return [];
  return (await env.DB.prepare("SELECT cve_id FROM cvie_disclosures WHERE state='REJECTED'").all()).results.map(r=>r.cve_id);
 }
 export async function excludedProductCves(env,userId,context=null){
