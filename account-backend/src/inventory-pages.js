@@ -40,8 +40,12 @@ export async function inventoryPage(req,env,user,team=null){
  if(revisionParam!==null&&!/^\d{1,15}$/.test(revisionParam))fail('Invalid inventory revision');
  const expected=cursor?.revision??(revisionParam===null?null:Number(revisionParam));
  if(cursor&&revisionParam!==null&&Number(revisionParam)!==cursor.revision)fail('Conflicting inventory revision');
+ // The owned environment set already enforces the selected customer's scope.
+ // Avoid repeating an environment index lookup for every software row.
+ const directAssets=resource==='assets'&&!team;
  const clauses=['t.user_id=?'],args=[owner];
- if(customer){clauses.push(def.scope+'=?');args.push(customer);}
+ if(customer&&!directAssets){clauses.push(def.scope+'=?');args.push(customer);}
+ if(directAssets&&!customer){clauses.push('t.environment_id IN (SELECT id FROM inventory_environments WHERE user_id=?)');args.push(owner);}
  // Restrict indexed keys before joining; a selected customer must not scan
  // all other customers belonging to a large MSP account.
  if(customer&&['assets','packages','networks'].includes(resource)){
@@ -60,7 +64,7 @@ export async function inventoryPage(req,env,user,team=null){
  const guardArgs=team?[team.org,team.actor,owner,customer]:customer?[owner,customer]:[];
  const environmentGuard=environment?'SELECT id FROM inventory_environments WHERE user_id=? AND id=?'+(customer?' AND customer_id=?':''):'SELECT 1';
  const environmentArgs=environment?[owner,environment,...customer?[customer]:[]]:[];
- const query='SELECT '+def.fields+' FROM '+def.table+' t'+(def.join||'')+' WHERE '+clauses.join(' AND ')+(def.extra||'')+' ORDER BY '+def.keys.map(k=>'t.'+k).join(',')+' LIMIT '+(INVENTORY_PAGE_SIZE+1);
+ const query='SELECT '+def.fields+' FROM '+def.table+' t'+(directAssets?'':def.join||'')+' WHERE '+clauses.join(' AND ')+(def.extra||'')+' ORDER BY '+def.keys.map(k=>'t.'+k).join(',')+' LIMIT '+(INVENTORY_PAGE_SIZE+1);
  // D1 serializes every returned object before sending it to the Worker. A
  // bounded array payload avoids repeating field names for every software row;
  // reconstruct the existing public shape here, without caching private data.

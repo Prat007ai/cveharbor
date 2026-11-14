@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import patch
 from scripts import production_release_checks as release
 
 
@@ -22,6 +23,17 @@ class ProductionChecksTest(unittest.TestCase):
 
     def test_reuses_ci_on_current_main(self):
         self.assertTrue(release.check_commit(self.sha, self.api))
+
+    def test_dashboard_capacity_release_cannot_skip_cloud_failure(self):
+        env = {'GITHUB_REPOSITORY': release.REPOSITORY, 'GITHUB_REF': 'refs/heads/main',
+               'GITHUB_SHA': self.sha, 'GITHUB_EVENT_PATH': 'fictional-event.json'}
+        with patch.dict(release.os.environ, env), patch.object(release.Path, 'read_text', return_value='{"inputs":{"team_release":"dashboard-read-capacity"}}'), \
+             patch.object(release, 'check_commit', return_value=True), patch.object(release, 'check_capacity_commit', return_value=True), \
+             patch.object(release, 'check_inventory_commit', return_value=True), \
+             patch.object(release, 'check_capacity_cloud_commit', side_effect=ValueError('Cloud outage rehearsal failed')) as cloud:
+            with self.assertRaisesRegex(ValueError, 'Cloud outage rehearsal failed'):
+                release.main()
+            cloud.assert_called_once_with(self.sha)
 
     def test_in_progress_waits_and_failure_stops(self):
         self.run["status"] = "in_progress"
