@@ -2,7 +2,7 @@
 // requires a newly validated primary session/MFA/hold and the exact D1 bookmark.
 // No cross-request authentication, promises, errors or unbounded inventory reads.
 const databases=new WeakMap();
-export const RESPONSE_TTL=5000,RESPONSE_BYTES=32*1024*1024,RESPONSE_ENTRY_BYTES=512*1024;
+export const RESPONSE_TTL=5000,INVENTORY_RESPONSE_TTL=60000,RESPONSE_BYTES=32*1024*1024,RESPONSE_ENTRY_BYTES=512*1024;
 const routes=new Set(['/v1/workspace/summary','/v1/cvie','/v1/cvie/advisories']);
 const flags=['AGENT_INVENTORY_SCHEMA','CVIE_SHARED_SCANS_ENABLED','CVIE_REGISTRY_ENABLED','CVIE_FAST_EVIDENCE_ENABLED','CVIE_TOPIC_HISTORY_ENABLED','CVIE_METRICS_ENABLED'];
 const partial=value=>value&&typeof value==='object'&&(value.available===false||value.ready===false||Object.values(value).some(partial));
@@ -13,13 +13,20 @@ export function responseCacheKey(req,env,user){
  if(!routes.has(url.pathname)&&!metadata)return null;
  return JSON.stringify([user.id,url.origin,url.pathname,url.search,flags.map(k=>env[k]??null)]);
 }
+// Inventory pages contain only database state, with no clock-dependent fields.
+// Keep them resident across distributed-worker visits, but require the exact
+// freshly checked primary bookmark on every hit. Any DB change still misses.
+function lifetime(key){
+ try{const parts=JSON.parse(key);if(parts[2]==='/v1/inventory/page')return INVENTORY_RESPONSE_TTL;}catch{}
+ return RESPONSE_TTL;
+}
 function state(identity){let s=databases.get(identity);if(!s){s={rows:new Map(),bytes:0};databases.set(identity,s);}return s;}
 function remove(s,key,row){s.rows.delete(key);s.bytes-=row.bytes;}
 export function cachedResponse(identity,bookmark,key,now=Date.now()){
  if(!identity||typeof bookmark!=='string'||!bookmark||!key)return null;
  const s=state(identity),id=JSON.stringify([bookmark,key]),row=s.rows.get(id);
  if(!row)return null;
- if(now<row.at||now-row.at>=RESPONSE_TTL){remove(s,id,row);return null;}
+ if(now<row.at||now-row.at>=row.ttl){remove(s,id,row);return null;}
  s.rows.delete(id);s.rows.set(id,row);
  return new Response(row.body,{status:200,headers:row.headers});
 }
@@ -31,9 +38,9 @@ export async function rememberResponse(identity,bookmark,key,response,stillCurre
  if(data?.error||partial(data))return;
  const s=state(identity),id=JSON.stringify([bookmark,key]),bytes=body.byteLength+2*id.length;
  const old=s.rows.get(id);if(old)remove(s,id,old);
- for(const [k,row] of s.rows)if(now<row.at||now-row.at>=RESPONSE_TTL)remove(s,k,row);
+ for(const [k,row] of s.rows)if(now<row.at||now-row.at>=row.ttl)remove(s,k,row);
  while(s.rows.size>=512||s.bytes+bytes>RESPONSE_BYTES){const [k,row]=s.rows.entries().next().value;remove(s,k,row);}
  const headers=[...response.headers];headers.push(['X-CVEHarbor-Read-At',new Date(now).toISOString()]);
- s.rows.set(id,{body,headers,at:now,bytes});s.bytes+=bytes;
+ s.rows.set(id,{body,headers,at:now,bytes,ttl:lifetime(key)});s.bytes+=bytes;
  response.headers.set('X-CVEHarbor-Read-At',new Date(now).toISOString());
 }
