@@ -65,7 +65,7 @@ jobs:
           github-token: ${{ github.token }}
       - name: Reproduce the serving baseline and verify only the reviewed delta
         run: |
-          python scripts/dashboard_read_release.py backend "$RUNNER_TEMP/capacity-backend"
+          python -c "import sys;from pathlib import Path;sys.path.insert(0,'scripts');import team_release as t;t.previous('94c479d22355bd8f0b2545550bb5a8bd6383add9','dashboard_read_release.py','backend',Path(sys.argv[1]))" "$RUNNER_TEMP/capacity-backend"
           python scripts/inventory_capacity_release.py prepare "$RUNNER_TEMP/capacity-site"
       - run: npm install --prefix staging --ignore-scripts --no-package-lock
       - name: Test the exact website package with fictional inventory

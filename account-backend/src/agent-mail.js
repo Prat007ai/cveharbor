@@ -8,7 +8,8 @@ export function agentAlert(row){
  const facts=['Suspicious agent activity detected; this is not confirmation of a server compromise.',
   'Customer: '+row.customer,'Environment: '+row.environment,'Server: '+row.hostname,
   'Detected: '+new Date(row.opened_at*1000).toISOString(),'Incident: '+row.id,
-  'Reason: '+row.reason,'Action: CVEHarbor has suspended uploads from this device. The last accepted inventory is retained.',
+  'Reason: '+row.reason,'Action at detection: CVEHarbor suspended uploads from this device and retained the last accepted inventory.',
+  row.resolved_at?'Incident reviewed: '+new Date(row.resolved_at*1000).toISOString()+'. Check the dashboard for current device status.':'Uploads remain suspended pending review.',
   'Last accepted collection: '+(row.last_sync?new Date(row.last_sync*1000).toISOString():'None'),
   'Check the affected server for recent maintenance, agent errors, unexpected processes and unauthorized access. If credentials may be compromised, revoke this device and re-enroll after investigation.',
   'An authorized owner must review the incident before uploads resume. Signing in is required; this email does not grant access.',link];

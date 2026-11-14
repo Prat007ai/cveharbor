@@ -89,7 +89,7 @@ jobs:
       - run: node scripts/server_network_schema.mjs --rehearse
       - name: Verify exact network package and paused AI
         run: |
-          python scripts/dashboard_read_release.py backend "$RUNNER_TEMP/network-worker"
+          python -c "import sys;from pathlib import Path;sys.path.insert(0,'scripts');import team_release as t;t.previous('94c479d22355bd8f0b2545550bb5a8bd6383add9','dashboard_read_release.py','backend',Path(sys.argv[1]))" "$RUNNER_TEMP/network-worker"
           rsync --archive --delete "$RUNNER_TEMP/network-worker/account-backend/src/" account-backend/src/
           cp "$RUNNER_TEMP/network-worker/account-backend/wrangler.toml" account-backend/wrangler.toml
           node --test account-backend/tests/server-network.test.mjs account-backend/tests/inventory-import.test.mjs account-backend/tests/team-access.test.mjs account-backend/tests/ai-*.test.mjs account-backend/tests/azure-connection.test.mjs
