@@ -27,7 +27,8 @@ export function snapshot(raw){
  exact(raw,['schema','sequence','request','collected_at','hostname','agent_version','complete','products','network','warnings']);
  if(raw.schema!==1||!Number.isSafeInteger(raw.sequence)||raw.sequence<1||!Number.isSafeInteger(raw.request)||raw.request<0||typeof raw.complete!=='boolean')fail('Invalid collection metadata');
  const collected=text(raw.collected_at,40,'collection time');
- if(!/^\d{4}-\d\d-\d\dT/.test(collected)||!Number.isFinite(Date.parse(collected))||Date.parse(collected)>Date.now()+600000||Date.parse(collected)<Date.now()-7*86400000)fail('Collection time outside accepted window');
+ if(!/^\d{4}-\d\d-\d\dT/.test(collected)||!Number.isFinite(Date.parse(collected))||Date.parse(collected)>Date.now()+600000)fail('Collection time outside accepted window');
+ if(Date.parse(collected)<Date.now()-7*86400000)fail('Stored collection expired. Poll and collect fresh inventory.',409);
  const hostname=text(raw.hostname,120,'hostname'),version=text(raw.agent_version,30,'agent version');
  if(!/^1\.\d+\.\d+$/.test(version))fail('Unsupported agent version');
  if(!Array.isArray(raw.products)||raw.products.length<1||raw.products.length>10000)fail('Inventory must contain 1–10,000 software entries');

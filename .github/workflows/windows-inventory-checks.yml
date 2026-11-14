@@ -47,7 +47,7 @@ jobs:
           github-token: ${{ github.token }}
       - name: Verify the isolated website using fictional inventory
         run: |
-          python scripts/inventory_capacity_release.py prepare "$RUNNER_TEMP/inventory-site"
+          python scripts/report_interaction_release.py prepare "$RUNNER_TEMP/inventory-site"
           SERVER_TEST_SITE="$RUNNER_TEMP/inventory-site/after" SERVER_SCREENSHOTS="$RUNNER_TEMP/inventory-screens" node scripts/server_security_browser.mjs
           INVENTORY_TEST_SITE="$RUNNER_TEMP/inventory-site/after" INVENTORY_SCREENSHOTS="$RUNNER_TEMP/inventory-screens" node scripts/inventory_browser.mjs
           INVENTORY_TEST_SITE="$RUNNER_TEMP/inventory-site/after" INVENTORY_SCREENSHOTS="$RUNNER_TEMP/inventory-screens" node scripts/inventory_experience_browser.mjs

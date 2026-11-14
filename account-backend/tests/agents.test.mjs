@@ -129,3 +129,9 @@ test('email dispatch uses separate recipients, retries only definite rejections 
   await dispatchAgentMail(f.env,()=>{throw Error('Must not blindly resend');});
  }finally{f.close();}
 });
+
+test('old offline collections request a fresh snapshot without suspending a healthy device',async()=>{
+ const f=setup();try{const d=await f.enroll();for(let i=0;i<4;i++)assert.equal((await f.device('upload',f.payload(1,undefined,{collected_at:new Date(Date.now()-8*86400000).toISOString()}),d.credential)).status,409);
+  assert.equal(f.sql.prepare('SELECT invalid_count FROM inventory_agents').get().invalid_count,0);assert.equal(f.sql.prepare('SELECT COUNT(*) n FROM inventory_agent_incidents').get().n,0);assert.equal((await f.device('upload',f.payload(),d.credential)).status,200);
+ }finally{f.close();}
+});

@@ -90,7 +90,7 @@ def prepare(out):
         pkg.git('-c','core.autocrlf=false','worktree','add','--detach',str(prior),BASE)
         try:
             shutil.copytree('collector-app/package',prior/'collector-app/package',dirs_exist_ok=True)
-            subprocess.run([sys.executable,'scripts/inventory_capacity_release.py','prepare',str(out)],cwd=prior,check=True,env={**os.environ,'GITHUB_SHA':BASE})
+            subprocess.run([sys.executable,'scripts/report_interaction_release.py','prepare',str(out)],cwd=prior,check=True,env={**os.environ,'GITHUB_SHA':BASE})
         finally:pkg.git('worktree','remove','--force',str(prior))
     shutil.rmtree(out/'before');shutil.copytree(out/'after',out/'before')
     overlay(out/'after',SITE)
@@ -117,7 +117,7 @@ def run(action,out):
         ready()
     elif action=='publish':
         publisher.publish(out,changed=SITE,added=ADDED_SITE,reviewed_pr=pr,ready=ready,
-            previous_version='c5528969-294e-4270-be8d-c0c019f21ef9',previous_deployment='f8fbee62-e88f-4267-9b6e-6fd7db3137ba',served_copy=out/'verified-origin')
+            previous_version='7a186a74-d77a-4b7e-8b25-3ee66426993b',previous_deployment='638cf177-77d6-4a6b-b85b-43cde3366f76',served_copy=out/'verified-origin')
     else:raise ValueError(action)
 
 if __name__=='__main__':

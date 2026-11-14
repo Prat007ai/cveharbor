@@ -105,7 +105,7 @@ export async function agentDeviceRoute(req,env){
    return reply({collect:!d.pending&&(d.requested>d.completed_request||!!d.daily&&(!d.last_sync||now()-d.last_sync>=86400)),request:d.requested,sequence:d.last_sequence+1,poll_seconds:300});
   }
   let snap;
-  try{snap=snapshot(await readBody(req));}catch(error){if(error instanceof AgentError)await invalid(env,d,error);throw error;}
+  try{snap=snapshot(await readBody(req));}catch(error){if(error instanceof AgentError&&error.status!==409)await invalid(env,d,error);throw error;}
   const digest=await hash(JSON.stringify(snap));
   if(snap.sequence===d.last_sequence&&digest===d.last_hash)return reply({accepted:true,review_required:!!d.pending,sequence:snap.sequence});
   if(snap.sequence<=d.last_sequence||snap.request>d.requested||snap.sequence!==d.last_sequence+1)fail('Collection sequence changed. Poll before collecting again.',409);

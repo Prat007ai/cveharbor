@@ -16,7 +16,7 @@ Suspicious uploads are rejected before changing accepted inventory. Repeated mal
 
 The agent only makes outbound HTTPS requests to `api.cveharbor.com`. It has no inbound listener or remote-command facility. Device credentials cannot read CVEHarbor dashboards or other customer data. A compromised machine can still misreport its own inventory; syntactically valid lies cannot all be detected. Local administrator compromise can also access that device's credential. Revocation and server-side authorization remain necessary.
 
-`C:\ProgramData\CVEHarborAgent\status.txt` contains a bounded latest-status message without credentials or raw inventory. Protected state is encrypted with Windows DPAPI and restricted to administrators, SYSTEM and the service identity. MSI upgrades preserve enrollment and pending inventory; uninstall removes local agent state. There is no automatic binary updater in this version.
+`C:\ProgramData\CVEHarborAgent\status.txt` contains a bounded latest-status message without credentials or raw inventory. Protected state is encrypted with Windows DPAPI and restricted to administrators, SYSTEM and the service identity. MSI upgrades preserve enrollment and pending inventory; uninstall removes local agent state. Revoke the device in CVEHarbor before decommissioning it so its server-side credential is also disabled. There is no automatic binary updater in this version.
 
 ## Build and future signing
 
