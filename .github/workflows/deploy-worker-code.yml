@@ -240,7 +240,7 @@ jobs:
           test "$MODE" = code-only
           test "$OTHER_PACKAGE" != true
           if [ "$TEAM_STATE" = dashboard-read-capacity ]; then
-            python -c "import sys;sys.path.insert(0,'scripts');import team_release as t;t.reviewed('fix/dashboard-read-cache')"
+            python -c "import sys;sys.path.insert(0,'scripts');import team_release as t;t.reviewed('fix/replica-read-fallback')"
           elif [ "$TEAM_STATE" = nvd-outage ]; then
             python -c "import sys;sys.path.insert(0,'scripts');import team_release as t;t.reviewed('fix/nvd-outage-resilience')"
           elif [ "$TEAM_STATE" = inventory-capacity ]; then

@@ -31,6 +31,16 @@ test('replica pages are anchored to this request while every authority check rea
  await reader.prepare('SELECT id FROM inventory_customers').all();
  assert.equal(calls.at(-1).constraint,'first-primary');
 });
+test('overloaded replica pages fall back to a fresh primary while retaining bound scope',async()=>{
+ const calls=[];
+ const db=inventoryReadDatabase({withSession(constraint){return {getBookmark:()=>constraint==='first-primary'?'fresh-primary':'old-replica',prepare(sql){let args=[];return {bind(...values){args=values;return this;},first:async()=>({id:'owner'}),all:async()=>{calls.push({constraint,args});if(constraint!=='first-primary')throw Error('D1 DB is overloaded. 7500');return {results:[{id:'owned'}]};}};}};}},{sleep:async()=>{},random:()=>0});
+ await db.prepare('SELECT id FROM sessions').first();
+ const page="SELECT EXISTS(SELECT 1 FROM inventory_capacity_schema WHERE version=1) AS schema_ready, 'fictional' AS packed";
+ assert.deepEqual((await db.prepare(page).bind('owner').all()).results,[{id:'owned'}]);
+ assert.deepEqual(calls,[{constraint:'fresh-primary',args:['owner']},{constraint:'first-primary',args:['owner']}]);
+ await db.prepare(page).bind('next-page').all();assert.equal(calls.at(-1).constraint,'first-primary');
+});
+
 test('read capability retries only transient SELECT failures with bounded backoff',async()=>{
  const delays=[],failure=new Error('D1 DB is overloaded. Requests queued for too long.');let calls=0;
  const db=inventoryReadDatabase({prepare(){return {first:async()=>{if(++calls<4)throw failure;return {id:'fictional'};}};}},{sleep:async ms=>delays.push(ms),random:()=>0});

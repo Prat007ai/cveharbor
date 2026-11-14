@@ -12,14 +12,15 @@ function readSql(sql){
  return tokens;
 }
 export function dashboardReadDatabase(db,{sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms)),random=Math.random,cacheIdentity=db}={}){
- let bookmark=null;const statements=new WeakMap();
+ let bookmark=null,replicaUnavailable=false;const statements=new WeakMap();
  const authority=sql=>/\b(operations_control|sessions|user_totp|users|team_\w+)\b/i.test(sql);
  const authentication=sql=>/\bFROM\s+sessions\b/i.test(sql)&&/\buser_totp\b/i.test(sql);
  const transient=e=>/overload|queued for too long|transient issue|object.*reset|7500/.test([e?.message,e?.cause?.message].join(' ').toLowerCase());
  async function execute(specs,method,options=[]){
   for(let attempt=0;;attempt++){
-   const primary=!bookmark||specs.some(s=>authority(s.sql));
-   const cacheable=!primary&&specs.every(s=>deterministicRead(s.sql)&&stableReadBindings(s.args));
+   const authorityRead=!bookmark||specs.some(s=>authority(s.sql));
+   const primary=authorityRead||replicaUnavailable||attempt>0;
+   const cacheable=!authorityRead&&specs.every(s=>deterministicRead(s.sql)&&stableReadBindings(s.args));
    const cacheQuery=cacheable?JSON.stringify([specs.map(s=>[s.sql,s.args]),method,options]):null;
    const hit=cacheable&&cachedRead(cacheIdentity,bookmark,cacheQuery);
    if(hit)return hit.value;
@@ -32,11 +33,11 @@ export function dashboardReadDatabase(db,{sleep=ms=>new Promise(resolve=>setTime
     if(session!==db){
      const seen=session.getBookmark();
      if(primary&&specs.some(s=>authentication(s.tokens)))bookmark=result?seen:null;
-     else if(!primary&&seen){bookmark=bookmark>seen?bookmark:seen;}
+     else if(!authorityRead&&seen){bookmark=bookmark>seen?bookmark:seen;}
      if(cacheable&&seen)rememberRead(cacheIdentity,seen,cacheQuery,result);
     }
     return result;
-   }catch(error){if(attempt===3||!transient(error))throw error;await sleep(50*3**attempt+Math.floor(random()*50));}
+   }catch(error){if(attempt===3||!transient(error))throw error;if(!primary)replicaUnavailable=true;await sleep(50*3**attempt+Math.floor(random()*50));}
   }
  }
  function statement(sql,args=[],tokens=readSql(sql)){
