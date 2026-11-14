@@ -100,7 +100,7 @@ assert.equal(document.querySelectorAll('.technology-row').length,38,'technology 
 const mark=explorerCard('recent').querySelector('.kpi-hit');mark.dispatchEvent(new window.Event('pointerover',{bubbles:true}));
 assert.equal(explorerCard('recent').querySelector('.kpi-insight').textContent,mark.dataset.chartLabel,'hover shows the actual date and count');
 explorerCard('recent').dispatchEvent(new window.Event('pointerleave'));
-assert.equal(explorerCard('recent').querySelector('.kpi-insight').textContent,'Daily disclosures Â· 30d');
+assert.equal(explorerCard('recent').querySelector('.kpi-insight').textContent,'Daily disclosures · 30d');
 assert.equal(document.querySelectorAll('.focus-action').length,9,'focus panel populated');
 assert.match(fs.readFileSync('advisory-details.js','utf8'),/FIRST EPSS, 30 day exploitation probability/,'EPSS details supported');
 assert.equal(document.querySelectorAll('#chartInsights .chart-insight').length,4,'chart insights populated');
