@@ -59,7 +59,7 @@ function render(host,data,{findingLink,loadNetworks,savePrimary}={}){
    const details=node('details'),summary=node('summary',server.assets.length+' software entries · '+cves.size+' candidate CVEs · '+server.issues.length+' software/CVE matches');
    details.open=expanded.has(server.key)||matches.length===1;details.append(summary);
    details.addEventListener('toggle',()=>{if(details.open)expanded.add(server.key);else expanded.delete(server.key);});
-   const body=node('div','','server-detail-body');details.addEventListener('toggle',()=>{if(details.open&&!body.childNodes.length)populate();});
+   const body=node('div','','server-detail-body');details.addEventListener('toggle',()=>{if(details.open&&!body.childNodes.length){populate();updateAssessments();}});
    function populate(){
     body.append(node('h4','Installed software'),node('p','Every entry has an assessment status. Missing mappings and incomplete source checks require review; no matches does not establish safety.'),grid(['Product','Installed version','Assessment status','Recorded role'],server.assets.map(a=>{
      const status=node('span');status.dataset.productAssessment=a.technology;status.dataset.assetId=a.id;
