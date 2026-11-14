@@ -59,14 +59,20 @@ jobs:
           python-version: '3.12'
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
+          name: windows-agent-evaluation
+          path: windows-agent/package/release
+          run-id: 43535697624
+          github-token: ${{ github.token }}
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
           name: windows-collector-package
           path: collector-app/package
           run-id: 43264633230
           github-token: ${{ github.token }}
       - name: Reproduce the serving baseline and verify only the reviewed delta
         run: |
-          python -c "import sys;from pathlib import Path;sys.path.insert(0,'scripts');import team_release as t;t.previous('da927ac147b130930a870be1a65f4e80b9ae4450','dashboard_read_release.py','backend',Path(sys.argv[1]))" "$RUNNER_TEMP/capacity-backend"
-          python scripts/report_interaction_release.py prepare "$RUNNER_TEMP/capacity-site"
+          python scripts/dashboard_read_release.py backend "$RUNNER_TEMP/capacity-backend"
+          python scripts/windows_agent_release.py prepare "$RUNNER_TEMP/capacity-site"
       - run: npm install --prefix staging --ignore-scripts --no-package-lock
       - name: Test the exact website package with fictional inventory
         env:

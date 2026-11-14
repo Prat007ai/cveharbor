@@ -3,6 +3,7 @@
 export const INVENTORY_CAPACITY=50000;
 export const INVENTORY_PAGE_SIZE=250;
 import {WorkflowError} from './remediation-workflow.js';
+import {cachedRead,rememberRead} from './versioned-read-cache.js';
 import {activeAssets} from './agent-validation.js';
 export class InventoryPageError extends WorkflowError{
  constructor(message,status=400){super(message,status);}
@@ -67,8 +68,25 @@ export async function inventoryPage(req,env,user,team=null){
  const guardArgs=team?[team.org,team.actor,owner,customer]:customer?[owner,customer]:[];
  const environmentGuard=environment?'SELECT id FROM inventory_environments WHERE user_id=? AND id=?'+(customer?' AND customer_id=?':''):'SELECT 1';
  const environmentArgs=environment?[owner,environment,...customer?[customer]:[]]:[];
+ // Only manual personal asset pages are reused; agent metadata remains live.
+ // Every reused page rechecks revision, scope and row ownership
+ // on the primary. Ownership checks also cover transfers that only bump the new owner.
+ const cacheIdentity=directAssets?env.INVENTORY_READ_CACHE_IDENTITY:null;
+ const cacheVersion=env.INVENTORY_READ_CONTROL_REVISION;
+ const cacheQuery=JSON.stringify(['inventory-assets',scope,cursor,expected,agents]);
  const selected=def.fields+(agents?',ag.id AS agent_device_id,ag.primary_ip AS agent_primary_ip,ag.state AS agent_state,ag.last_sync AS agent_last_sync':'');
  const agentJoin=agents?' LEFT JOIN inventory_agent_assets aa ON aa.asset_id=t.id LEFT JOIN inventory_agents ag ON ag.id=aa.device_id AND ag.user_id=t.user_id AND ag.environment_id=t.environment_id':'';
+ const cached=cacheIdentity&&cachedRead(cacheIdentity,cacheVersion,cacheQuery)?.value;
+ if(cached){
+  const validation='SELECT EXISTS(SELECT 1 FROM inventory_capacity_schema WHERE version=1) AS schema_ready, EXISTS('+guard+') AS access_ready, EXISTS('+environmentGuard+') AS environment_ready, COALESCE((SELECT revision FROM inventory_capacity_revisions WHERE user_id=?),0) AS revision, (SELECT count(*) FROM inventory_assets t WHERE '+clauses.join(' AND ')+(agents?' AND NOT EXISTS(SELECT 1 FROM inventory_agent_assets aa WHERE aa.asset_id=t.id)':'')+' AND t.id IN (SELECT value FROM json_each(?))) AS owned_count';
+  let checked;
+  try{checked=await env.DB.prepare(validation).bind(...guardArgs,...environmentArgs,owner,...args,JSON.stringify(cached.items.map(row=>row.id))).first();}
+  catch(error){if(/no such (table|column)/i.test([error?.message,error?.cause?.message].join(' ')))fail('Inventory capacity migration is required',503);throw error;}
+  if(!checked?.schema_ready)fail('Inventory capacity migration is required',503);
+  if(!checked.access_ready||!checked.environment_ready)fail('Customer or environment unavailable',404);
+  if(expected!==null&&Number(checked.revision)!==expected)fail('Inventory changed while loading. Refresh and retry.',409);
+  if(Number(checked.revision)===cached.revision&&Number(checked.owned_count)===cached.items.length)return cached;
+ }
  const query='SELECT '+selected+' FROM '+def.table+' t'+(directAssets?'':def.join||'')+agentJoin+' WHERE '+clauses.join(' AND ')+(def.extra||'')+' ORDER BY '+def.keys.map(k=>'t.'+k).join(',')+' LIMIT '+(INVENTORY_PAGE_SIZE+1);
  // D1 serializes every returned object before sending it to the Worker. A
  // bounded array payload avoids repeating field names for every software row;
@@ -86,5 +104,7 @@ export async function inventoryPage(req,env,user,team=null){
  const rows=JSON.parse(page.packed).map(values=>Object.fromEntries(fields.map((field,i)=>[field,values[i]]))),items=rows.slice(0,INVENTORY_PAGE_SIZE),last=items.at(-1);
  const next=rows.length>INVENTORY_PAGE_SIZE?encode({scope,revision,after:def.keys.map(k=>last[k])}):null;
  for(const row of items){if(resource==='checks'){row.findings=JSON.parse(row.findings_json||'[]');delete row.findings_json;}if(resource==='networks')row.snapshot=JSON.parse(row.snapshot);}
- return {resource,items,revision,next_cursor:next,complete:next===null,page_size:INVENTORY_PAGE_SIZE};
+ const result={resource,items,revision,next_cursor:next,complete:next===null,page_size:INVENTORY_PAGE_SIZE};
+ if(cacheIdentity&&(!agents||items.every(row=>row.agent_device_id===null)))rememberRead(cacheIdentity,cacheVersion,cacheQuery,result);
+ return result;
 }

@@ -26,6 +26,7 @@ export function recoveryProtected(handler){
   if(inventoryRead||dashboardRead){const identity=publicSourceCacheKey(env);env={...env,CVIE_PUBLIC_CACHE_KEY:identity,DB:(inventoryRead?inventoryReadDatabase:dashboardReadDatabase)(env.DB,{cacheIdentity:identity})};}
   let state;try{state=await recoveryState(env);}catch{return kind==='fetch'?busyResponse():undefined;}
   if(state?.write_hold)return kind==='fetch'?heldResponse():undefined;
+  if(inventoryRead&&state)env={...env,INVENTORY_READ_CACHE_IDENTITY:env.CVIE_PUBLIC_CACHE_KEY,INVENTORY_READ_CONTROL_REVISION:String(state.revision)};
   // These routes cannot mutate D1: enforce SELECT-only capabilities at runtime.
   // They still check the current hold and current session on every request.
   // Omit the background context and avoid creating write leases for pure reads.

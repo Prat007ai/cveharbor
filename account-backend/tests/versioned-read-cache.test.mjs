@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import {cachedRead,rememberRead,READ_CACHE_TTL,READ_CACHE_ENTRIES,deterministicRead,stableReadBindings} from '../src/versioned-read-cache.js';
 import {capacityFixture,capacitySessions,fixtureId} from './helpers/capacity-db.mjs';
 import {dashboardReadDatabase} from '../src/dashboard-read-db.js';
@@ -31,14 +32,36 @@ function sessionFixture(f){
 }
 
 test('real inventory requests reuse unchanged pages only after fresh primary checks and invalidate on every write',async()=>{
- const f=capacityFixture({owners:50,customers:50,environments:100,assets:1000}),tokens=capacitySessions(f.sql),observed=sessionFixture(f),env={DB:observed.binding,RECOVERY_CONTROL_REQUIRED:'true'};
+ const f=capacityFixture({owners:50,customers:50,environments:100,assets:1000}),tokens=capacitySessions(f.sql),observed=sessionFixture(f),env={DB:observed.binding,RECOVERY_CONTROL_REQUIRED:'true',AGENT_INVENTORY_SCHEMA:'1'};
+ f.sql.exec(fs.readFileSync(new URL('../agent-schema.sql',import.meta.url),'utf8'));
  const call=(i=0)=>worker.fetch(new Request('https://api.cveharbor.com/v1/inventory/page?resource=assets&customer_id='+fixtureId(i+1),{headers:{Cookie:'cvh_session='+tokens[i]}}),env,{});
  try{
   const a=await call();assert.equal(a.status,200);const original=await a.json();assert.equal(observed.calls.length,3);
-  observed.calls.length=0;assert.deepEqual(await(await call()).json(),original);assert.equal(observed.calls.length,2);assert.ok(observed.calls.every(c=>c.constraint==='first-primary'));
+  observed.calls.length=0;assert.deepEqual(await(await call()).json(),original);assert.equal(observed.calls.length,3);assert.ok(observed.calls.every(c=>c.constraint==='first-primary'));
   observed.calls.length=0;const other=await(await call(1)).json();assert.notDeepEqual(other.items,original.items);assert.equal(observed.calls.length,3);
   f.sql.prepare('UPDATE inventory_assets SET notes=? WHERE id=?').run('Changed',original.items[0].id);
-  observed.calls.length=0;const changed=await(await call()).json();assert.equal(changed.items[0].notes,'Changed');assert.equal(observed.calls.length,3);
+  observed.calls.length=0;const changed=await(await call()).json();assert.equal(changed.items[0].notes,'Changed');assert.equal(observed.calls.length,4);
+  // Agent mappings and metadata do not bump the inventory revision. Such
+  // pages must stay live, and a manual cached page cannot hide a new mapping.
+  const asset=original.items[1];
+  f.sql.prepare("INSERT INTO inventory_agents(id,user_id,customer_id,environment_id,token_hash,hostname,agent_version,created_at,state) VALUES('fixture-device','owner-0',?,?,'fictional-hash','TEST','1',0,'active')").run(fixtureId(1),asset.environment_id);
+  f.sql.prepare("INSERT INTO inventory_agent_assets VALUES(?,'fixture-device','fixture-product',1)").run(asset.id);
+  const linked=await(await call()).json();assert.equal(linked.items.find(x=>x.id===asset.id).agent_device_id,'fixture-device');
+  f.sql.exec("UPDATE inventory_agents SET primary_ip='192.0.2.10',state='suspended'");
+  const refreshed=await(await call()).json();assert.equal(refreshed.items.find(x=>x.id===asset.id).agent_primary_ip,'192.0.2.10');assert.equal(refreshed.items.find(x=>x.id===asset.id).agent_state,'suspended');
+  f.sql.exec("DELETE FROM inventory_agent_assets");await call();
+  // Transfer away: the trigger bumps only the new owner. A revision-only cache
+  // would leak this asset; the primary ownership guard must reject that hit.
+  const revision=f.sql.prepare("SELECT revision FROM inventory_capacity_revisions WHERE user_id='owner-0'").get().revision;
+  f.sql.prepare('UPDATE inventory_assets SET user_id=? WHERE id=?').run('owner-1',original.items[0].id);
+  assert.equal(f.sql.prepare("SELECT revision FROM inventory_capacity_revisions WHERE user_id='owner-0'").get().revision,revision);
+  const transferred=await(await call()).json();assert.ok(!transferred.items.some(x=>x.id===original.items[0].id));
+  f.sql.exec('UPDATE operations_control SET revision=revision+1');observed.calls.length=0;
+  await call();assert.ok(observed.calls.some(c=>c.sql.endsWith(' AS packed')),'Control revision invalidates saved pages');
+  f.sql.prepare('UPDATE inventory_environments SET user_id=? WHERE id=?').run('owner-1',transferred.items[0].environment_id);
+  const movedEnvironment=await(await call()).json();assert.ok(!movedEnvironment.items.some(x=>x.environment_id===transferred.items[0].environment_id));
+  f.sql.exec("UPDATE user_totp SET enabled=0 WHERE user_id='owner-0'");assert.equal((await call()).status,401);
+  f.sql.exec("UPDATE user_totp SET enabled=1 WHERE user_id='owner-0'");
   f.sql.exec("DELETE FROM sessions WHERE user_id='owner-0'");assert.equal((await call()).status,401);
   f.sql.exec('UPDATE operations_control SET write_hold=1');assert.equal((await call(1)).status,503);
  }finally{f.close();}

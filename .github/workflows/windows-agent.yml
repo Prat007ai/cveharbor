@@ -25,7 +25,7 @@ jobs:
         run: node scripts/windows_agent_schema.mjs --rehearse
       - name: Reproduce and test the exact agent backend
         run: |
-          python scripts/windows_agent_release.py backend "$RUNNER_TEMP/agent-backend"
+          python -c "import sys;from pathlib import Path;sys.path.insert(0,'scripts');import team_release as t;t.previous('f00b4c4939ddf3d304fe525738d6fdbfedb57956','windows_agent_release.py','backend',Path(sys.argv[1]))" "$RUNNER_TEMP/agent-backend"
           rsync --archive --delete "$RUNNER_TEMP/agent-backend/account-backend/src/" account-backend/src/
           cp "$RUNNER_TEMP/agent-backend/account-backend/wrangler.toml" account-backend/wrangler.toml
           node --test account-backend/tests/agents.test.mjs account-backend/tests/inventory-capacity.test.mjs account-backend/tests/workspace-history.test.mjs account-backend/tests/workspace-summary.test.mjs account-backend/tests/team-access.test.mjs account-backend/tests/ai-*.test.mjs account-backend/tests/azure-connection.test.mjs

@@ -1,6 +1,7 @@
 // Bounded per-isolate data results, never authentication or maintenance state.
-// A hit requires a fresh primary bookmark for the exact database version and
-// identical SQL/bindings. No promises, database capabilities or bookmarks leave
+// Callers require either a fresh primary bookmark and identical SQL/bindings,
+// or a fresh primary revision/ownership check before returning a saved page.
+// No promises, database capabilities or bookmarks leave
 // this module's caller. Cold isolates and missing bookmarks read D1 normally.
 const databases=new WeakMap();
 export const READ_CACHE_TTL=5000,READ_CACHE_BYTES=24*1024*1024,READ_CACHE_ENTRIES=1024;

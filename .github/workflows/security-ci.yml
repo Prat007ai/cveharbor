@@ -69,10 +69,10 @@ jobs:
 
       - name: Reproduce the dashboard capacity delta and verify its read boundaries
         run: |
-          python -c "import sys;from pathlib import Path;sys.path.insert(0,'scripts');import team_release as t;t.previous('da927ac147b130930a870be1a65f4e80b9ae4450','dashboard_read_release.py','backend',Path(sys.argv[1]))" "$RUNNER_TEMP/dashboard-read-backend"
+          python scripts/dashboard_read_release.py backend "$RUNNER_TEMP/dashboard-read-backend"
           cp -r account-backend/tests "$RUNNER_TEMP/dashboard-read-backend/account-backend/tests"
           cp account-backend/package.json "$RUNNER_TEMP/dashboard-read-backend/account-backend/package.json"
           cp inventory-matching.js "$RUNNER_TEMP/dashboard-read-backend/inventory-matching.js"
           cp inventory-client.js "$RUNNER_TEMP/dashboard-read-backend/inventory-client.js"
           cp -r scripts deployment "$RUNNER_TEMP/dashboard-read-backend/"
-          node --test "$RUNNER_TEMP/dashboard-read-backend/account-backend/tests/versioned-read-cache.test.mjs" "$RUNNER_TEMP/dashboard-read-backend/account-backend/tests/dashboard-read-capacity.test.mjs" "$RUNNER_TEMP/dashboard-read-backend/account-backend/tests/inventory-capacity.test.mjs" "$RUNNER_TEMP/dashboard-read-backend/account-backend/tests/inventory-read-db.test.mjs" "$RUNNER_TEMP/dashboard-read-backend/account-backend/tests/recovery-control.test.mjs" "$RUNNER_TEMP/dashboard-read-backend/account-backend/tests/cvie-shared.test.mjs"
+          node --test "$RUNNER_TEMP/dashboard-read-backend/account-backend/tests/versioned-read-cache.test.mjs" "$RUNNER_TEMP/dashboard-read-backend/account-backend/tests/dashboard-read-capacity.test.mjs" "$RUNNER_TEMP/dashboard-read-backend/account-backend/tests/inventory-capacity.test.mjs" "$RUNNER_TEMP/dashboard-read-backend/account-backend/tests/inventory-read-db.test.mjs" "$RUNNER_TEMP/dashboard-read-backend/account-backend/tests/recovery-control.test.mjs" "$RUNNER_TEMP/dashboard-read-backend/account-backend/tests/cvie-shared.test.mjs" "$RUNNER_TEMP/dashboard-read-backend/account-backend/tests/agents.test.mjs"

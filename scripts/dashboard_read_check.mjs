@@ -7,7 +7,7 @@ import {holdStatus} from './recovery_control.mjs';
 import {verifyService} from './production_service_health.mjs';
 import {verifyAfterDeployment} from './organization_ai_health.mjs';
 const after=process.argv[2]==='after';assert.ok(after||process.argv[2]==='before');
-const predecessor='611f3576f8b30323f6a2d0625891b102515f5ab8805d37c18801f4ba6cc54047';
+const predecessor='1d687be8ff23a3785b466f41151a065f5dc4aa34aabaafb0b50b832b7021d50f';
 const expected=after?fs.readFileSync('release/dashboard-read-capacity-backend.txt','utf8').trim():predecessor;
 if(after)await verifyAfterDeployment({expectedRelease:expected,predecessor});else await verifyService({expectedRelease:expected});
 const account='aa99b9b15e0492302e4f6484b8d27bc2';assert.equal(process.env.CLOUDFLARE_ACCOUNT_ID,account);

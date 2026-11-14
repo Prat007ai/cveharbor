@@ -39,7 +39,8 @@ test('transient routing failures create a fresh session; stale replicas cannot s
  }})};}},{sleep:async()=>{},random:()=>0});
  const auth='SELECT users.id FROM sessions JOIN users JOIN user_totp';
  assert.equal((await db.prepare(auth).first()).id,'owner');await db.prepare('SELECT * FROM cvie_shared_advisories').first();
- assert.deepEqual(constraints,['first-primary','authenticated-snapshot','authenticated-snapshot']);
+ assert.deepEqual(constraints,['first-primary','authenticated-snapshot','first-primary']);
+ await db.prepare('SELECT * FROM cvie_sources').first();assert.equal(constraints.at(-1),'first-primary','An overloaded replica is avoided for the rest of this request');
  revoked=true;assert.equal(await db.prepare(auth).first(),null);assert.equal(constraints.at(-1),'first-primary');
 });
 

@@ -242,7 +242,7 @@ jobs:
           if [ "$TEAM_STATE" = windows-agent ]; then
             python -c "import sys;sys.path.insert(0,'scripts');import team_release as t;t.reviewed('feature/windows-agent')"
           elif [ "$TEAM_STATE" = dashboard-read-capacity ]; then
-            python -c "import sys;sys.path.insert(0,'scripts');import team_release as t;t.reviewed('fix/dashboard-read-cache')"
+            python -c "import sys;sys.path.insert(0,'scripts');import team_release as t;t.reviewed('fix/replica-read-fallback')"
           elif [ "$TEAM_STATE" = nvd-outage ]; then
             python -c "import sys;sys.path.insert(0,'scripts');import team_release as t;t.reviewed('fix/nvd-outage-resilience')"
           elif [ "$TEAM_STATE" = inventory-capacity ]; then
