@@ -44,7 +44,7 @@ test('compact database pages preserve text and empty values while reducing the t
  const f=capacityFixture({owners:1,customers:1,environments:1,assets:500}),prepare=f.DB.prepare.bind(f.DB);let packed;
  f.DB.prepare=sql=>{const wrap=s=>({...s,bind:(...args)=>wrap(s.bind(...args)),all:async()=>{const result=await s.all();packed=result.results;return result;}});return wrap(prepare(sql));};
  try{
-  f.sql.prepare("UPDATE inventory_assets SET notes=?,version=''").run('Quotes " and newlines\nUnicode æ—¥æœ¬èªž and literal [null]');
+  f.sql.prepare("UPDATE inventory_assets SET notes=?,version=''").run('Quotes " and newlines\nUnicode 日本語 and literal [null]');
   const page=await read(f);
   const expected=f.sql.prepare('SELECT id,environment_id,name,asset_type,technology,version,notes FROM inventory_assets ORDER BY environment_id,id LIMIT 251').all().map(row=>({...row}));
   assert.deepEqual(page.items,expected.slice(0,250));assert.ok(page.next_cursor);

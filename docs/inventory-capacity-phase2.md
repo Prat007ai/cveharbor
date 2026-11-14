@@ -1,4 +1,4 @@
-# Inventory capacity phase 2 â€” work in progress
+# Inventory capacity phase 2 — work in progress
 
 The production baseline is PR361, main `3ce02f24cbcdfd33cd776c6fdd3e4e7a245ed97a`. The serving backend identity is `0b15e96eb98e5d1a2f7e2961e858886c62c632f7eaed1b02d7241a0e7ff34a34`. This change is not yet a deployed or remotely certified capacity increase.
 
