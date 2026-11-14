@@ -1,7 +1,7 @@
 // Fictional outage rehearsal inputs. Never read customer data or call a provider.
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
-export const extraSchemas=['agent-schema.sql','migrations/0019_cvie.sql','migrations/0020_cvie_evidence.sql','migrations/0022_cvie_shared_scans.sql','remediation-schema.sql','software-upgrade-history-schema.sql','customer-score-schema.sql','alert-schema.sql','lifecycle-schema.sql','migrations/0016_website_monitor.sql'];
+export const extraSchemas=['agent-schema.sql','migrations/0019_cvie.sql','migrations/0020_cvie_evidence.sql','migrations/0022_cvie_shared_scans.sql','remediation-schema.sql','software-upgrade-history-schema.sql','customer-score-schema.sql','alert-schema.sql','lifecycle-schema.sql','migrations/0016_website_monitor.sql','migrations/0023_lifecycle_monitoring.sql','../scripts/fixtures/capacity-read-compatibility.sql'];
 export function addOutageSchema(fixture){
  for(const file of extraSchemas)fixture.sql.exec(fs.readFileSync(new URL('../account-backend/'+file,import.meta.url),'utf8'));
  fixture.sql.exec('CREATE TABLE IF NOT EXISTS user_technology_catalogue(user_id TEXT PRIMARY KEY,preferences_json TEXT,updated_at INTEGER)');

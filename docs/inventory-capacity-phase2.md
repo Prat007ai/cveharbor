@@ -1,4 +1,4 @@
-# Inventory capacity phase 2 — work in progress
+# Inventory capacity phase 2 â€” work in progress
 
 The production baseline is PR361, main `3ce02f24cbcdfd33cd776c6fdd3e4e7a245ed97a`. The serving backend identity is `0b15e96eb98e5d1a2f7e2961e858886c62c632f7eaed1b02d7241a0e7ff34a34`. This change is not yet a deployed or remotely certified capacity increase.
 
@@ -37,3 +37,14 @@ The activated workflow has exact policy tests. It requires the exact reviewed ma
 The initial remote run has 50 concurrent sessions, 50 owners/customers, 100 environments, 10,000 host names and 50,000 installed software entries, sustained for two minutes. It checks complete 1,000-entry customer reads, foreign-account denial and authentication. Acceptance requires zero request/completeness errors, request p95 below one second and complete customer-read p95 below three seconds. This first remote scenario does not certify actual CVIE ingestion or concurrent import contention; those remain explicit acceptance gaps. Aggregate-only results exclude tokens, credentials and row contents.
 
 The large-workspace browser audit found a 13.8-second dashboard startup at 50,000 entries with 50 ms simulated request latency. Metadata-first controls and customer-scoped loading now show the selector in about 0.46 seconds and the selected dashboard in 1.32 seconds; switching took 0.52 seconds. Full-workspace reads use at most four disjoint environment requests, retain a shared revision and discard changed partition lists. This is local synthetic evidence, not a production measurement.
+
+
+## Fresh primary read authority follow-up
+
+The PR385 isolated cloud run 43543591270 failed: both NVD outage phases lost all 50 sessions after D1 resource-window errors. Its mostly-primary data routing demonstrates that replica availability cannot be assumed. No candidate from this outage capacity investigation has been deployed.
+
+The next candidate combines maintenance state and session/MFA validation in one fresh primary SELECT for the audited read routes. The result is restricted to the exact Request and request-local database capability, and session expiry is checked again before use. Later requests, mutations and background work retain current checks; missing control state fails closed. Replica data remains anchored to the resulting primary bookmark. No cross-request authentication cache or recovery lease change is introduced here.
+
+Workspace inventory totals select the currently owned environment set once instead of repeating customer/environment joins for every software entry. Ownership transfers and agent retirement remain enforced. The isolated fixture now includes the existing workspace read tables for integrity and lifecycle delivery, avoiding missing-table queries; this is not a production migration or permission to enable notification jobs.
+
+The scoped package is based on the serving PR381 Windows Agent backend, with an exact eleven-module delta (eight changes, three additions). Package tests: 122 passed. Local 50-customer rehearsal retained all sessions in both outage phases (1,291 and 1,250 journeys); worst endpoint p95 was 466 ms. The timeout workspace-tab probe took 1,324 ms, exceeding the unchanged 1,200 ms gate, so local browser acceptance is not claimed. Cloud acceptance and production release remain pending.

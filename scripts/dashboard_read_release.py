@@ -10,9 +10,10 @@ import team_release as team
 BASE = '43fce637edfc8d1a557a7b4a93153fcb5f8070e3'
 LIVE_BASE = 'f00b4c4939ddf3d304fe525738d6fdbfedb57956'
 PREDECESSOR = '1d687be8ff23a3785b466f41151a065f5dc4aa34aabaafb0b50b832b7021d50f'
+AUTHORITY_BASE = '32d8cc625c43e54a7c9a8559034e2dc63519b2a1'
 READ_BASE = '2a675b814d01712d1a1119e96ba9b5b096dfa5fe'
-CHANGED = {'account-backend/src/cvie.js', 'account-backend/src/cvie-records.js', 'account-backend/src/recovery-control.js', 'account-backend/src/inventory-pages.js', 'account-backend/src/public-source-status-cache.js', 'account-backend/src/inventory-read-db.js'}
-ADDED = {'account-backend/src/dashboard-read-db.js', 'account-backend/src/versioned-read-cache.js'}
+CHANGED = {'account-backend/src/index.js', 'account-backend/src/workspace-summary.js', 'account-backend/src/cvie.js', 'account-backend/src/cvie-records.js', 'account-backend/src/recovery-control.js', 'account-backend/src/inventory-pages.js', 'account-backend/src/public-source-status-cache.js', 'account-backend/src/inventory-read-db.js'}
+ADDED = {'account-backend/src/read-authority.js', 'account-backend/src/dashboard-read-db.js', 'account-backend/src/versioned-read-cache.js'}
 
 
 def backend(out, check=True):
@@ -34,7 +35,7 @@ def backend(out, check=True):
                 # reviewed capacity changes. Preserve its complete agent shape.
                 (out/name).write_bytes(Path(name).read_bytes().replace(b'\r\n', b'\n'))
                 continue
-            old.write_bytes(pkg.git('show', (READ_BASE if name in {'account-backend/src/cvie.js','account-backend/src/cvie-records.js'} else BASE)+':'+name))
+            old.write_bytes(pkg.git('show', (AUTHORITY_BASE if name in {'account-backend/src/index.js','account-backend/src/workspace-summary.js'} else READ_BASE if name in {'account-backend/src/cvie.js','account-backend/src/cvie-records.js'} else BASE)+':'+name))
             new.write_bytes(Path(name).read_bytes().replace(b'\r\n', b'\n'))
             if name == 'account-backend/src/cvie.js':
                 # The held topic-history response flag is adjacent to the

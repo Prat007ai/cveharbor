@@ -1,6 +1,7 @@
 import {inventoryReadDatabase} from './inventory-read-db.js';
 import {dashboardReadDatabase,dashboardReadRequest} from './dashboard-read-db.js';
 import {publicSourceCacheKey} from './public-source-status-cache.js';
+import {readAuthority} from './read-authority.js';
 // Recovery is fail-closed when configured. State is read on every entry, never cached.
 export async function recoveryState(env){
  try{
@@ -24,7 +25,10 @@ export function recoveryProtected(handler){
   const inventoryRead=url&&input.method==='GET'&&url.hostname!=='confirm.cveharbor.com'&&['/v1/inventory/page','/v1/inventory/status'].includes(url.pathname);
   const dashboardRead=kind==='fetch'&&dashboardReadRequest(input);
   if(inventoryRead||dashboardRead){const identity=publicSourceCacheKey(env);env={...env,CVIE_PUBLIC_CACHE_KEY:identity,DB:(inventoryRead?inventoryReadDatabase:dashboardReadDatabase)(env.DB,{cacheIdentity:identity})};}
-  let state;try{state=await recoveryState(env);}catch{return kind==='fetch'?busyResponse():undefined;}
+  let state;try{
+   if((inventoryRead||dashboardRead)&&env.RECOVERY_CONTROL_REQUIRED==='true')state=await readAuthority(input,env);
+   else state=await recoveryState(env);
+  }catch{return kind==='fetch'?busyResponse():undefined;}
   if(state?.write_hold)return kind==='fetch'?heldResponse():undefined;
   if(inventoryRead&&state)env={...env,INVENTORY_READ_CACHE_IDENTITY:env.CVIE_PUBLIC_CACHE_KEY,INVENTORY_READ_CONTROL_REVISION:String(state.revision)};
   // These routes cannot mutate D1: enforce SELECT-only capabilities at runtime.
