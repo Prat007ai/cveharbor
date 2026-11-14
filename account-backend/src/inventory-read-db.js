@@ -1,6 +1,6 @@
 // Capability restricted to SELECTs for the two explicitly read-only inventory
 // endpoints. No writes, arbitrary batches, exec, exposed sessions or background work.
-export function inventoryReadDatabase(db,{sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms)),random=Math.random}={}){
+export function inventoryReadDatabase(db,{sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms)),random=Math.random,onBookmark=()=>{}}={}){
  const native=new WeakMap();let bookmark=null,replicaUnavailable=false;
  const pageQuery=sql=>sql.startsWith('SELECT EXISTS(SELECT 1 FROM inventory_capacity_schema WHERE version=1) AS schema_ready,')&&sql.endsWith(' AS packed');
  const transient=error=>/overload|too many resources consumed|10 second window|queued for too long|transient issue|object.*reset|7500/.test([error?.message,error?.cause?.message].join(' ').toLowerCase());
@@ -20,9 +20,9 @@ export function inventoryReadDatabase(db,{sleep=ms=>new Promise(resolve=>setTime
    const statement=session.prepare(sql),bound=bindings.length?statement.bind(...bindings):statement;
    let value;
    try{value=await bound[method](...args);}catch(error){if(!primary&&transient(error))replicaUnavailable=true;throw error;}
-   // Bookmarks never leave this request. Each authority check starts a fresh
+   // Bookmarks stay server-side. Each authority check starts a fresh
    // primary session, even if an earlier primary check has already completed.
-   if(session!==db){const seen=session.getBookmark();if(authority)bookmark=seen;else if(seen)bookmark=bookmark>seen?bookmark:seen;}
+   if(session!==db){const seen=session.getBookmark();onBookmark(seen);if(authority)bookmark=seen;else if(seen)bookmark=bookmark>seen?bookmark:seen;}
    return value;
   });
   native.set(result,{sql,bindings});return Object.freeze(result);
@@ -38,7 +38,7 @@ export function inventoryReadDatabase(db,{sleep=ms=>new Promise(resolve=>setTime
   batch(statements){if(!Array.isArray(statements)||!statements.length||statements.some(s=>!native.has(s)))throw Error('Inventory read batch requires SELECT capabilities');return read(async()=>{
    const session=typeof db.withSession==='function'?db.withSession('first-primary'):db;
    const value=await session.batch(statements.map(s=>{const {sql,bindings}=native.get(s);const p=session.prepare(sql);return bindings.length?p.bind(...bindings):p;}));
-   if(session!==db)bookmark=session.getBookmark();return value;
+   if(session!==db){bookmark=session.getBookmark();onBookmark(bookmark);}return value;
   });}
  });
 }

@@ -1,7 +1,9 @@
 import {inventoryReadDatabase} from './inventory-read-db.js';
 import {dashboardReadDatabase,dashboardReadRequest} from './dashboard-read-db.js';
 import {publicSourceCacheKey} from './public-source-status-cache.js';
-import {readAuthority} from './read-authority.js';
+import {readAuthority,readCurrentUser} from './read-authority.js';
+import {responseCacheKey,cachedResponse,rememberResponse} from './read-response-cache.js';
+import {observeCvie} from './cvie-metrics.js';
 // Recovery is fail-closed when configured. State is read on every entry, never cached.
 export async function recoveryState(env){
  try{
@@ -24,7 +26,9 @@ export function recoveryProtected(handler){
   const url=kind==='fetch'?new URL(input.url):null;
   const inventoryRead=url&&input.method==='GET'&&url.hostname!=='confirm.cveharbor.com'&&['/v1/inventory/page','/v1/inventory/status'].includes(url.pathname);
   const dashboardRead=kind==='fetch'&&dashboardReadRequest(input);
-  if(inventoryRead||dashboardRead){const identity=publicSourceCacheKey(env);env={...env,CVIE_PUBLIC_CACHE_KEY:identity,DB:(inventoryRead?inventoryReadDatabase:dashboardReadDatabase)(env.DB,{cacheIdentity:identity})};}
+  let snapshot=null,snapshotChanged=false;
+  const onBookmark=seen=>{if(snapshot&&seen!==snapshot)snapshotChanged=true;snapshot=seen;};
+  if(inventoryRead||dashboardRead){const identity=publicSourceCacheKey(env);env={...env,CVIE_PUBLIC_CACHE_KEY:identity,DB:(inventoryRead?inventoryReadDatabase:dashboardReadDatabase)(env.DB,{cacheIdentity:identity,onBookmark})};}
   let state;try{
    if((inventoryRead||dashboardRead)&&env.RECOVERY_CONTROL_REQUIRED==='true')state=await readAuthority(input,env);
    else state=await recoveryState(env);
@@ -34,7 +38,17 @@ export function recoveryProtected(handler){
   // These routes cannot mutate D1: enforce SELECT-only capabilities at runtime.
   // They still check the current hold and current session on every request.
   // Omit the background context and avoid creating write leases for pure reads.
-  if(inventoryRead||dashboardRead)return handler.fetch(input,env,undefined);
+  if(inventoryRead||dashboardRead){
+   // Only a fresh combined authority check can admit a response-cache lookup.
+   // Cold/non-session bindings and older compatibility schemas use normal reads.
+   const user=env.RECOVERY_CONTROL_REQUIRED==='true'&&snapshot?await readCurrentUser(input,env):null;
+   const key=responseCacheKey(input,env,user),version=snapshot,started=Date.now();
+   const hit=cachedResponse(env.CVIE_PUBLIC_CACHE_KEY,version,key,started);
+   if(hit)return url.pathname.startsWith('/v1/cvie')?observeCvie(env,url.pathname.endsWith('/advisories')?'evidence':'status',()=>hit):hit;
+   const response=await handler.fetch(input,env,undefined);
+   try{await rememberResponse(env.CVIE_PUBLIC_CACHE_KEY,version,key,response,()=>!snapshotChanged&&snapshot===version,started);}catch{/* Optional in-memory reuse must not fail an otherwise valid read. */}
+   return response;
+  }
   if(!state)return handler[kind](input,env,ctx);
   // Guest receipt/reviewer GETs remain strictly read-only; they cannot send email.
   const guestRead=url&&['GET','HEAD'].includes(input.method)&&(/^(?:\/v1)?\/acknowledge\//.test(url.pathname)||url.hostname==='confirm.cveharbor.com'&&url.pathname.startsWith('/assignment/'));

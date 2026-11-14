@@ -11,7 +11,7 @@ function readSql(sql){
  if(!/^\s*(SELECT|WITH)\b/i.test(tokens)||/;|\b(INSERT|UPDATE|DELETE|CREATE|ALTER|DROP|PRAGMA|ATTACH|DETACH|VACUUM|REINDEX|ANALYZE|BEGIN|COMMIT|ROLLBACK)\b|\bREPLACE\b(?!\s*\()/i.test(tokens))throw Error('Dashboard capability accepts one read-only SELECT');
  return tokens;
 }
-export function dashboardReadDatabase(db,{sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms)),random=Math.random,cacheIdentity=db}={}){
+export function dashboardReadDatabase(db,{sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms)),random=Math.random,cacheIdentity=db,onBookmark=()=>{}}={}){
  let bookmark=null,replicaUnavailable=false;const statements=new WeakMap();
  const authority=sql=>/\b(operations_control|sessions|user_totp|users|team_\w+)\b/i.test(sql);
  const authentication=sql=>/\bFROM\s+sessions\b/i.test(sql)&&/\buser_totp\b/i.test(sql);
@@ -32,6 +32,7 @@ export function dashboardReadDatabase(db,{sleep=ms=>new Promise(resolve=>setTime
     const result=method==='batch'?await session.batch(native):await native[0][method](...options);
     if(session!==db){
      const seen=session.getBookmark();
+     onBookmark(seen);
      if(primary&&specs.some(s=>authentication(s.tokens)))bookmark=result?seen:null;
      else if(!authorityRead&&seen){bookmark=bookmark>seen?bookmark:seen;}
      if(cacheable&&seen)rememberRead(cacheIdentity,seen,cacheQuery,result);

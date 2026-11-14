@@ -36,8 +36,9 @@ export function outageAdapter(worker,runCvieStep,epoch,controlKey){
    const b=bookmark?await env.DB.withSession(bookmark).prepare('SELECT 1 AS routing_probe').all():null;
    // This unconstrained diagnostic reads only a literal, never customer data.
    const c=await env.DB.withSession('first-unconstrained').prepare('SELECT 1 AS routing_probe').all();
+   const repeat=env.DB.withSession('first-primary');await repeat.prepare('SELECT 1 AS routing_probe').all();
    const meta=r=>r?{primary:r.meta?.served_by_primary,region:r.meta?.served_by_region,duration_ms:r.meta?.duration}:null;
-   return Response.json({bookmark_present:!!bookmark,primary:meta(a),anchored:meta(b),unconstrained_literal:meta(c)});
+   return Response.json({bookmark_present:!!bookmark,unchanged_read_bookmark:bookmark===repeat.getBookmark(),primary:meta(a),anchored:meta(b),unconstrained_literal:meta(c)});
   }
   if(url.pathname==='/__outage/step'){
    if(req.method!=='POST'||req.headers.get('X-Outage-Control')!==controlKey)return new Response('',{status:404});
