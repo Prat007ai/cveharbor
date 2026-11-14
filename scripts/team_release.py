@@ -131,7 +131,10 @@ def site(action,out):
 if __name__=='__main__':
     action=sys.argv[1]
     output=Path(sys.argv[2]).resolve() if len(sys.argv)>2 else None
-    if action == 'nvd-outage':
+    if action == 'dashboard-read-capacity':
+        from dashboard_read_release import backend
+        backend(output)
+    elif action == 'nvd-outage':
         from nvd_outage_release import backend
         backend(output)
     elif action == 'inventory-capacity':

@@ -6,6 +6,7 @@ import {PRODUCTION_DB} from './production_schema_baseline.mjs';
 import {verifyService} from './production_service_health.mjs';
 
 const state=process.env.TEAM_STATE;
+if(state==='dashboard-read-capacity'){await import('./dashboard_read_check.mjs');process.exit(0);}
 if(state==='nvd-outage'){await import('./nvd_outage_check.mjs');process.exit(0);}
 if(state==='inventory-capacity'){await import('./inventory_capacity_check.mjs');process.exit(0);}
 if(state==='finding-ai'){await import('./finding_ai_check.mjs');process.exit(0);}
