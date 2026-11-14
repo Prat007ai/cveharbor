@@ -107,14 +107,14 @@ namespace CVEHarbor.Collector
                 s.Add(".NET Framework",Read(key,"Version"),"Framework registry version; verify patch applicability.");
             foreach(string sub in key.GetSubKeyNames()) using(var child=key.OpenSubKey(sub)) if(child!=null) WalkFramework(s,child,modern,path==""?sub:path+"\\"+sub);
         }
-        static void Frameworks(Snapshot s)
+        static void Frameworks(Snapshot s, bool machineOnly)
         {
             try { using(var root=RegistryKey.OpenBaseKey(RegistryHive.LocalMachine,RegistryView.Registry64)) using(var ndp=root.OpenSubKey(@"SOFTWARE\Microsoft\NET Framework Setup\NDP"))
                 if(ndp!=null) { bool modern; using(var full=ndp.OpenSubKey(@"v4\Full")) modern=full!=null && full.GetValue("Release")!=null; WalkFramework(s,ndp,modern,""); }
             } catch(Exception ex){s.Incomplete=true;s.Warnings.Add(".NET Framework inventory incomplete: "+ex.GetType().Name);}
             var roots=new List<string>();
             foreach(string variable in new[]{"ProgramW6432","ProgramFiles","ProgramFiles(x86)"}) {string v=Environment.GetEnvironmentVariable(variable);if(!String.IsNullOrEmpty(v))roots.Add(Path.Combine(v,"dotnet"));}
-            roots.Add(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),".dotnet"));
+            if(!machineOnly)roots.Add(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),".dotnet"));
             string custom=Environment.GetEnvironmentVariable("DOTNET_ROOT");if(!String.IsNullOrEmpty(custom))roots.Add(custom);
             string[] folders={@"shared\Microsoft.NETCore.App",@"shared\Microsoft.AspNetCore.App",@"shared\Microsoft.WindowsDesktop.App","sdk"};
             string[] names={".NET Runtime","ASP.NET Core Runtime",".NET Desktop Runtime",".NET SDK"};
@@ -142,11 +142,12 @@ namespace CVEHarbor.Collector
             }catch(Exception ex){s.Incomplete=true;s.Warnings.Add("An adapter could not be fully collected: "+ex.GetType().Name);}
             }catch(Exception ex){s.Incomplete=true;s.Warnings.Add("Network inventory unavailable: "+ex.GetType().Name);}
         }
+        static ManagementObjectCollection TimedResults(ManagementObjectSearcher search){search.Options.Timeout=TimeSpan.FromSeconds(30);search.Options.ReturnImmediately=true;return search.Get();}
         public static Snapshot Collect(Action<string> progress, bool machineOnly=false)
         {
             var s=new Snapshot{Hostname=Environment.MachineName,CollectedUtc=DateTime.UtcNow.ToString("o")};
             progress("Reading Windows edition and build...");
-            try { using(var search=new ManagementObjectSearcher("SELECT Caption,Version,OSArchitecture FROM Win32_OperatingSystem")) using(var results=search.Get())
+            try { using(var search=new ManagementObjectSearcher("SELECT Caption,Version,OSArchitecture FROM Win32_OperatingSystem")) using(var results=TimedResults(search))
                 foreach(ManagementObject os in results) using(os) {
                     string caption=Convert.ToString(os["Caption"]),version=Convert.ToString(os["Version"]),display="";
                     using(var root=RegistryKey.OpenBaseKey(RegistryHive.LocalMachine,RegistryView.Registry64)) using(var cv=root.OpenSubKey(@"SOFTWARE\Microsoft\Windows NT\CurrentVersion"))
@@ -155,7 +156,7 @@ namespace CVEHarbor.Collector
                 }
             }catch(Exception ex){s.Incomplete=true;s.Warnings.Add("Operating system inventory incomplete: "+ex.GetType().Name);}
             progress("Reading installed software (Programs and Features)..."); Software(s,machineOnly);
-            progress("Reading .NET runtimes, SDKs and IIS..."); Frameworks(s);
+            progress("Reading .NET runtimes, SDKs and IIS..."); Frameworks(s,machineOnly);
             try {using(var root=RegistryKey.OpenBaseKey(RegistryHive.LocalMachine,RegistryView.Registry64)) using(var iis=root.OpenSubKey(@"SOFTWARE\Microsoft\InetStp"))
                 if(iis!=null && Read(iis,"MajorVersion")!="")s.Add("IIS",Read(iis,"MajorVersion")+"."+Read(iis,"MinorVersion"),"IIS version; Windows build and patch evidence are also required.");
             }catch(Exception ex){s.Incomplete=true;s.Warnings.Add("IIS inventory unavailable: "+ex.GetType().Name);}

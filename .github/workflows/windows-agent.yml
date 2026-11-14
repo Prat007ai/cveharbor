@@ -42,6 +42,19 @@ jobs:
       - name: Verify service permissions and installer lifecycle on disposable runner
         shell: pwsh
         run: ./windows-agent/test-installer.ps1 -Installer windows-agent/package/base/CVEHarbor-Agent.msi -UpgradeInstaller windows-agent/package/upgrade/CVEHarbor-Agent.msi
+      - name: Record unsigned evaluation artifact
+        shell: pwsh
+        run: |
+          $receipt=@{channel='unsigned-evaluation';commit=$env:GITHUB_SHA;sha256=(Get-FileHash windows-agent/package/base/CVEHarbor-Agent.msi -Algorithm SHA256).Hash.ToLowerInvariant();version='1.0.0'}
+          $receipt | ConvertTo-Json | Set-Content windows-agent/package/base/agent-release.json -Encoding utf8
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: windows-agent-evaluation
+          path: |
+            windows-agent/package/base/CVEHarbor-Agent.msi
+            windows-agent/package/base/agent-release.json
+          if-no-files-found: error
+          retention-days: 90
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: failure()
         with:

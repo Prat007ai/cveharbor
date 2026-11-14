@@ -41,7 +41,7 @@ function render(host,data,{findingLink,loadNetworks,savePrimary}={}){
  host.append(heading);if(data.limited)host.append(node('p','The assessment reached its result limit. Narrow the customer or environment selection to review additional matches.','server-warning'));host.append(controls,count,list,pager);let page=0;
  const networkFor=server=>networks.find(n=>n.environment_id===server.assets[0].environment_id&&n.server_key===normalize(server.name));
  function draw(){
-  const matches=servers.filter(s=>(!search.value||normalize(s.name).includes(normalize(search.value))||networkFor(s)?.snapshot.adapters.some(a=>a.addresses.some(p=>normalize(p.ip).includes(normalize(search.value)))))&&(!roleSelect.value||(s.roles.length?s.roles:['Not recorded']).includes(roleSelect.value)));
+  const matches=servers.filter(s=>(!search.value||normalize(s.name).includes(normalize(search.value))||s.assets.some(a=>normalize(a.agent_primary_ip||'').includes(normalize(search.value)))||networkFor(s)?.snapshot.adapters.some(a=>a.addresses.some(p=>normalize(p.ip).includes(normalize(search.value)))))&&(!roleSelect.value||(s.roles.length?s.roles:['Not recorded']).includes(roleSelect.value)));
   page=Math.min(page,Math.max(0,Math.ceil(matches.length/12)-1));list.replaceChildren();
   count.textContent=matches.length+' of '+servers.length+' servers / named assets'+(matches.length?' · Showing '+(page*12+1)+'–'+Math.min((page+1)*12,matches.length):'');
   if(!matches.length)list.append(node('p',servers.length?'No servers match these filters.':'No inventory is recorded for this selection.'));

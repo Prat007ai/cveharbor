@@ -3,7 +3,8 @@ CREATE TABLE IF NOT EXISTS inventory_agent_enrollments (
  token_hash TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES users(id),
  customer_id TEXT NOT NULL REFERENCES inventory_customers(id),
  environment_id TEXT NOT NULL REFERENCES inventory_environments(id), org_id TEXT NOT NULL DEFAULT '',
- expires_at INTEGER NOT NULL, created_by TEXT NOT NULL REFERENCES users(id), consumed_at INTEGER
+ expires_at INTEGER NOT NULL, created_by TEXT NOT NULL REFERENCES users(id), consumed_at INTEGER,
+ device_id TEXT REFERENCES inventory_agents(id), device_revision INTEGER
 );
 CREATE TABLE IF NOT EXISTS inventory_agents (
  id TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES users(id),

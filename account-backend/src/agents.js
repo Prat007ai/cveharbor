@@ -78,10 +78,12 @@ export async function agentDeviceRoute(req,env){
    const digest=await hash(data.code),e=await stmt(env.DB,'SELECT n.*,c.name AS customer_name,v.name AS environment_name FROM inventory_agent_enrollments n JOIN inventory_customers c ON c.id=n.customer_id AND c.user_id=n.user_id JOIN inventory_environments v ON v.id=n.environment_id AND v.customer_id=c.id AND v.user_id=n.user_id WHERE token_hash=? AND consumed_at IS NULL AND expires_at>?',digest,now()).first();
    if(!e)fail('Enrollment unavailable or expired',401);
    if(e.org_id&&!await stmt(env.DB,"SELECT 1 FROM team_visible_customers WHERE org=? AND actor=? AND customer_id=? AND data_owner=? AND role IN ('Owner','Editor')",e.org_id,e.created_by,e.customer_id,e.user_id).first())fail('Enrollment unavailable',401);
-   const id=crypto.randomUUID(),secret=token();
+   const id=e.device_id||crypto.randomUUID(),secret=token();
+   const target=e.device_id?await stmt(env.DB,"SELECT * FROM inventory_agents WHERE id=? AND revision=? AND state='revoked' AND user_id=? AND customer_id=? AND environment_id=? AND org_id=?",e.device_id,e.device_revision,e.user_id,e.customer_id,e.environment_id,e.org_id).first():null;
+   if(e.device_id&&!target)fail('Enrollment unavailable or expired',401);
    const enrollmentScope=await scope(env,{id:e.created_by},new URL('https://api.cveharbor.com/?'+new URLSearchParams({customer_id:e.customer_id,environment_id:e.environment_id,org:e.org_id})),true);
-   await transaction(env.DB,[guard(env.DB,enrollmentScope,{id:e.created_by},'enroll',null,"EXISTS(SELECT 1 FROM inventory_agent_enrollments WHERE token_hash=? AND consumed_at IS NULL AND expires_at>?) AND (SELECT COUNT(*) FROM inventory_agents WHERE user_id=? AND state!='revoked')<1000",[digest,now(),e.user_id]),
-    stmt(env.DB,'INSERT INTO inventory_agents(id,user_id,customer_id,environment_id,org_id,token_hash,hostname,agent_version,created_at) VALUES(?,?,?,?,?,?,?,?,?)',id,e.user_id,e.customer_id,e.environment_id,e.org_id,await hash(secret),hostname,version,now()),
+   await transaction(env.DB,[guard(env.DB,enrollmentScope,{id:e.created_by},'enroll',null,"EXISTS(SELECT 1 FROM inventory_agent_enrollments WHERE token_hash=? AND consumed_at IS NULL AND expires_at>?) AND (SELECT COUNT(*) FROM inventory_agents WHERE user_id=? AND state!='revoked')<1000 AND (? IS NULL OR EXISTS(SELECT 1 FROM inventory_agents WHERE id=? AND revision=? AND state='revoked'))",[digest,now(),e.user_id,e.device_id,e.device_id,e.device_revision]),
+    target?stmt(env.DB,"UPDATE inventory_agents SET token_hash=?,state='review',hostname=?,agent_version=?,pending=NULL,pending_hash='',requested=completed_request+1,invalid_count=0,reviewed_large_change=0,revision=revision+1 WHERE id=?",await hash(secret),hostname,version,id):stmt(env.DB,'INSERT INTO inventory_agents(id,user_id,customer_id,environment_id,org_id,token_hash,hostname,agent_version,created_at) VALUES(?,?,?,?,?,?,?,?,?)',id,e.user_id,e.customer_id,e.environment_id,e.org_id,await hash(secret),hostname,version,now()),
     stmt(env.DB,'UPDATE inventory_agent_enrollments SET consumed_at=? WHERE token_hash=?',now(),digest)]);
    return reply({device_id:id,credential:secret,customer:e.customer_name,environment:e.environment_name,poll_seconds:300},201);
   }
@@ -101,8 +103,9 @@ export async function agentDeviceRoute(req,env){
   if(snap.sequence===d.last_sequence&&digest===d.last_hash)return reply({accepted:true,review_required:!!d.pending,sequence:snap.sequence});
   if(snap.sequence<=d.last_sequence||snap.request>d.requested||snap.sequence!==d.last_sequence+1)fail('Collection sequence changed. Poll before collecting again.',409);
   if(d.pending)fail('First inventory is waiting for customer review',409);
+  if(d.state==='active'&&snap.request<=d.completed_request&&(!d.daily||now()-d.last_sync<86400))fail('No inventory collection is currently requested',409);
   const previous=d.accepted?JSON.parse(d.accepted):null,delta=changes(previous,snap);
-  if(previous&&snap.complete&&!d.reviewed_large_change&&previous.products.length>=10&&delta.removed.length/previous.products.length>0.5){await suspend(env,d,'More than half of previously observed software disappeared in one complete collection. Verify maintenance or collection problems before accepting changes.');return reply({error:'Unexpected inventory removal; uploads suspended',suspended:true},423);}
+  if(d.state!=='review'&&previous&&snap.complete&&!d.reviewed_large_change&&previous.products.length>=10&&delta.removed.length/previous.products.length>0.5){await suspend(env,d,'More than half of previously observed software disappeared in one complete collection. Verify maintenance or collection problems before accepting changes.');return reply({error:'Unexpected inventory removal; uploads suspended',suspended:true},423);}
   const [condition,args]=revisionGuard(d),writeGuard=stmt(env.DB,"INSERT INTO inventory_agent_audit(device_id,actor,action,at,authorized) VALUES(?,?,'upload',?,("+condition+'))',d.id,'agent:'+d.id,now(),...args);
   const received=stmt(env.DB,'UPDATE inventory_agents SET last_sequence=?,last_hash=?,last_seen=?,invalid_count=0 WHERE id=?',snap.sequence,digest,now(),d.id);
   if(d.state==='review')await transaction(env.DB,[writeGuard,received,stmt(env.DB,'UPDATE inventory_agents SET pending=?,pending_hash=?,revision=revision+1 WHERE id=?',JSON.stringify(snap),digest,d.id)]);
@@ -118,7 +121,7 @@ export async function agentManagement(req,env,user){
   const devices=await list(stmt(db,'SELECT '+deviceColumns+',json_array_length(json_extract(COALESCE(pending,accepted),\'$.products\')) AS software_count FROM inventory_agents WHERE user_id=? AND customer_id=? AND environment_id=? AND org_id=? ORDER BY hostname,id LIMIT 1000',s.owner,s.customer,s.environment,s.org));
   return {devices,can_edit:s.role!=='Viewer',can_admin:s.role==='Owner',installer: /^[a-f0-9]{64}$/.test(env.AGENT_INSTALLER_SHA256||'')?{url:'https://cveharbor.com/collectors/agent/CVEHarbor-Agent.msi',sha256:env.AGENT_INSTALLER_SHA256,channel:env.AGENT_DISTRIBUTION||'evaluation'}:null};
  }
- if(['contacts','resume','revoke'].includes(action)&&write&&s.org){s.predicate=s.predicate.replace("v.role IN ('Owner','Editor')","v.role='Owner'");}
+ if((['contacts','resume','revoke'].includes(action)||(id&&action==='enrollment'))&&write&&s.org){s.predicate=s.predicate.replace("v.role IN ('Owner','Editor')","v.role='Owner'");}
  if(action==='contacts'){
   if(req.method==='GET')return {contacts:await list(stmt(db,'SELECT email FROM inventory_agent_contacts WHERE user_id=? AND customer_id=?',s.owner,s.customer))};
   if(req.method!=='POST'||s.role!=='Owner')fail('Owner access required',403);
@@ -126,12 +129,14 @@ export async function agentManagement(req,env,user){
   const emails=[...new Set(data.emails.map(e=>text(e,254,'email').toLowerCase()))];if(emails.some(e=>!/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(e)))fail('Invalid email address');
   await transaction(db,[guard(db,s,user,'security contacts'),stmt(db,'DELETE FROM inventory_agent_contacts WHERE user_id=? AND customer_id=?',s.owner,s.customer),...emails.map(e=>stmt(db,'INSERT INTO inventory_agent_contacts VALUES(?,?,?)',s.owner,s.customer,e))]);return {saved:true};
  }
- if(!id&&action==='enrollment'&&req.method==='POST'){
+ if(action==='enrollment'&&req.method==='POST'){
   if(!/^[a-f0-9]{64}$/.test(env.AGENT_INSTALLER_SHA256||''))fail('Installer release is not ready',503);
   const consent=await readBody(req,1024);if((env.AGENT_DISTRIBUTION||'evaluation')==='evaluation'&&consent.evaluation_accepted!==true)fail('Acknowledge the unsigned evaluation installer before enrolling');
+  const target=id?await scopedDevice(db,s,id):null;
+  if(target&&(s.role!=='Owner'||target.state!=='revoked'||consent.revision!==target.revision))fail('Revoke the device and refresh before replacing its credential',409);
   const value=token(),expires=now()+900;
   const outstanding=await stmt(db,'SELECT COUNT(*) n FROM inventory_agent_enrollments WHERE user_id=? AND expires_at>? AND consumed_at IS NULL',s.owner,now()).first();if(outstanding.n>=20)fail('Too many unused enrollment codes. Use a code or wait for expiry.',429);
-  await transaction(db,[guard(db,s,user,'create enrollment'),stmt(db,'INSERT INTO inventory_agent_enrollments(token_hash,user_id,customer_id,environment_id,org_id,expires_at,created_by) VALUES(?,?,?,?,?,?,?)',await hash(value),s.owner,s.customer,s.environment,s.org,expires,user.id)]);
+  await transaction(db,[guard(db,s,user,'create enrollment',id||null,...(target?revisionGuard(target):['1',[]])),stmt(db,'INSERT INTO inventory_agent_enrollments(token_hash,user_id,customer_id,environment_id,org_id,expires_at,created_by,device_id,device_revision) VALUES(?,?,?,?,?,?,?,?,?)',await hash(value),s.owner,s.customer,s.environment,s.org,expires,user.id,target?.id||null,target?.revision??null)]);
   return {code:value,expires_at:expires};
  }
  const d=await scopedDevice(db,s,id);

@@ -1,3 +1,4 @@
+import {activeAssets} from './agent-validation.js';
 // Account aggregates only: never infer confirmed exposure or backfill earlier days.
 export const historyTable = 'workspace_finding_daily_snapshots';
 export const historyFields = ['needs_review', 'in_progress', 'fixed', 'accepted_risk', 'not_applicable'];
@@ -32,7 +33,7 @@ export async function captureWorkspaceHistory(env) {
  if (env.WORKSPACE_HISTORY_ENABLED !== 'true') return {enabled:false};
  // Called only inside recoveryProtected's scheduled lease. Database time chooses
  // the actual observation day, even when the scheduled event arrives late.
- const result = await env.DB.prepare(captureSQL).run();
+ const result = await env.DB.prepare(env.AGENT_INVENTORY_SCHEMA==='1'?captureSQL.replace(' ), findings AS (',' WHERE '+activeAssets('a')+'\n ), findings AS ('):captureSQL).run();
  if (result.success === false) throw Error('Workspace daily snapshot failed');
  return {enabled:true,created:result.meta?.changes ?? null};
 }

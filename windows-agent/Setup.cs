@@ -14,9 +14,9 @@ namespace CVEHarbor.Agent {
   }
   async void Connect(object sender,EventArgs e){connect.Enabled=false;code.Enabled=false;status.Text="Connecting securely to CVEHarbor…";try{
    // Stop the installed service before replacing its identity or pending queue.
-   using(var service=new ServiceController("CVEHarborAgent")){if(service.Status!=ServiceControllerStatus.Stopped){service.Stop();service.WaitForStatus(ServiceControllerStatus.Stopped,TimeSpan.FromSeconds(30));}
+   using(var service=new ServiceController("CVEHarborAgent")){bool restart=service.Status==ServiceControllerStatus.Running;try{if(service.Status!=ServiceControllerStatus.Stopped){service.Stop();service.WaitForStatus(ServiceControllerStatus.Stopped,TimeSpan.FromSeconds(30));}
     var result=await Runtime.Enroll(code.Text,CancellationToken.None);code.Clear();service.Start();status.Text="Connected to "+result.customer+" / "+result.environment+". Return to the web wizard to review the first inventory.";
-   }
+   }finally{service.Refresh();if(restart&&service.Status==ServiceControllerStatus.Stopped)service.Start();}}
   }catch(Exception error){status.Text=error is AgentHttpException?error.Message+". Check the enrollment code and try again.":"Setup could not complete. Confirm administrator access, the installed service and internet connectivity. "+(error is ArgumentException?error.Message:"");}
    finally{connect.Enabled=true;code.Enabled=true;}
   }
