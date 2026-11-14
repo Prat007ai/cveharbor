@@ -92,3 +92,24 @@ test('a queued check observes revocation before execution and larger bursts use 
   assert.equal(rows.reduce((n,r)=>n+r.native_queries,0),2);assert.ok(rows.every(r=>r.row.id==='owner-1'&&r.batch_size<=128));
  }finally{f.close();}
 });
+
+
+test('requests arriving during an in-flight primary query wait for a newer check',async()=>{
+ let queries=0,release,started;const ready=new Promise(resolve=>started=resolve),hold=new Promise(resolve=>release=resolve);
+ const db={withSession(constraint){
+  assert.equal(constraint,'first-primary');let bookmark;
+  return {getBookmark:()=>bookmark,prepare(sql){
+   assert.equal(sql,BATCH_SQL);
+   return {bind(hashes){return {async all(){
+    const number=++queries;bookmark='snapshot-'+number;
+    const results=JSON.parse(hashes).map((_,i)=>({request_index:i,write_hold:0,revision:0,id:number===1?'owner':null,expires_at:9999999999}));
+    if(number===1){started();await hold;}return {results};
+   }};}};
+  }};
+ }};
+ const coordinator=new CapacityAuthorityCoordinator({}, {DB:db});
+ const first=coordinator.fetch(request('a'.repeat(64)));await ready;
+ const later=coordinator.fetch(request('a'.repeat(64)));release();
+ const [before,after]=await Promise.all([first.then(r=>r.json()),later.then(r=>r.json())]);
+ assert.equal(queries,2);assert.equal(before.row.id,'owner');assert.equal(after.row.id,null);assert.notEqual(before.bookmark,after.bookmark);
+});
