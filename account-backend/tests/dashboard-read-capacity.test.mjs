@@ -8,7 +8,7 @@ import {seedOutage} from '../../scripts/nvd_capacity_fixture.mjs';
 import * as cvie from '../src/cvie.js';
 import worker from '../src/index.js';
 import {evidenceContext} from '../src/cvie-records.js';
-import {responseCacheKey,cachedResponse,rememberResponse,RESPONSE_TTL,RESPONSE_ENTRY_BYTES} from '../src/read-response-cache.js';
+import {responseCacheKey,cachedResponse,rememberResponse,RESPONSE_TTL,INVENTORY_RESPONSE_TTL,RESPONSE_ENTRY_BYTES} from '../src/read-response-cache.js';
 import {readAuthority,readCurrentUser} from '../src/read-authority.js';
 import {capacitySessionBinding} from './helpers/capacity-sessions.mjs';
 import {ownedProductSql} from '../src/shared-scopes.js';
@@ -198,4 +198,31 @@ test('bounded response memory retains the actual 50-customer dashboard and 50,00
   reads=0;for(let i=0;i<50;i++){for(const path of [...paths,assets(i)])await call(i,path);}
   assert.equal(reads,300,'Each hot request must perform only its fresh primary authority check');
  }finally{Date.now=clock;f.close();}
+});
+
+
+test('inventory snapshot residency spans distributed visits while fresh authority and time-dependent expiry remain enforced',async()=>{
+ const f=capacityFixture({owners:50,customers:50,environments:100,assets:50000}),tokens=capacitySessions(f.sql),seed=await seedOutage(f,cvie),prepare=f.DB.prepare.bind(f.DB),clock=Date.now,at=clock();let reads=0;
+ f.DB.prepare=sql=>{reads++;return prepare(sql);};
+ const env={...seed.env,DB:capacitySessionBinding(f),RECOVERY_CONTROL_REQUIRED:'true'};
+ const call=async(i,path)=>worker.fetch(new Request('https://api.cveharbor.com'+path,{headers:{Cookie:'cvh_session='+tokens[i]}}),env,{});
+ const assets=i=>'/v1/inventory/page?resource=assets&customer_id='+fixtureId(i+1);
+ try{
+  Date.now=()=>at;
+  for(let i=0;i<50;i++)assert.equal((await call(i,assets(i))).status,200);
+  await call(0,'/v1/workspace/summary');
+  // A customer's next visit to this isolate may be many journeys later.
+  Date.now=()=>at+20000;reads=0;
+  for(let i=0;i<50;i++){const r=await call(i,assets(i));assert.equal(r.status,200);assert.equal((await r.json()).items.length,250);}
+  assert.equal(reads,50,'Only fresh primary authority is needed for unchanged inventory');
+  reads=0;await call(0,'/v1/workspace/summary');assert.ok(reads>1,'Time-dependent summary still expires after five seconds');
+  f.sql.prepare("UPDATE inventory_assets SET version='8.0.2' WHERE id=?").run(fixtureId(10000));
+  assert.equal((await(await call(0,assets(0))).json()).items[0].version,'8.0.2','Fresh snapshot sees changes immediately');
+  f.sql.exec("UPDATE user_totp SET enabled=0 WHERE user_id='owner-0'");assert.equal((await call(0,assets(0))).status,401);
+  f.sql.exec('UPDATE operations_control SET write_hold=1');assert.equal((await call(1,assets(1))).status,503);
+ }finally{Date.now=clock;f.close();}
+ const identity={},key=responseCacheKey(new Request('https://api.cveharbor.com/v1/inventory/page?resource=customers'),{}, {id:'a'});
+ await rememberResponse(identity,'snapshot',key,Response.json({items:[]}),()=>true,1000);
+ assert.ok(cachedResponse(identity,'snapshot',key,1000+INVENTORY_RESPONSE_TTL-1));
+ assert.equal(cachedResponse(identity,'snapshot',key,1000+INVENTORY_RESPONSE_TTL),null,'No residency renewal on hits');
 });
