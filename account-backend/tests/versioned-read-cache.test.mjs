@@ -38,7 +38,7 @@ test('real inventory requests reuse unchanged pages only after fresh primary che
  const call=(i=0)=>worker.fetch(new Request('https://api.cveharbor.com/v1/inventory/page?resource=assets&customer_id='+fixtureId(i+1),{headers:{Cookie:'cvh_session='+tokens[i]}}),env,{});
  try{
   const a=await call();assert.equal(a.status,200);const original=await a.json();assert.equal(observed.calls.length,2);
-  observed.calls.length=0;assert.deepEqual(await(await call()).json(),original);assert.equal(observed.calls.length,2);assert.ok(observed.calls.every(c=>c.constraint==='first-primary'));
+  observed.calls.length=0;assert.deepEqual(await(await call()).json(),original);assert.equal(observed.calls.length,1);assert.ok(observed.calls[0].sql.includes('FROM sessions'));assert.ok(observed.calls.every(c=>c.constraint==='first-primary'));
   observed.calls.length=0;const other=await(await call(1)).json();assert.notDeepEqual(other.items,original.items);assert.equal(observed.calls.length,2);
   f.sql.prepare('UPDATE inventory_assets SET notes=? WHERE id=?').run('Changed',original.items[0].id);
   observed.calls.length=0;const changed=await(await call()).json();assert.equal(changed.items[0].notes,'Changed');assert.equal(observed.calls.length,3);

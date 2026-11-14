@@ -13,7 +13,7 @@ PREDECESSOR = '1d687be8ff23a3785b466f41151a065f5dc4aa34aabaafb0b50b832b7021d50f'
 AUTHORITY_BASE = '32d8cc625c43e54a7c9a8559034e2dc63519b2a1'
 READ_BASE = '2a675b814d01712d1a1119e96ba9b5b096dfa5fe'
 CHANGED = {'account-backend/src/index.js', 'account-backend/src/workspace-summary.js', 'account-backend/src/cvie.js', 'account-backend/src/cvie-records.js', 'account-backend/src/recovery-control.js', 'account-backend/src/inventory-pages.js', 'account-backend/src/public-source-status-cache.js', 'account-backend/src/inventory-read-db.js'}
-ADDED = {'account-backend/src/read-authority.js', 'account-backend/src/dashboard-read-db.js', 'account-backend/src/versioned-read-cache.js'}
+ADDED = {'account-backend/src/read-response-cache.js', 'account-backend/src/read-authority.js', 'account-backend/src/dashboard-read-db.js', 'account-backend/src/versioned-read-cache.js'}
 
 
 def backend(out, check=True):

@@ -23,7 +23,7 @@ test('routing diagnostic returns only version presence and location metadata, ne
  const calls=[];const env={DB:{withSession(constraint){calls.push(constraint);return {getBookmark:()=> 'fictional-private-bookmark',prepare(sql){assert.equal(sql,'SELECT 1 AS routing_probe');return {all:async()=>({results:[{routing_probe:1}],meta:{served_by_primary:constraint==='first-primary',served_by_region:'WNAM',duration:1}})};}};}}};
  const adapter=outageAdapter({fetch:()=>assert.fail('Not an application read')},()=>assert.fail('No provider call'),1,'fictional-key');
  const r=await adapter.fetch(new Request('https://example.test/__outage/routing',{method:'POST',headers:{'X-Outage-Control':'fictional-key'}}),env);
- const body=await r.json();assert.equal(body.bookmark_present,true);assert.equal(body.anchored.primary,false);assert.deepEqual(calls,['first-primary','fictional-private-bookmark','first-unconstrained']);assert.doesNotMatch(JSON.stringify(body),/fictional|private/);
+ const body=await r.json();assert.equal(body.bookmark_present,true);assert.equal(body.unchanged_read_bookmark,true);assert.equal(body.anchored.primary,false);assert.deepEqual(calls,['first-primary','fictional-private-bookmark','first-unconstrained','first-primary']);assert.doesNotMatch(JSON.stringify(body),/fictional|private/);
 });
 test('failed customer reads and browser probes cannot suppress either outage phase or produce success',async()=>{
  const calls={timeout:0,'503':0};let receipt;

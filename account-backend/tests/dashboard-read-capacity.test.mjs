@@ -8,6 +8,7 @@ import {seedOutage} from '../../scripts/nvd_capacity_fixture.mjs';
 import * as cvie from '../src/cvie.js';
 import worker from '../src/index.js';
 import {evidenceContext} from '../src/cvie-records.js';
+import {responseCacheKey,cachedResponse,rememberResponse,RESPONSE_TTL,RESPONSE_ENTRY_BYTES} from '../src/read-response-cache.js';
 import {readAuthority,readCurrentUser} from '../src/read-authority.js';
 import {capacitySessionBinding} from './helpers/capacity-sessions.mjs';
 import {ownedProductSql} from '../src/shared-scopes.js';
@@ -130,4 +131,71 @@ test('workspace count excludes assets in another owner environment and transferr
   f.sql.prepare('UPDATE inventory_customers SET user_id=? WHERE id=?').run('owner-1',fixtureId(1));
   body=await call();assert.equal(body.inventory.inventory_entries,0);assert.equal(body.inventory.environments,0);
  }finally{f.close();}
+});
+
+
+test('dashboard response snapshots require fresh primary authority and invalidate on source, owner, MFA and hold changes',async()=>{
+ const f=capacityFixture({owners:50,customers:50,environments:100,assets:1000}),tokens=capacitySessions(f.sql),seed=await seedOutage(f,cvie),calls=[],prepare=f.DB.prepare.bind(f.DB);
+ f.DB.prepare=sql=>{calls.push(sql);return prepare(sql);};
+ const env={...seed.env,DB:capacitySessionBinding(f),RECOVERY_CONTROL_REQUIRED:'true'};
+ const call=(path,i=0,origin='https://cveharbor.com')=>worker.fetch(new Request('https://api.cveharbor.com'+path,{headers:{Cookie:'cvh_session='+tokens[i],Origin:origin}}),env,{});
+ try{
+  f.sql.exec("UPDATE cvie_shared_scopes SET status='retrying',error='Fictional NVD outage',next_attempt_at=9999999999999");
+  for(const path of ['/v1/inventory/page?resource=customers','/v1/inventory/page?resource=environments','/v1/inventory/page?resource=assets','/v1/workspace/summary','/v1/cvie','/v1/cvie/advisories']){
+   const first=await call(path);assert.equal(first.status,200);const body=await first.json();assert.ok(first.headers.get('X-CVEHarbor-Read-At'),path);
+   calls.length=0;const hit=await call(path);assert.deepEqual(await hit.json(),body);assert.equal(calls.length,1,path+' should only recheck current hold/session/MFA');assert.ok(calls[0].includes('FROM sessions')&&calls[0].includes('operations_control'));
+  }
+  calls.length=0;const other=await(await call('/v1/cvie',1)).json();assert.equal(other.account_id,'owner-1');assert.ok(calls.length>1);
+  assert.equal((await call('/v1/cvie',0,'https://other.example')).status,403);
+  f.sql.exec("UPDATE cvie_shared_scopes SET status='ready',error='' ");const changed=await(await call('/v1/cvie')).json();assert.equal(changed.products[0].error,'');
+  f.sql.prepare('UPDATE inventory_customers SET user_id=? WHERE id=?').run('owner-1',fixtureId(1));assert.deepEqual((await(await call('/v1/inventory/page?resource=customers')).json()).items,[]);
+  f.sql.exec("UPDATE user_totp SET enabled=0 WHERE user_id='owner-0'");assert.equal((await call('/v1/cvie')).status,401);
+  f.sql.exec("UPDATE user_totp SET enabled=1 WHERE user_id='owner-0'; UPDATE sessions SET expires_at=0 WHERE user_id='owner-0'");assert.equal((await call('/v1/cvie')).status,401);
+  f.sql.exec('UPDATE operations_control SET write_hold=1');assert.equal((await call('/v1/cvie',1)).status,503);
+ }finally{f.close();}
+});
+
+test('response snapshots are bounded, expire without renewal and reject errors, partial reads and changed snapshots',async()=>{
+ const identity={},make=body=>Response.json(body,{headers:{'Cache-Control':'no-store'}}),payload={ready:true,advisories:[{description:'x'.repeat(210000)}]};
+ for(let i=0;i<50;i++)await rememberResponse(identity,'v1','owner-'+i,make(payload),()=>true,1000);
+ for(let i=0;i<50;i++){const hit=cachedResponse(identity,'v1','owner-'+i,2000);assert.ok(hit);assert.equal(hit.headers.get('Cache-Control'),'no-store');assert.deepEqual(await hit.json(),payload);}
+ assert.equal(cachedResponse(identity,'v2','owner-0',2000),null);assert.equal(cachedResponse({},'v1','owner-0',2000),null);
+ assert.equal(cachedResponse(identity,'v1','owner-0',1000+RESPONSE_TTL),null);assert.equal(cachedResponse(identity,'v1','owner-1',999),null);
+ for(const [key,response,stable] of [['error',make({error:'Failed'}),true],['partial',make({inventory:{available:false}}),true],['changed',make({ready:true}),false],['large',make({text:'x'.repeat(RESPONSE_ENTRY_BYTES)}),true],['cookie',Response.json({ready:true},{headers:{'Set-Cookie':'test=1'}}),true]]){
+  await rememberResponse(identity,'v1',key,response,()=>stable,1000);assert.equal(cachedResponse(identity,'v1',key,1001),null,key);
+ }
+ const req=new Request('https://api.cveharbor.com/v1/cvie?scope=inventory');
+ assert.notEqual(responseCacheKey(req,{}, {id:'a'}),responseCacheKey(req,{}, {id:'b'}));assert.notEqual(responseCacheKey(req,{}, {id:'a'}),responseCacheKey(req,{CVIE_SHARED_SCANS_ENABLED:'true'},{id:'a'}));
+ assert.equal(responseCacheKey(new Request('https://api.cveharbor.com/v1/inventory/page?resource=tickets'),{}, {id:'a'}),null);
+});
+
+
+test('response reuse preserves CVIE telemetry and does not cache a changing database snapshot',async()=>{
+ const f=capacityFixture({owners:50,customers:50,environments:100,assets:1000}),tokens=capacitySessions(f.sql),seed=await seedOutage(f,cvie),events=[];
+ const env={...seed.env,DB:capacitySessionBinding(f),RECOVERY_CONTROL_REQUIRED:'true',CVIE_METRICS_ENABLED:'true',CVIE_METRIC_SINK:e=>events.push(e)};
+ const req=()=>new Request('https://api.cveharbor.com/v1/cvie',{headers:{Cookie:'cvh_session='+tokens[0]}});
+ try{
+  assert.equal((await worker.fetch(req(),env,{})).status,200);assert.equal((await worker.fetch(req(),env,{})).status,200);
+  assert.equal(events.length,2);assert.ok(events[0].statements>0);assert.equal(events[1].statements,0);assert.equal(events[1].ok,true);
+  const app=recoveryProtected({async fetch(request,readEnv){f.sql.exec("UPDATE users SET email='changed@example.test' WHERE id='owner-0'");await readEnv.DB.prepare('SELECT id FROM inventory_customers').all();return Response.json({ready:true});}});
+  const response=await app.fetch(req(),{...env,CVIE_PUBLIC_CACHE_KEY:{}},{});assert.equal(response.status,200);assert.equal(response.headers.get('X-CVEHarbor-Read-At'),null);
+ }finally{f.close();}
+});
+
+
+test('bounded response memory retains the actual 50-customer dashboard and 50,000-entry page workload',async()=>{
+ const f=capacityFixture({owners:50,customers:50,environments:100,assets:50000}),tokens=capacitySessions(f.sql),seed=await seedOutage(f,cvie),prepare=f.DB.prepare.bind(f.DB),clock=Date.now,at=clock();let reads=0;
+ f.DB.prepare=sql=>{reads++;return prepare(sql);};
+ const env={...seed.env,DB:capacitySessionBinding(f),RECOVERY_CONTROL_REQUIRED:'true'};
+ const call=async(i,path)=>{const r=await worker.fetch(new Request('https://api.cveharbor.com'+path,{headers:{Cookie:'cvh_session='+tokens[i]}}),env,{});assert.equal(r.status,200);return r.json();};
+ const assets=i=>'/v1/inventory/page?resource=assets&customer_id='+fixtureId(i+1),paths=['/v1/inventory/page?resource=customers','/v1/inventory/page?resource=environments','/v1/workspace/summary','/v1/cvie','/v1/cvie/advisories'];
+ try{
+  Date.now=()=>at;
+  for(let i=0;i<50;i++){
+   for(const path of paths)await call(i,path);
+   let cursor=null;do{const page=await call(i,assets(i)+(cursor?'&cursor='+encodeURIComponent(cursor):''));cursor=page.next_cursor;}while(cursor);
+  }
+  reads=0;for(let i=0;i<50;i++){for(const path of [...paths,assets(i)])await call(i,path);}
+  assert.equal(reads,300,'Each hot request must perform only its fresh primary authority check');
+ }finally{Date.now=clock;f.close();}
 });
