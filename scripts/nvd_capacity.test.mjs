@@ -13,9 +13,17 @@ test('outage adapter limits reads and keeps source injection behind a run-only c
  for(const path of ['/v1/inventory','/v1/cvie/directory','/v1/cvie/sync'])assert.equal((await adapter.fetch(req(path),{})).status,405);
  assert.equal((await adapter.fetch(req('/v1/inventory/page',{method:'DELETE'}),{})).status,405);
  assert.equal((await adapter.fetch(req('/__outage/step?mode=503',{method:'POST'}),{})).status,404);
+ assert.equal((await adapter.fetch(req('/__outage/routing',{method:'POST'}),{})).status,404);
  assert.equal(reads,1);assert.equal(steps,0);
  const response=await adapter.fetch(req('/__outage/step?mode=503',{method:'POST',headers:{'X-Outage-Control':'fictional-key'}}),{});
  assert.equal((await response.json()).calls,1);assert.equal(steps,1);
+});
+
+test('routing diagnostic returns only version presence and location metadata, never the bookmark or customer data',async()=>{
+ const calls=[];const env={DB:{withSession(constraint){calls.push(constraint);return {getBookmark:()=> 'fictional-private-bookmark',prepare(sql){assert.equal(sql,'SELECT 1 AS routing_probe');return {all:async()=>({results:[{routing_probe:1}],meta:{served_by_primary:constraint==='first-primary',served_by_region:'WNAM',duration:1}})};}};}}};
+ const adapter=outageAdapter({fetch:()=>assert.fail('Not an application read')},()=>assert.fail('No provider call'),1,'fictional-key');
+ const r=await adapter.fetch(new Request('https://example.test/__outage/routing',{method:'POST',headers:{'X-Outage-Control':'fictional-key'}}),env);
+ const body=await r.json();assert.equal(body.bookmark_present,true);assert.equal(body.anchored.primary,false);assert.deepEqual(calls,['first-primary','fictional-private-bookmark','first-unconstrained']);assert.doesNotMatch(JSON.stringify(body),/fictional|private/);
 });
 test('failed customer reads and browser probes cannot suppress either outage phase or produce success',async()=>{
  const calls={timeout:0,'503':0};let receipt;
