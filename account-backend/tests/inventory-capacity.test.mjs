@@ -82,14 +82,14 @@ for(const replicas of [false,true])test('full Worker requires current session an
  }finally{f.close();}
 });
 
-test('inventory read fast path uses only three statements and round trips and still obeys current maintenance holds',async()=>{
+test('inventory read fast path uses only two statements and round trips and still obeys current maintenance holds',async()=>{
  const f=capacityFixture({owners:1,customers:1,environments:1,assets:500}),[token]=capacitySessions(f.sql,1);let calls=0,statements=0;
  const prepare=f.DB.prepare.bind(f.DB),batch=f.DB.batch.bind(f.DB);
  f.DB.prepare=sql=>{statements++;const wrap=s=>{const result={bind:(...args)=>wrap(s.bind(...args))};for(const method of ['first','all','run'])result[method]=(...args)=>{calls++;return s[method](...args);};result.runSync=s.runSync;return result;};return wrap(prepare(sql));};
  f.DB.batch=statements=>{calls++;return batch(statements);};
  const call=()=>worker.fetch(new Request(url,{headers:{Cookie:'cvh_session='+token,Origin:'https://cveharbor.com'}}),{DB:f.DB,RECOVERY_CONTROL_REQUIRED:'true'});
  try{
-  assert.equal((await call()).status,200);assert.equal(calls,3);assert.equal(statements,3);
+  assert.equal((await call()).status,200);assert.equal(calls,2);assert.equal(statements,2);
   f.sql.exec('UPDATE operations_control SET write_hold=1');calls=0;assert.equal((await call()).status,503);assert.equal(calls,1);
   f.sql.exec('UPDATE operations_control SET database_frozen=1');assert.equal((await call()).status,503);
   f.sql.exec('DROP TABLE operations_control');assert.equal((await call()).status,503);

@@ -909,7 +909,9 @@ assert.ok(fs.readFileSync('styles.css','utf8').includes('.account-redesign'),'ac
 const mandatoryMfaWorker=fs.readFileSync('account-backend/src/index.js','utf8');
 assert.ok(mandatoryMfaWorker.includes("mfa_enrollment_required:true"),'users without MFA must enroll');
 assert.ok(mandatoryMfaWorker.includes("mfa_required:true"),'enrolled users must verify MFA');
-assert.ok(mandatoryMfaWorker.includes("JOIN user_totp ON user_totp.user_id=users.id AND user_totp.enabled=1"),'private sessions require completed enrollment');
+assert.ok(mandatoryMfaWorker.includes("import {readCurrentUser} from './read-authority.js'")&&mandatoryMfaWorker.includes('async function me(req,env){return readCurrentUser(req,env)}'),'private routes use the shared current-session check');
+const mandatoryMfaAuthority=fs.readFileSync('account-backend/src/read-authority.js','utf8');
+assert.ok(mandatoryMfaAuthority.includes("JOIN user_totp ON user_totp.user_id=users.id AND user_totp.enabled=1"),'private sessions require completed enrollment');
 assert.ok(fs.readFileSync('workspace/index.html','utf8').includes('accountPageRequiredEnroll'),'required enrollment form exists');
 
 assert.ok(accountMarkup.includes('accountPageRequiredQr'),'mandatory authenticator enrollment contains QR target');
