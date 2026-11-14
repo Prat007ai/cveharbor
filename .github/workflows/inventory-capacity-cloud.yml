@@ -95,6 +95,6 @@ jobs:
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
-          name: capacity-cloud-result
+          name: ${{ inputs.authority_coordinator && 'capacity-coordinator-result' || 'capacity-cloud-result' }}
           path: capacity-cloud-result.json
           retention-days: 14
