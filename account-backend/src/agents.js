@@ -1,4 +1,5 @@
-import {AgentError,fail,hash,token,now,text,exact,readBody,snapshot,changes,roles} from './agent-validation.js';
+import {AgentError,fail,hash,token,now,text,exact,readBody,snapshot,assessedSnapshot,changes,roles} from './agent-validation.js';
+import {syncAccountProducts,inventoryProductProgress,cvieReady} from './cvie.js';
 const stmt=(db,sql,...args)=>db.prepare(sql).bind(...args);
 const list=async q=>(await q.all()).results||[];
 const reply=(body,status=200)=>new Response(JSON.stringify(body),{status,headers:{'Content-Type':'application/json','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
@@ -42,6 +43,7 @@ function suggestedPrimary(snap){
  return candidates.length===1?candidates[0]:null;
 }
 async function accept(db,d,snap,guards=[]){
+ const observed=snap;snap=assessedSnapshot(snap);
  const previous=d.accepted?JSON.parse(d.accepted):null,delta=changes(previous,snap);
  // Incomplete collections can add observations, but cannot remove earlier observations.
  if(!snap.complete&&previous){const keys=new Set(snap.products.map(p=>JSON.stringify([p.name.toLowerCase(),p.version.toLowerCase()])));snap={...snap,products:[...snap.products,...previous.products.filter(p=>!keys.has(JSON.stringify([p.name.toLowerCase(),p.version.toLowerCase()]))) ]};}
@@ -49,7 +51,7 @@ async function accept(db,d,snap,guards=[]){
  const network=snap.network,selected=network?.adapters.some(a=>a.id===d.primary_adapter&&a.addresses.some(p=>p.ip===d.primary_ip));
  const primary=selected?{adapter_id:d.primary_adapter,ip:d.primary_ip}:d.primary_ip?{adapter_id:d.primary_adapter,ip:d.primary_ip}:suggestedPrimary(snap);
  await transaction(db,[...guards,...await projection(db,d,snap),
-  stmt(db,'INSERT INTO inventory_agent_history(device_id,received_at,sequence,snapshot,changes) VALUES(?,?,?,?,?)',d.id,now(),snap.sequence,JSON.stringify(snap),JSON.stringify(delta)),
+  stmt(db,'INSERT INTO inventory_agent_history(device_id,received_at,sequence,snapshot,changes) VALUES(?,?,?,?,?)',d.id,now(),snap.sequence,JSON.stringify(observed),JSON.stringify(delta)),
   stmt(db,"UPDATE inventory_agents SET state='active',hostname=?,agent_version=?,accepted=?,pending=NULL,pending_hash='',last_sync=?,completed_request=MAX(completed_request,?),primary_ip=?,primary_adapter=?,reviewed_large_change=0,revision=revision+1 WHERE id=?",snap.hostname,snap.agent_version,JSON.stringify(snap),now(),snap.request,primary?.ip||'',primary?.adapter_id||'',d.id)]);
 }
 async function recipients(db,d){
@@ -70,7 +72,13 @@ async function invalid(env,d,error){
  const row=await stmt(env.DB,'SELECT invalid_count FROM inventory_agents WHERE id=?',d.id).first();
  if(row.invalid_count>=3||error.status===413)await suspend(env,d,error.status===413?'Upload exceeded the permitted size.':'Repeated invalid inventory uploads within one hour. Check agent logs, version and server integrity.');
 }
-export async function agentDeviceRoute(req,env){
+async function registerInventory(env,owner){
+ // Register accepted products without making a provider request in the upload
+ // path. Existing cron work handles history, leases and provider retry limits.
+ try{if(await cvieReady(env))await syncAccountProducts(env,owner,'inventory');}
+ catch{console.warn('Accepted agent inventory awaits CVIE registration retry on the next inventory sync');}
+}
+export async function agentDeviceRoute(req,env,ctx){
  try{
   installed(env);if(req.headers.has('origin')||req.headers.has('cookie'))fail('Agent credentials required',403);
   const path=new URL(req.url).pathname;
@@ -116,7 +124,7 @@ export async function agentDeviceRoute(req,env){
   const [condition,args]=revisionGuard(d),writeGuard=stmt(env.DB,"INSERT INTO inventory_agent_audit(device_id,actor,action,at,authorized) VALUES(?,?,'upload',?,("+condition+'))',d.id,'agent:'+d.id,now(),...args);
   const received=stmt(env.DB,'UPDATE inventory_agents SET last_sequence=?,last_hash=?,last_seen=?,invalid_count=0 WHERE id=?',snap.sequence,digest,now(),d.id);
   if(d.state==='review')await transaction(env.DB,[writeGuard,received,stmt(env.DB,"UPDATE inventory_agents SET pending=?,pending_hash=?,primary_ip=CASE WHEN primary_ip='' THEN ? ELSE primary_ip END,primary_adapter=CASE WHEN primary_ip='' THEN ? ELSE primary_adapter END,revision=revision+1 WHERE id=?",JSON.stringify(snap),digest,suggestedPrimary(snap)?.ip||'',suggestedPrimary(snap)?.adapter_id||'',d.id)]);
-  else await accept(env.DB,d,snap,[writeGuard,received]);
+  else {await accept(env.DB,d,snap,[writeGuard,received]);const work=registerInventory(env,d.user_id);if(ctx?.waitUntil)ctx.waitUntil(work);else await work;}
   return reply({accepted:true,review_required:d.state==='review',sequence:snap.sequence});
  }catch(error){if(error instanceof AgentError)return reply({error:error.message},error.status);return reply({error:'Agent service temporarily unavailable'},503);}
 }
@@ -150,7 +158,10 @@ export async function agentManagement(req,env,user){
  if(req.method==='GET'){
   if(action==='history')return {entries:await list(stmt(db,'SELECT sequence,received_at,changes FROM inventory_agent_history WHERE device_id=? ORDER BY sequence DESC LIMIT 90',d.id))};
   if(action==='incident')return {incidents:await list(stmt(db,'SELECT id,reason,opened_at,resolved_at,resolution FROM inventory_agent_incidents WHERE device_id=? ORDER BY opened_at DESC LIMIT 20',d.id)),notifications:await list(stmt(db,'SELECT m.state,m.attempts FROM inventory_agent_mail m JOIN inventory_agent_incidents i ON i.id=m.incident_id WHERE i.device_id=? AND i.resolved_at IS NULL',d.id))};
-  if(!action)return {device:Object.fromEntries(deviceColumns.split(',').map(k=>[k,d[k]])),snapshot:JSON.parse(d.pending||d.accepted||'null'),pending_hash:d.pending_hash};
+  if(!action){const snap=assessedSnapshot(JSON.parse(d.pending||d.accepted||'null'));
+   return {device:Object.fromEntries(deviceColumns.split(',').map(k=>[k,d[k]])),snapshot:snap,pending_hash:d.pending_hash,
+    assessment:snap?await inventoryProductProgress(env,d.user_id,snap.products.map(p=>p.name)):{ready:false,products:[]}};
+  }
  }
  if(req.method!=='POST')fail('Not found',404);
  const data=await readBody(req,4096),[condition,args]=revisionGuard(d),check=guard(db,s,user,action,d.id,condition,args);
@@ -158,7 +169,7 @@ export async function agentManagement(req,env,user){
  if(action==='confirm'){
   if(d.state!=='review'||!d.pending||data.pending_hash!==d.pending_hash)fail('Inventory review changed',409);
   if(data.daily!==true)fail('Confirm daily synchronization before continuing');
-  const snap=JSON.parse(d.pending);await accept(db,d,snap,[check]);return {accepted:true};
+  const snap=JSON.parse(d.pending);await accept(db,d,snap,[check]);await registerInventory(env,d.user_id);return {accepted:true};
  }
  if(action==='sync'){
   if(!['active','review'].includes(d.state))fail('Resolve the incident or re-enroll the device first',409);

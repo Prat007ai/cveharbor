@@ -45,9 +45,17 @@ try{for(const org of [false,true])for(const width of [1440,768,390]){
  else{await networkDetails.getByRole('radio',{name:'Backup LAN 198.51.100.20',exact:true}).check();await networkDetails.getByRole('button',{name:'Save primary adapter & IP'}).click();await networkDetails.getByText('Primary adapter and IP saved for this server.',{exact:true}).waitFor();assert.match(await panel.innerText(),/Primary IP: 198.51.100.20/);}
  await panel.getByLabel('Find a hostname or asset').fill('2001:db8::10');assert.equal(await panel.locator('.server-card').count(),1);await panel.getByLabel('Find a hostname or asset').fill('');
  assert.equal(await panel.locator('.server-card').count(),3);assert.doesNotMatch(await panel.innerText(),/OTHER01|Other Customer/);
+ if(process.env.PRODUCT_ASSESSMENT_TEST==='true'){
+  const collapsed=panel.locator('.server-card > details:not(.server-network):not([open])').first();
+  await collapsed.locator('summary').click();
+  await page.waitForFunction(()=>[...document.querySelectorAll('.server-detail-body [data-product-assessment]')].some(e=>e.textContent));
+  assert.ok((await collapsed.locator('[data-product-assessment]').allTextContents()).every(Boolean),'expanding a server populates its statuses immediately');
+ }
  await panel.getByLabel('Server role',{exact:true}).selectOption('Web');assert.equal(await panel.locator('.server-card').count(),1);
  assert.match(await panel.innerText(),/8\.4\.0/);assert.match(await panel.innerText(),/8\.4\.1/);assert.match(await panel.innerText(),/CVE-2026-12345/);
- assert.equal(await panel.locator('.server-table-scroll').first().locator('tbody tr').count(),4,'both versions retain their two findings');
+ if(process.env.PRODUCT_ASSESSMENT_TEST==='true'){assert.ok(await panel.locator('[data-product-assessment]').count()>0,'every installed entry exposes assessment status');
+ assert.ok((await panel.locator('[data-product-assessment]').allTextContents()).every(Boolean),'status cells are populated');}
+ assert.equal(await panel.getByRole('region',{name:'Server vulnerability matches'}).first().locator('tbody tr').count(),4,'both versions retain their two findings');
  if(!org){await panel.getByRole('button',{name:'View CVE-2026-12345 details for WEB01'}).first().click();assert.match(await page.locator('.customer-finding-context').innerText(),/Hostname \/ asset: WEB01/);assert.match(await page.locator('.customer-finding-context').innerText(),/Server role: Web/);await page.getByRole('button',{name:'Close vulnerability details'}).click();}
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true,'Dashboard overflow '+width);
  await panel.screenshot({path:path.join(screens,(org?'organization':'personal')+'-'+width+'.png')});

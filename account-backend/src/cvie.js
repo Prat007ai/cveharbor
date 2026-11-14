@@ -1,4 +1,5 @@
 import {catalogueHistory} from './cvie-topic-history.js';
+import {activeAssets,agentSchemaReady} from './agent-validation.js';
 import {registryEnabled,resolveRegistry,searchRegistry,searchDirectory,registerVerifiedCpe} from './product-registry.js';
 import {bindProductIdentities,fastEvidenceEnabled,immediateEvidence} from './cvie-onboarding.js';
 import {catalogueProducts,activeSubscription} from './catalogue-selection.js';
@@ -104,6 +105,7 @@ export async function subscribeProducts(env,userId,products,origin='catalogue',e
 export async function repairAccountCoverage(env,userId,scope='all'){
  const repairRows=(await query(env.DB,`SELECT p.* FROM cvie_products p WHERE p.user_id=? AND ${activeSubscription('p',scope)}`,userId).all()).results||[];
  const identityRepair=await repairInventoryIdentities(env,userId,scope,repairRows);
+ if(identityRepair&&registryEnabled(env))await bindProductIdentities(env,userId);
  const hostRepair=await prepareHyperVHosts(env,userId,repairRows);
  const coverageRepair=await prepareProductCoverage(env,userId,repairRows);
  return identityRepair||hostRepair||coverageRepair;
@@ -112,7 +114,7 @@ export async function repairAccountCoverage(env,userId,scope='all'){
 // concurrent edits win; private inventory rows/installed versions never change.
 async function repairInventoryIdentities(env,userId,scope,products){
  const repairs=products.flatMap(p=>{
-  const identity=!p.cpe&&dotnetInventoryIdentity(p.name,p.vendor);
+  const identity=!p.cpe&&knownIdentity(p.name,p.vendor);
   return identity?[{id:p.id,name:p.name,vendor:p.vendor,cursor:p.cursor_json,cpe:identity.cpe}]:[];
  });
  if(!repairs.length)return false;
@@ -134,7 +136,8 @@ export async function syncAccountProducts(env,userId,scope='all'){
   results.push(await subscribeProducts(env,userId,catalogueProducts(JSON.parse(catalogue?.preferences_json||'{}')),'catalogue',catalogue?.preferences_json??null));
  }
  if(scope==='all'||scope==='inventory'){
-  const inventory=await query(env.DB,'SELECT DISTINCT technology FROM inventory_assets WHERE user_id=?',userId).all();
+  const agents=await agentSchemaReady(env.DB);
+  const inventory=await query(env.DB,'SELECT DISTINCT technology FROM inventory_assets t WHERE user_id=?'+(agents?' AND '+activeAssets('t'):''),userId).all();
   results.push(await subscribeProducts(env,userId,(inventory.results||[]).map(x=>({name:x.technology})),'inventory'));
  }
  if(scope==='all'||scope==='stack'){
@@ -327,6 +330,7 @@ export async function runCvieStep(env,fetcher=fetch,now=Date.now(),userId=null,s
    const cpe=finished&&sameName&&catalogueKind(product.name)==='product'?candidates[0].cpe:'';
    const status=cpe?'queued':finished||limited?'needs_identity':'scanning';
    await query(env.DB,"UPDATE cvie_products SET cpe=?,status=?,candidates_json=?,cursor_json=?,lease_until=0,error=? WHERE id=? AND lease_until=? AND json_extract(cursor_json,'$.active_scan')=?",cpe,status,JSON.stringify(candidates.slice(0,500)),JSON.stringify({directory_query:directorySearch(product),directory_complete:finished,directory_limited:limited,...(status==='scanning'?{directory_index:next,directory_total:data.totalResults}:{})}),cpe||status==='scanning'?'':limited?'The product directory is broad and only partially searched. Add the vendor or a more specific product name, or confirm an exact listed identity.':'Choose the exact vendor/product identity to continue; a name search alone is not a vulnerability match.',product.id,lease,owner).run();
+   if(cpe&&registryEnabled(env)){await registerVerifiedCpe(env,cpe);await bindProductIdentities(env,product.user_id);}
    if(shared&&cpe)await reconcileSharedScopes(env,product.user_id,now);
    return {resolved:Boolean(cpe),directory_complete:finished||limited};
   }
@@ -430,6 +434,16 @@ function savedProgress(p,now){
   next_attempt_at:p.next_attempt_at,stale:!p.last_success_at||now-p.last_success_at>24*3600000,
   progress:{windows_complete:cursor.position||0,windows_total:cursor.windows?.length||0,records_checked:window?.index||0,
    records_in_window:window?.total??null,directory_checked:cursor.directory_index||0,directory_total:cursor.directory_total||0}};
+}
+// Called only after the caller has authorized the customer/device scope. Return
+// public product-check metadata for the supplied inventory names, never owner
+// credentials, unrelated products or customer records.
+export async function inventoryProductProgress(env,userId,names){
+ if(!await cvieReady(env))return {ready:false,products:[]};
+ const selected=JSON.stringify([...new Set(names.map(normalizeName))]);
+ const sql=ownedProductSql(env,'p.*','inventory').replace(' ORDER BY p.name',' AND p.name_key IN(SELECT value FROM json_each(?)) ORDER BY p.name');
+ const rows=(await query(env.DB,sql,userId,selected).all()).results||[];
+ return {ready:true,products:rows.map(overlaySharedProduct).map(p=>({...savedProgress(p,Date.now()),coverage:coverageSummary(p)}))};
 }
 async function productSourceHealth(env,products,now){
  const evidence=await sourceHealth(env,now),attempted=products.map(p=>p.last_success_at).filter(Boolean);

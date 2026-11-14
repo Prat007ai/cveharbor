@@ -131,7 +131,10 @@ def site(action,out):
 if __name__=='__main__':
     action=sys.argv[1]
     output=Path(sys.argv[2]).resolve() if len(sys.argv)>2 else None
-    if action == 'windows-agent':
+    if action == 'installed-products':
+        from installed_products_release import backend
+        backend(output)
+    elif action == 'windows-agent':
         from windows_agent_release import backend
         backend(output)
     elif action == 'dashboard-read-capacity':

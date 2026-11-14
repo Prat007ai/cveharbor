@@ -90,7 +90,7 @@ function install(){
   const byProduct=cached.products,requestProducts=new Map();
   const windowsHosts=new Set((assets||[]).filter(a=>a.name&&a.environment_id&&norm(a.technology)==='windows server').map(a=>JSON.stringify([a.environment_id,a.name])));
   for(const rawAsset of assets||[]){
-   const asset=windowsHosts.has(JSON.stringify([rawAsset.environment_id,rawAsset.name]))?{...rawAsset,assessment_os:'windows'}:rawAsset;
+   const asset=rawAsset.agent_device_id||windowsHosts.has(JSON.stringify([rawAsset.environment_id,rawAsset.name]))?{...rawAsset,assessment_os:'windows'}:rawAsset;
    const key=JSON.stringify([asset.technology,asset.version,asset.assessment_os]);
    let matches=byProduct.get(key)||requestProducts.get(key);
    if(!matches){

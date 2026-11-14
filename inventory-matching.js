@@ -48,7 +48,34 @@ function structuredAssessment(asset,record){
  if(!/^cvie_/.test(record.source_type||'')||!(record.cvie_products||[]).some(p=>norm(p)===product))return null;
  if(sourcePending(record)||['windows','windows server','iis','.net framework'].includes(product))return 'unknown';
  const families=(record.cvie_identities||[]).filter(x=>norm(x.name)===product).map(x=>String(x.cpe).split(':').slice(0,5).join(':'));
- return cvieVersionAssessment(String(asset.version||''),(record.affected_cpes||[]).filter(x=>x.cvie_product_key?norm(x.cvie_product_key)===product:families.includes(String(x.criteria).split(':').slice(0,5).join(':'))));
+ const ranges=(record.affected_cpes||[]).filter(x=>x.cvie_product_key?norm(x.cvie_product_key)===product:families.includes(String(x.criteria).split(':').slice(0,5).join(':')));
+ // Explicit non-Windows CPE targets cannot establish exposure on a Windows agent.
+ const compatible=ranges.filter(x=>asset.assessment_os!=='windows'||!['android','iphone_os','ios','mac_os','mac_os_x','macos','linux'].includes(String(x.criteria).split(':')[10]));
+ if(ranges.length&&!compatible.length)return 'outside';
+ const python=/^python (\d+\.\d+\.\d+) core interpreter \((?:64|32)-bit\)$/i.exec(asset.technology||'');
+ if(python){
+  const [major,minor,patch]=python[1].split('.').map(Number),msi=major+'.'+minor+'.'+(patch*1000+150)+'.0';
+  // CPython final-release MSI encoding (PCbuild/python.props). Contradictory
+  // display-name and package versions require review, never a guessed exclusion.
+  if(asset.version!==python[1]&&asset.version!==msi)return 'unknown';
+ }
+ return cvieVersionAssessment(python?python[1]:String(asset.version||''),compatible);
+}
+function productAssessment(asset,product,{count=0,limited=false,available=true,months=3}={}){
+ const finding=count?' · '+count+' candidate CVE'+(count===1?'':'s'):'';
+ let code,label;
+ if(!String(asset.version||'').trim()||/^(?:unknown|version unknown|n\/a|-)$/i.test(asset.version)){code='version_missing';label='Version unavailable — assessment incomplete';}
+ else if(!available){code='unavailable';label='Assessment status unavailable';}
+ else if(!product){code='unregistered';label='Waiting for product registration';}
+ else if(product.status==='retrying'){code='retrying';label='Source unavailable — retry scheduled';}
+ else if(!product.cpe){code=product.status==='needs_identity'?'unmapped':'resolving';label=code==='unmapped'?'Product mapping needs review':'Resolving product identity';}
+ else if(['queued','scanning'].includes(product.status)){code=product.status;label=code==='queued'?'CVE check queued':'CVE check in progress';}
+ else if(product.stale){code='stale';label='Saved assessment — source check overdue';}
+ else if(limited||product.coverage?.limited){code='partial';label='Partial coverage — review required';}
+ else if(product.status!=='ready'||!(months===12?product.history_complete_at:product.recent_complete_at)){code='pending';label='Assessment incomplete';}
+ else if(count){code='candidates';label='Potential vulnerabilities — verify applicability';}
+ else {code='no_match';label='No applicable matches in loaded '+months+'-month results';}
+ return {code,label:label+finding};
 }
 // Release identity is separate from patch applicability. Never compare a Windows
 // build number numerically with a marketing year. Source: Microsoft Server release info.
@@ -340,5 +367,5 @@ function evaluate(assets,advisories,limit=150){
   Number(b.level==='version_review')-Number(a.level==='version_review')||a.id.localeCompare(b.id));
  return {items:items.slice(0,limit),total:items.length,limited:items.length>limit};
 }
-root.CVEHARBOR_INVENTORY_MATCH={candidate,evaluate,compare,cvieVersionAssessment,windowsServerApplicability,dotnetAssessment,structuredAssessment,applicability,summarize,assessFinding};
+root.CVEHARBOR_INVENTORY_MATCH={candidate,evaluate,compare,cvieVersionAssessment,windowsServerApplicability,dotnetAssessment,structuredAssessment,applicability,summarize,assessFinding,productAssessment};
 })(window);

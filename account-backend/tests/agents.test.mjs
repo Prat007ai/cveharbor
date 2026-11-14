@@ -135,3 +135,24 @@ test('old offline collections request a fresh snapshot without suspending a heal
   assert.equal(f.sql.prepare('SELECT invalid_count FROM inventory_agents').get().invalid_count,0);assert.equal(f.sql.prepare('SELECT COUNT(*) n FROM inventory_agent_incidents').get().n,0);assert.equal((await f.device('upload',f.payload(),d.credential)).status,200);
  }finally{f.close();}
 });
+
+
+test('accepted and daily inventory registers every active product and preserves raw .NET evidence',async()=>{
+ const f=setup();try{
+  for(const n of ['0019_cvie.sql','0020_cvie_evidence.sql','0022_cvie_shared_scans.sql','0028_cvie_source_efficiency.sql','0029_cvie_identity_registry.sql'])f.sql.exec(fs.readFileSync(new URL('../migrations/'+n,import.meta.url),'utf8'));
+  f.sql.exec('CREATE TABLE user_technology_catalogue(user_id TEXT,preferences_json TEXT);');
+  f.env.CVIE_REGISTRY_ENABLED='true';f.env.CVIE_SHARED_SCANS_ENABLED='true';
+  const d=await f.enroll(),raw=[{name:'.NET Framework',version:'4.0.0.0',details:'Framework registry version; verify patch applicability.'},{name:'.NET Framework',version:'4.8.1',details:'Registry release: 534296; framework family, not Windows patch level.'},{name:'Google Chrome',version:'130.0.1',details:''}];
+  const upload=f.payload(1,raw);assert.equal((await f.device('upload',upload,d.credential)).status,200);await f.confirm(d);
+  assert.equal((await f.device('upload',upload,d.credential)).status,200,'original upload hash remains replay-safe');
+  let state=await f.management('/'+d.device_id);assert.equal(state.snapshot.products.length,2);
+  assert.equal(state.assessment.ready,true);assert.equal(state.assessment.products.length,2);
+  assert.ok(state.assessment.products.find(p=>p.name==='Google Chrome').cpe.includes(':google:chrome:'));
+  assert.equal(JSON.parse(f.sql.prepare('SELECT snapshot FROM inventory_agent_history').get().snapshot).products.length,3,'raw evidence remains available');
+  f.sql.exec('UPDATE inventory_agents SET last_sync=last_sync-86401');
+  assert.equal((await f.device('upload',f.payload(2,[raw[1],raw[2],{name:'Mozilla Firefox (x64 en-CA)',version:'131.0',details:''}]),d.credential)).status,200);
+  state=await f.management('/'+d.device_id);assert.equal(state.assessment.products.length,3,'new daily products register without an open browser');
+  assert.ok(state.assessment.products.find(p=>p.name.startsWith('Mozilla')).cpe.includes(':mozilla:firefox:'));
+  assert.equal(f.sql.prepare("SELECT COUNT(*) n FROM inventory_assets WHERE version='4.0.0.0'").get().n,0);
+ }finally{f.close();}
+});

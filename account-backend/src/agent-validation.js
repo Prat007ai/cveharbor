@@ -48,4 +48,17 @@ export function changes(previous,next){
  return {added:next.products.filter(p=>!old.has(key(p))).map(({name,version})=>({name,version})),removed:next.complete?[...old].filter(([k])=>!current.has(k)).map(([,p])=>({name:p.name,version:p.version})):[],incomplete:!next.complete};
 }
 export const activeAssets=(alias='t')=>` NOT EXISTS(SELECT 1 FROM inventory_agent_assets aa WHERE aa.asset_id=${alias}.id AND aa.active=0)`;
+// 1.0.0 also observes the v4.0 compatibility key on systems with an in-place
+// 4.5+ Full release. Drop only that exact artifact, with release evidence from
+// this device's same collection. Preserve standalone 4.0 and real older runtimes.
+export function assessedSnapshot(snap){
+ if(!snap)return snap;
+ const releases=[[533320,'4.8.1'],[528040,'4.8'],[461808,'4.7.2'],[461308,'4.7.1'],[460798,'4.7'],[394802,'4.6.2'],[394254,'4.6.1'],[393295,'4.6'],[379893,'4.5.2'],[378675,'4.5.1'],[378389,'4.5']];
+ const modern=snap.products.some(p=>{
+  if(p.name!=='.NET Framework')return false;
+  const m=/^Registry release: (\d+); framework family, not Windows patch level\.$/.exec(p.details);
+  return m&&releases.find(([n])=>Number(m[1])>=n)?.[1]===p.version;
+ });
+ return modern?{...snap,products:snap.products.filter(p=>!(p.name==='.NET Framework'&&p.version==='4.0.0.0'&&p.details==='Framework registry version; verify patch applicability.'))}:snap;
+}
 export const agentSchemaReady=async db=>!!await db.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name='inventory_agent_assets'").first();

@@ -36,10 +36,13 @@ export function mountAgents(host,{scope,afterImport=async()=>{},onChange=()=>{},
   if(!snap.complete)body.append(el('p','Collection incomplete. Previously observed software will be retained.','agent-warning'));
   for(const warning of snap.warnings)body.append(el('p',warning,'agent-warning'));
   body.append(el('p','Collected '+new Date(snap.collected_at).toLocaleString()+'. Machine-wide software is collected; other users, portable apps and bundled runtimes may be absent.'));
-  const table=el('table'),head=el('thead'),tr=el('tr');for(const name of ['Installed software','Version'])tr.append(el('th',name));head.append(tr);const tbody=el('tbody');table.append(head,tbody);body.append(table);
+  const table=el('table'),head=el('thead'),tr=el('tr');for(const name of ['Installed software','Version','Assessment status'])tr.append(el('th',name));head.append(tr);const tbody=el('tbody');table.append(head,tbody);body.append(table);
   const paging=el('div','','agent-actions'),count=el('span');let page=0;
   const previous=button('Previous software',()=>{page--;draw();}),next=button('Next software',()=>{page++;draw();});paging.append(previous,count,next);body.append(paging);
-  function draw(){tbody.replaceChildren();for(const p of snap.products.slice(page*50,page*50+50)){const row=el('tr');row.append(el('td',p.name),el('td',p.version||'Version unknown'));tbody.append(row);}count.textContent=(page*50+1)+'–'+Math.min(page*50+50,snap.products.length)+' of '+snap.products.length;previous.disabled=page===0;next.disabled=page*50+50>=snap.products.length;paging.hidden=snap.products.length<=50;}draw();
+  const checksByName=new Map((result.assessment?.products||[]).map(p=>[p.name.toLowerCase(),p]));
+  function draw(){tbody.replaceChildren();for(const p of snap.products.slice(page*50,page*50+50)){const row=el('tr'),check=checksByName.get(p.name.toLowerCase());
+   const state=device.state==='review'?'Awaiting first inventory approval':window.CVEHARBOR_INVENTORY_MATCH?.productAssessment?.({technology:p.name,version:p.version},check,{available:!!result.assessment?.ready,limited:true})?.label||'Assessment status unavailable';
+   row.append(el('td',p.name),el('td',p.version||'Version unknown'),el('td',state));tbody.append(row);}count.textContent=(page*50+1)+'–'+Math.min(page*50+50,snap.products.length)+' of '+snap.products.length;previous.disabled=page===0;next.disabled=page*50+50>=snap.products.length;paging.hidden=snap.products.length<=50;}draw();
   if(rights.can_edit){
    const settings=el('details'),summary=el('summary','Server role, primary IP and daily synchronization');settings.append(summary);
    const roleBox=el('div','','agent-roles'),chosen=JSON.parse(device.roles);
