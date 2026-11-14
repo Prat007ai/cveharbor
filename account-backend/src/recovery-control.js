@@ -23,8 +23,7 @@ export function recoveryProtected(handler){
   const url=kind==='fetch'?new URL(input.url):null;
   const inventoryRead=url&&input.method==='GET'&&url.hostname!=='confirm.cveharbor.com'&&['/v1/inventory/page','/v1/inventory/status'].includes(url.pathname);
   const dashboardRead=kind==='fetch'&&dashboardReadRequest(input);
-  if(inventoryRead)env={...env,DB:inventoryReadDatabase(env.DB)};
-  else if(dashboardRead)env={...env,CVIE_PUBLIC_CACHE_KEY:publicSourceCacheKey(env),DB:dashboardReadDatabase(env.DB)};
+  if(inventoryRead||dashboardRead){const identity=publicSourceCacheKey(env);env={...env,CVIE_PUBLIC_CACHE_KEY:identity,DB:(inventoryRead?inventoryReadDatabase:dashboardReadDatabase)(env.DB,{cacheIdentity:identity})};}
   let state;try{state=await recoveryState(env);}catch{return kind==='fetch'?busyResponse():undefined;}
   if(state?.write_hold)return kind==='fetch'?heldResponse():undefined;
   // These routes cannot mutate D1: enforce SELECT-only capabilities at runtime.

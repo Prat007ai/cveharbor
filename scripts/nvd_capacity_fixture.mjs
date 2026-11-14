@@ -30,6 +30,15 @@ export function outageAdapter(worker,runCvieStep,epoch,controlKey){
  const reads=new Set(['/v1/me','/v1/inventory/page','/v1/inventory/status','/v1/inventory/software-history','/v1/customer-score-history','/v1/cvie','/v1/cvie/progress','/v1/cvie/advisories','/v1/finding-assignments','/v1/team/organizations','/v1/workspace/items','/v1/workspace/summary','/v1/workspace/trend']);
  return {async fetch(req,env,ctx){
   const url=new URL(req.url);
+  if(url.pathname==='/__outage/routing'){
+   if(req.method!=='POST'||req.headers.get('X-Outage-Control')!==controlKey)return new Response('',{status:404});
+   const primary=env.DB.withSession('first-primary');const a=await primary.prepare('SELECT 1 AS routing_probe').all(),bookmark=primary.getBookmark();
+   const b=bookmark?await env.DB.withSession(bookmark).prepare('SELECT 1 AS routing_probe').all():null;
+   // This unconstrained diagnostic reads only a literal, never customer data.
+   const c=await env.DB.withSession('first-unconstrained').prepare('SELECT 1 AS routing_probe').all();
+   const meta=r=>r?{primary:r.meta?.served_by_primary,region:r.meta?.served_by_region,duration_ms:r.meta?.duration}:null;
+   return Response.json({bookmark_present:!!bookmark,primary:meta(a),anchored:meta(b),unconstrained_literal:meta(c)});
+  }
   if(url.pathname==='/__outage/step'){
    if(req.method!=='POST'||req.headers.get('X-Outage-Control')!==controlKey)return new Response('',{status:404});
    const mode=url.searchParams.get('mode');if(!['timeout','503'].includes(mode))return new Response('',{status:400});

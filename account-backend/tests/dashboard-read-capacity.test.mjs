@@ -26,7 +26,7 @@ test('replica reads are anchored to this request authentication; every authority
  await db.prepare('WITH x AS (SELECT 1) SELECT * FROM x').all();
  await db.batch([db.prepare('SELECT * FROM cvie_sources'),db.prepare('SELECT * FROM inventory_customers')]);
  await db.prepare('SELECT * FROM team_members').all();await db.prepare(auth).first();await db.prepare('SELECT * FROM cvie_sources').all();
- assert.deepEqual(calls.map(c=>c[0]),['first-primary','first-primary','server-2','server-2','server-2','first-primary','first-primary','server-6']);
+ assert.deepEqual(calls.map(c=>c[0]),['first-primary','first-primary','server-2','server-3','server-3','first-primary','first-primary','server-6']);
  const second=dashboardReadDatabase(original);await second.prepare('SELECT * FROM cvie_sources').all();assert.equal(calls.at(-1)[0],'first-primary','No bookmark crosses requests');
 });
 

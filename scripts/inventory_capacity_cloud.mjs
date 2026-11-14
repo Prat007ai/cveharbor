@@ -132,6 +132,7 @@ export async function cloudRehearsal(env=process.env){
   const headers=i=>({Cookie:'cvh_session='+tokens[i],Origin:'https://cveharbor.com'});
   const unauth=await fetch(base+'/v1/inventory/page');assert.equal(unauth.status,401);
   const foreign=await fetch(base+'/v1/inventory/page?customer_id='+fixtureId(2),{headers:headers(0)});assert.equal(foreign.status,404);
+  const routing=await fetch(base+'/__outage/routing',{method:'POST',headers:{'X-Outage-Control':controlKey},signal:AbortSignal.timeout(15000)});assert.equal(routing.status,200);receipt.routing=await routing.json();save();assert.equal(receipt.routing.bookmark_present,true,'Cloud binding did not return a session bookmark');
   const samples=[],journeys=[],errors=[],databaseSamples=[];let completed=0;
   const start=performance.now(),until=start+120000;
   receipt.status='running';save();

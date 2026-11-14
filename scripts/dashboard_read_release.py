@@ -9,8 +9,8 @@ import team_release as team
 
 BASE = '43fce637edfc8d1a557a7b4a93153fcb5f8070e3'
 PREDECESSOR = '611f3576f8b30323f6a2d0625891b102515f5ab8805d37c18801f4ba6cc54047'
-CHANGED = {'account-backend/src/recovery-control.js', 'account-backend/src/inventory-pages.js', 'account-backend/src/public-source-status-cache.js'}
-ADDED = {'account-backend/src/dashboard-read-db.js'}
+CHANGED = {'account-backend/src/recovery-control.js', 'account-backend/src/inventory-pages.js', 'account-backend/src/public-source-status-cache.js', 'account-backend/src/inventory-read-db.js'}
+ADDED = {'account-backend/src/dashboard-read-db.js', 'account-backend/src/versioned-read-cache.js'}
 
 
 def backend(out, check=True):
