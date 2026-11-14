@@ -28,6 +28,9 @@ jobs:
           python -c "import sys;from pathlib import Path;sys.path.insert(0,'scripts');import team_release as t;t.previous('f00b4c4939ddf3d304fe525738d6fdbfedb57956','windows_agent_release.py','backend',Path(sys.argv[1]))" "$RUNNER_TEMP/agent-backend"
           rsync --archive --delete "$RUNNER_TEMP/agent-backend/account-backend/src/" account-backend/src/
           cp "$RUNNER_TEMP/agent-backend/account-backend/wrangler.toml" account-backend/wrangler.toml
+          # Keep the original round-trip expectation with the frozen serving backend.
+          # Current capacity behavior is checked above and in the scoped release suite.
+          git show f00b4c4939ddf3d304fe525738d6fdbfedb57956:account-backend/tests/inventory-capacity.test.mjs > account-backend/tests/inventory-capacity.test.mjs
           node --test account-backend/tests/agents.test.mjs account-backend/tests/inventory-capacity.test.mjs account-backend/tests/workspace-history.test.mjs account-backend/tests/workspace-summary.test.mjs account-backend/tests/team-access.test.mjs account-backend/tests/ai-*.test.mjs account-backend/tests/azure-connection.test.mjs
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
