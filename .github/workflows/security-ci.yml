@@ -66,3 +66,13 @@ jobs:
           cp inventory-matching.js "$RUNNER_TEMP/nvd-backend/inventory-matching.js"
           node --test "$RUNNER_TEMP/nvd-backend/account-backend/tests/cvie.test.mjs" "$RUNNER_TEMP/nvd-backend/account-backend/tests/cvie-evidence.test.mjs" "$RUNNER_TEMP/nvd-backend/account-backend/tests/cvie-shared.test.mjs"
           python -m unittest discover -s tests -p test_nvd_outage.py -v
+
+      - name: Reproduce the dashboard capacity delta and verify its read boundaries
+        run: |
+          python scripts/dashboard_read_release.py backend "$RUNNER_TEMP/dashboard-read-backend"
+          cp -r account-backend/tests "$RUNNER_TEMP/dashboard-read-backend/account-backend/tests"
+          cp account-backend/package.json "$RUNNER_TEMP/dashboard-read-backend/account-backend/package.json"
+          cp inventory-matching.js "$RUNNER_TEMP/dashboard-read-backend/inventory-matching.js"
+          cp inventory-client.js "$RUNNER_TEMP/dashboard-read-backend/inventory-client.js"
+          cp -r scripts deployment "$RUNNER_TEMP/dashboard-read-backend/"
+          node --test "$RUNNER_TEMP/dashboard-read-backend/account-backend/tests/dashboard-read-capacity.test.mjs" "$RUNNER_TEMP/dashboard-read-backend/account-backend/tests/inventory-capacity.test.mjs" "$RUNNER_TEMP/dashboard-read-backend/account-backend/tests/inventory-read-db.test.mjs" "$RUNNER_TEMP/dashboard-read-backend/account-backend/tests/recovery-control.test.mjs" "$RUNNER_TEMP/dashboard-read-backend/account-backend/tests/cvie-shared.test.mjs"

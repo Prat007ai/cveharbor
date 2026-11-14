@@ -65,7 +65,7 @@ jobs:
           github-token: ${{ github.token }}
       - name: Reproduce the serving baseline and verify only the reviewed delta
         run: |
-          python scripts/inventory_capacity_release.py backend "$RUNNER_TEMP/capacity-backend"
+          python scripts/dashboard_read_release.py backend "$RUNNER_TEMP/capacity-backend"
           python scripts/inventory_capacity_release.py prepare "$RUNNER_TEMP/capacity-site"
       - run: npm install --prefix staging --ignore-scripts --no-package-lock
       - name: Test the exact website package with fictional inventory

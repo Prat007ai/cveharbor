@@ -41,10 +41,14 @@ export async function inventoryPage(req,env,user,team=null){
  if(revisionParam!==null&&!/^\d{1,15}$/.test(revisionParam))fail('Invalid inventory revision');
  const expected=cursor?.revision??(revisionParam===null?null:Number(revisionParam));
  if(cursor&&revisionParam!==null&&Number(revisionParam)!==cursor.revision)fail('Conflicting inventory revision');
+ // The owned environment set already enforces the selected customer's scope.
+ // Avoid repeating an environment index lookup for every software row.
+ const directAssets=resource==='assets'&&!team;
  const clauses=['t.user_id=?'],args=[owner];
  const agents=resource==='assets'&&env.AGENT_INVENTORY_SCHEMA==='1';
  if(agents)clauses.push(activeAssets('t'));
- if(customer){clauses.push(def.scope+'=?');args.push(customer);}
+ if(customer&&!directAssets){clauses.push(def.scope+'=?');args.push(customer);}
+ if(directAssets&&!customer){clauses.push('t.environment_id IN (SELECT id FROM inventory_environments WHERE user_id=?)');args.push(owner);}
  // Restrict indexed keys before joining; a selected customer must not scan
  // all other customers belonging to a large MSP account.
  if(customer&&['assets','packages','networks'].includes(resource)){
@@ -65,7 +69,7 @@ export async function inventoryPage(req,env,user,team=null){
  const environmentArgs=environment?[owner,environment,...customer?[customer]:[]]:[];
  const selected=def.fields+(agents?',ag.id AS agent_device_id,ag.primary_ip AS agent_primary_ip,ag.state AS agent_state,ag.last_sync AS agent_last_sync':'');
  const agentJoin=agents?' LEFT JOIN inventory_agent_assets aa ON aa.asset_id=t.id LEFT JOIN inventory_agents ag ON ag.id=aa.device_id AND ag.user_id=t.user_id AND ag.environment_id=t.environment_id':'';
- const query='SELECT '+selected+' FROM '+def.table+' t'+(def.join||'')+agentJoin+' WHERE '+clauses.join(' AND ')+(def.extra||'')+' ORDER BY '+def.keys.map(k=>'t.'+k).join(',')+' LIMIT '+(INVENTORY_PAGE_SIZE+1);
+ const query='SELECT '+selected+' FROM '+def.table+' t'+(directAssets?'':def.join||'')+agentJoin+' WHERE '+clauses.join(' AND ')+(def.extra||'')+' ORDER BY '+def.keys.map(k=>'t.'+k).join(',')+' LIMIT '+(INVENTORY_PAGE_SIZE+1);
  // D1 serializes every returned object before sending it to the Worker. A
  // bounded array payload avoids repeating field names for every software row;
  // reconstruct the existing public shape here, without caching private data.
