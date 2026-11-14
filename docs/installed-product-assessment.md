@@ -36,7 +36,8 @@ Primary identity evidence:
 
 Python's existing reviewed family also accepts the exact Windows Core Interpreter
 installer name. Assessment uses the runtime release explicitly embedded in that
-name, retaining the observed MSI version for display. Other Python installer
+name only when the observed version agrees with the runtime release or the
+[CPython final-release MSI encoding](https://github.com/python/cpython/blob/v3.12.10/PCbuild/python.props), retaining the observed MSI version for display. Other Python installer
 components are not assumed to be independently installed interpreters.
 
 ## .NET compatibility records
@@ -63,3 +64,14 @@ Agent details expose only product-check metadata for that authorized device's
 inventory. Organization-only views must never borrow the signed-in user's personal
 CVIE state. Inventory collection, source discovery and installed-version assessment
 are separate stages; a successful upload does not imply a completed CVE check.
+
+## Coordinated historical capacity checks
+
+The credential-free security and capacity regression jobs reconstruct PR389 at
+84553046ee8313723702a4db24a1df198abbb518, with its historical agent regression test.
+They are explicitly historical checks, not approval of a future capacity candidate.
+Current-source tests and the dedicated installed-products package checks remain
+separate. The capacity cloud workflow and production gate still use the current
+capacity builder and must fail closed until its owner rebases the package onto the
+then-serving product release. This boundary was coordinated with the active
+Locate Azure OpenAI chat; its resources and PR390 remain outside this change.

@@ -26,6 +26,7 @@ test('Python interpreter assessment uses the explicit runtime release rather tha
  const name='Python 3.12.10 Core Interpreter (64-bit)',a={id:'test',technology:name,version:'3.12.10150.0'};
  const source={id:'CVE-2026-12345',source_type:'cvie_nvd',cvie_products:[name],affected_cpes:[{criteria:'cpe:2.3:a:python:python:*:*:*:*:*:*:*:*',cvie_product_key:name,versionStartIncluding:'3.12.0',versionEndExcluding:'3.12.11'}],severity:'high'};
  assert.equal(engine.structuredAssessment(a,source),'within');
- assert.equal(engine.structuredAssessment({...a,technology:'Python 3.12.11 Core Interpreter (64-bit)'},{...source,cvie_products:['Python 3.12.11 Core Interpreter (64-bit)'],affected_cpes:[{...source.affected_cpes[0],cvie_product_key:'Python 3.12.11 Core Interpreter (64-bit)'}]}),'outside');
+ assert.equal(engine.structuredAssessment({...a,version:'3.12.11150.0',technology:'Python 3.12.11 Core Interpreter (64-bit)'},{...source,cvie_products:['Python 3.12.11 Core Interpreter (64-bit)'],affected_cpes:[{...source.affected_cpes[0],cvie_product_key:'Python 3.12.11 Core Interpreter (64-bit)'}]}),'outside');
+ assert.equal(engine.structuredAssessment({...a,version:'3.13.150.0'},source),'unknown');
  assert.equal(a.version,'3.12.10150.0','collected evidence remains unchanged');
 });

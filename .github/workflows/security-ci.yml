@@ -67,10 +67,11 @@ jobs:
           node --test "$RUNNER_TEMP/nvd-backend/account-backend/tests/cvie.test.mjs" "$RUNNER_TEMP/nvd-backend/account-backend/tests/cvie-evidence.test.mjs" "$RUNNER_TEMP/nvd-backend/account-backend/tests/cvie-shared.test.mjs"
           python -m unittest discover -s tests -p test_nvd_outage.py -v
 
-      - name: Reproduce the dashboard capacity delta and verify its read boundaries
+      - name: Reproduce historical PR389 capacity regression and verify its read boundaries
         run: |
-          python scripts/dashboard_read_release.py backend "$RUNNER_TEMP/dashboard-read-backend"
+          python -c "import sys;from pathlib import Path;sys.path.insert(0,'scripts');import team_release as t;t.previous('84553046ee8313723702a4db24a1df198abbb518','dashboard_read_release.py','backend',Path(sys.argv[1]))" "$RUNNER_TEMP/dashboard-read-backend"
           cp -r account-backend/tests "$RUNNER_TEMP/dashboard-read-backend/account-backend/tests"
+          git show 84553046ee8313723702a4db24a1df198abbb518:account-backend/tests/agents.test.mjs > "$RUNNER_TEMP/dashboard-read-backend/account-backend/tests/agents.test.mjs"
           cp account-backend/package.json "$RUNNER_TEMP/dashboard-read-backend/account-backend/package.json"
           cp inventory-matching.js "$RUNNER_TEMP/dashboard-read-backend/inventory-matching.js"
           cp inventory-client.js "$RUNNER_TEMP/dashboard-read-backend/inventory-client.js"

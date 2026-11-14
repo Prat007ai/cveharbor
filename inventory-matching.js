@@ -53,6 +53,12 @@ function structuredAssessment(asset,record){
  const compatible=ranges.filter(x=>asset.assessment_os!=='windows'||!['android','iphone_os','ios','mac_os','mac_os_x','macos','linux'].includes(String(x.criteria).split(':')[10]));
  if(ranges.length&&!compatible.length)return 'outside';
  const python=/^python (\d+\.\d+\.\d+) core interpreter \((?:64|32)-bit\)$/i.exec(asset.technology||'');
+ if(python){
+  const [major,minor,patch]=python[1].split('.').map(Number),msi=major+'.'+minor+'.'+(patch*1000+150)+'.0';
+  // CPython final-release MSI encoding (PCbuild/python.props). Contradictory
+  // display-name and package versions require review, never a guessed exclusion.
+  if(asset.version!==python[1]&&asset.version!==msi)return 'unknown';
+ }
  return cvieVersionAssessment(python?python[1]:String(asset.version||''),compatible);
 }
 function productAssessment(asset,product,{count=0,limited=false,available=true,months=3}={}){
