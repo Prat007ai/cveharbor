@@ -35,13 +35,19 @@ async function projection(db,d,snap){
  writes.push(stmt(db,'UPDATE inventory_capacity_revisions SET revision=revision+1 WHERE user_id=?',d.user_id));
  return writes;
 }
+function suggestedPrimary(snap){
+ if(snap.network?.suggested)return snap.network.suggested;
+ const candidates=(snap.network?.adapters||[]).filter(a=>a.status.toLowerCase()==='up').flatMap(a=>a.addresses.filter(p=>/^\d+\./.test(p.ip)&&!p.ip.startsWith('127.')&&!p.ip.startsWith('169.254.')&&!p.skip_source).map(p=>({adapter_id:a.id,ip:p.ip})));
+ // Multiple active IPv4 interfaces need an explicit customer choice.
+ return candidates.length===1?candidates[0]:null;
+}
 async function accept(db,d,snap,guards=[]){
  const previous=d.accepted?JSON.parse(d.accepted):null,delta=changes(previous,snap);
  // Incomplete collections can add observations, but cannot remove earlier observations.
  if(!snap.complete&&previous){const keys=new Set(snap.products.map(p=>JSON.stringify([p.name.toLowerCase(),p.version.toLowerCase()])));snap={...snap,products:[...snap.products,...previous.products.filter(p=>!keys.has(JSON.stringify([p.name.toLowerCase(),p.version.toLowerCase()]))) ]};}
  if(snap.products.length>10000||new TextEncoder().encode(JSON.stringify(snap)).length>2097152)fail('Combined inventory exceeds the device limit',413);
  const network=snap.network,selected=network?.adapters.some(a=>a.id===d.primary_adapter&&a.addresses.some(p=>p.ip===d.primary_ip));
- const primary=selected?{adapter_id:d.primary_adapter,ip:d.primary_ip}:d.primary_ip?{adapter_id:d.primary_adapter,ip:d.primary_ip}:network?.suggested;
+ const primary=selected?{adapter_id:d.primary_adapter,ip:d.primary_ip}:d.primary_ip?{adapter_id:d.primary_adapter,ip:d.primary_ip}:suggestedPrimary(snap);
  await transaction(db,[...guards,...await projection(db,d,snap),
   stmt(db,'INSERT INTO inventory_agent_history(device_id,received_at,sequence,snapshot,changes) VALUES(?,?,?,?,?)',d.id,now(),snap.sequence,JSON.stringify(snap),JSON.stringify(delta)),
   stmt(db,"UPDATE inventory_agents SET state='active',hostname=?,agent_version=?,accepted=?,pending=NULL,pending_hash='',last_sync=?,completed_request=MAX(completed_request,?),primary_ip=?,primary_adapter=?,reviewed_large_change=0,revision=revision+1 WHERE id=?",snap.hostname,snap.agent_version,JSON.stringify(snap),now(),snap.request,primary?.ip||'',primary?.adapter_id||'',d.id)]);
@@ -109,7 +115,7 @@ export async function agentDeviceRoute(req,env){
   if(d.state!=='review'&&previous&&snap.complete&&!d.reviewed_large_change&&previous.products.length>=10&&delta.removed.length/previous.products.length>0.5){await suspend(env,d,'More than half of previously observed software disappeared in one complete collection. Verify maintenance or collection problems before accepting changes.');return reply({error:'Unexpected inventory removal; uploads suspended',suspended:true},423);}
   const [condition,args]=revisionGuard(d),writeGuard=stmt(env.DB,"INSERT INTO inventory_agent_audit(device_id,actor,action,at,authorized) VALUES(?,?,'upload',?,("+condition+'))',d.id,'agent:'+d.id,now(),...args);
   const received=stmt(env.DB,'UPDATE inventory_agents SET last_sequence=?,last_hash=?,last_seen=?,invalid_count=0 WHERE id=?',snap.sequence,digest,now(),d.id);
-  if(d.state==='review')await transaction(env.DB,[writeGuard,received,stmt(env.DB,'UPDATE inventory_agents SET pending=?,pending_hash=?,revision=revision+1 WHERE id=?',JSON.stringify(snap),digest,d.id)]);
+  if(d.state==='review')await transaction(env.DB,[writeGuard,received,stmt(env.DB,"UPDATE inventory_agents SET pending=?,pending_hash=?,primary_ip=CASE WHEN primary_ip='' THEN ? ELSE primary_ip END,primary_adapter=CASE WHEN primary_ip='' THEN ? ELSE primary_adapter END,revision=revision+1 WHERE id=?",JSON.stringify(snap),digest,suggestedPrimary(snap)?.ip||'',suggestedPrimary(snap)?.adapter_id||'',d.id)]);
   else await accept(env.DB,d,snap,[writeGuard,received]);
   return reply({accepted:true,review_required:d.state==='review',sequence:snap.sequence});
  }catch(error){if(error instanceof AgentError)return reply({error:error.message},error.status);return reply({error:'Agent service temporarily unavailable'},503);}
