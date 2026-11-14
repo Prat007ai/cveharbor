@@ -73,11 +73,11 @@ test('full application keeps customer isolation and live denial while coalescing
 });
 
 
-test('coordinator infrastructure is restricted to its separate protected main-only caller and fictional database',()=>{
- const env={GITHUB_REPOSITORY:'Prat007ai/cveharbor',GITHUB_REF:'refs/heads/main',GITHUB_EVENT_NAME:'workflow_dispatch',GITHUB_RUN_ATTEMPT:'1',GITHUB_WORKFLOW_REF:'Prat007ai/cveharbor/.github/workflows/inventory-capacity-coordinator.yml@refs/heads/main',GITHUB_RUN_ID:'12345678901',GITHUB_SHA:'a'.repeat(40),CAPACITY_REVIEWED_COMMIT:'a'.repeat(40),CLOUDFLARE_ACCOUNT_ID:'9706b4d98ad72884e67fd1eb875c8a61',CLOUDFLARE_API_TOKEN:'fictional',CAPACITY_AUTHORITY_COORDINATOR:'true'};
+test('coordinator infrastructure is restricted to the existing protected main-only caller and explicit mode and fictional database',()=>{
+ const env={GITHUB_REPOSITORY:'Prat007ai/cveharbor',GITHUB_REF:'refs/heads/main',GITHUB_EVENT_NAME:'workflow_dispatch',GITHUB_RUN_ATTEMPT:'1',GITHUB_WORKFLOW_REF:'Prat007ai/cveharbor/.github/workflows/inventory-capacity-cloud.yml@refs/heads/main',GITHUB_RUN_ID:'12345678901',GITHUB_SHA:'a'.repeat(40),CAPACITY_REVIEWED_COMMIT:'a'.repeat(40),CLOUDFLARE_ACCOUNT_ID:'9706b4d98ad72884e67fd1eb875c8a61',CLOUDFLARE_API_TOKEN:'fictional',CAPACITY_AUTHORITY_COORDINATOR:'true'};
  const config=coordinatorConfig(env);assert.equal(config.workers_dev,false);assert.equal(config.preview_urls,false);assert.deepEqual(config.routes,[]);assert.equal(config.d1_databases[0].database_id,'b4a226d7-35e8-469f-abfe-2a2eee0a96de');assert.equal(config.durable_objects.bindings.length,1);validateCloudRun(env);
- for(const change of [{GITHUB_REF:'refs/heads/feature'},{GITHUB_RUN_ATTEMPT:'2'},{GITHUB_EVENT_NAME:'push'},{CAPACITY_REVIEWED_COMMIT:'b'.repeat(40)},{CAPACITY_AUTHORITY_COORDINATOR:undefined},{CLOUDFLARE_ACCOUNT_ID:'aa99b9b15e0492302e4f6484b8d27bc2'},{GITHUB_WORKFLOW_REF:'Prat007ai/cveharbor/.github/workflows/inventory-capacity-cloud.yml@refs/heads/main'}])assert.throws(()=>coordinatorConfig({...env,...change}));
- assert.throws(()=>validateCloudRun({...env,GITHUB_WORKFLOW_REF:'Prat007ai/cveharbor/.github/workflows/inventory-capacity-cloud.yml@refs/heads/main'}));
+ for(const change of [{GITHUB_REF:'refs/heads/feature'},{GITHUB_RUN_ATTEMPT:'2'},{GITHUB_EVENT_NAME:'push'},{CAPACITY_REVIEWED_COMMIT:'b'.repeat(40)},{CAPACITY_AUTHORITY_COORDINATOR:undefined},{CLOUDFLARE_ACCOUNT_ID:'aa99b9b15e0492302e4f6484b8d27bc2'},{GITHUB_WORKFLOW_REF:'Prat007ai/cveharbor/.github/workflows/unapproved.yml@refs/heads/main'}])assert.throws(()=>coordinatorConfig({...env,...change}));
+ assert.throws(()=>validateCloudRun({...env,GITHUB_WORKFLOW_REF:'Prat007ai/cveharbor/.github/workflows/unapproved.yml@refs/heads/main'}));
 });
 
 

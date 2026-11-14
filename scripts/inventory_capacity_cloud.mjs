@@ -57,9 +57,8 @@ export function previewDiagnostics(output){
 }
 export function validateCloudRun(env){
  assert.equal(env.GITHUB_REPOSITORY,'Prat007ai/cveharbor');assert.equal(env.GITHUB_REF,'refs/heads/main');assert.equal(env.GITHUB_EVENT_NAME,'workflow_dispatch');assert.equal(env.GITHUB_RUN_ATTEMPT,'1');
- assert.ok(env.CAPACITY_AUTHORITY_COORDINATOR===undefined||env.CAPACITY_AUTHORITY_COORDINATOR==='true');
- const workflow=env.CAPACITY_AUTHORITY_COORDINATOR==='true'?'inventory-capacity-coordinator.yml':'inventory-capacity-cloud.yml';
- assert.equal(env.GITHUB_WORKFLOW_REF,'Prat007ai/cveharbor/.github/workflows/'+workflow+'@refs/heads/main');
+ assert.ok(env.CAPACITY_AUTHORITY_COORDINATOR===undefined||['true','false'].includes(env.CAPACITY_AUTHORITY_COORDINATOR));
+ assert.equal(env.GITHUB_WORKFLOW_REF,'Prat007ai/cveharbor/.github/workflows/inventory-capacity-cloud.yml@refs/heads/main');
  assert.match(env.GITHUB_RUN_ID||'',/^\d{8,20}$/);assert.match(env.GITHUB_SHA||'',/^[a-f0-9]{40}$/);assert.equal(env.CAPACITY_REVIEWED_COMMIT,env.GITHUB_SHA);
  assert.equal(env.CLOUDFLARE_ACCOUNT_ID,account);assert.ok(env.CLOUDFLARE_API_TOKEN);
  return 'cveharbor-capacity-'+env.GITHUB_RUN_ID;

@@ -1,4 +1,4 @@
-// Proposed isolated-test infrastructure. Requires its separately approved job.
+// Proposed isolated-test infrastructure. Requires explicit coordinator mode in the existing protected job.
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -7,7 +7,7 @@ export const coordinatorName='cveharbor-capacity-authority';
 const account='9706b4d98ad72884e67fd1eb875c8a61',database='b4a226d7-35e8-469f-abfe-2a2eee0a96de',marker='retained-fictional-v1';
 export function coordinatorConfig(env){
  assert.equal(env.CLOUDFLARE_ACCOUNT_ID,account);
- assert.equal(env.GITHUB_WORKFLOW_REF,'Prat007ai/cveharbor/.github/workflows/inventory-capacity-coordinator.yml@refs/heads/main');
+ assert.equal(env.GITHUB_WORKFLOW_REF,'Prat007ai/cveharbor/.github/workflows/inventory-capacity-cloud.yml@refs/heads/main');
  assert.equal(env.GITHUB_REF,'refs/heads/main');assert.equal(env.GITHUB_EVENT_NAME,'workflow_dispatch');assert.equal(env.GITHUB_RUN_ATTEMPT,'1');
  assert.equal(env.GITHUB_REPOSITORY,'Prat007ai/cveharbor');assert.match(env.GITHUB_SHA||'',/^[a-f0-9]{40}$/);assert.equal(env.CAPACITY_REVIEWED_COMMIT,env.GITHUB_SHA);
  assert.equal(env.CAPACITY_AUTHORITY_COORDINATOR,'true');
