@@ -5,6 +5,7 @@ import {cachedRead,rememberRead,READ_CACHE_TTL,READ_CACHE_ENTRIES,deterministicR
 import {capacityFixture,capacitySessions,fixtureId} from './helpers/capacity-db.mjs';
 import {dashboardReadDatabase} from '../src/dashboard-read-db.js';
 import worker from '../src/index.js';
+import {inventoryPage} from '../src/inventory-pages.js';
 
 test('data results require exact database/version/query/bindings and expire with bounded storage',()=>{
  const key={},query='owner-a/page',value={success:true,results:[{name:'Before'}],meta:{served_by_primary:true,rows_read:250,duration:4}};
@@ -76,5 +77,23 @@ test('dashboard cache never reuses primary authority, crosses bindings, or retur
   const db=dashboardReadDatabase(observed.binding);await db.prepare(actualAuth).first();await db.prepare(auth).bind('owner-0').first();assert.equal(observed.calls.at(-1).constraint,'first-primary');
   f.sql.exec('DELETE FROM sessions');assert.equal(await db.prepare(actualAuth).first(),null);
   await db.prepare('SELECT name FROM inventory_customers WHERE user_id=?').bind('owner-0').all();assert.equal(observed.calls.at(-1).constraint,'first-primary','Failed auth clears the cache version; the handler rejects the request');
+ }finally{f.close();}
+});
+
+
+test('the existing memory budget retains bounded pages for all 50 fictional customers',async t=>{
+ t.mock.timers.enable({apis:['Date'],now:Date.now()});
+ const f=capacityFixture({owners:50,customers:50,environments:100,assets:50000});
+ f.sql.exec(fs.readFileSync(new URL('../agent-schema.sql',import.meta.url),'utf8'));
+ let packedReads=0,ownershipChecks=0;
+ const DB={prepare(sql){if(sql.endsWith(' AS packed'))packedReads++;if(sql.includes(' AS owned_count'))ownershipChecks++;return f.DB.prepare(sql);}};
+ const env={DB,AGENT_INVENTORY_SCHEMA:'1',INVENTORY_READ_CACHE_IDENTITY:{},INVENTORY_READ_CONTROL_REVISION:'1'};
+ const page=(owner,cursor=null)=>inventoryPage(new Request('https://api.cveharbor.com/v1/inventory/page?'+new URLSearchParams({customer_id:fixtureId(owner+1),...(cursor?{cursor}:{})})),env,{id:'owner-'+owner});
+ const first=[];
+ try{
+  for(let owner=0;owner<50;owner++){let cursor=null,count=0;do{const result=await page(owner,cursor);if(!cursor)first[owner]=result;count+=result.items.length;cursor=result.next_cursor;}while(cursor);assert.equal(count,1000);}
+  assert.equal(packedReads,200);packedReads=0;
+  for(let round=0;round<2;round++){t.mock.timers.tick(4000);for(let owner=0;owner<50;owner++)assert.deepEqual(await page(owner),first[owner]);}
+  assert.equal(packedReads,0,'Freshly validated pages stay reusable within the existing memory budget');assert.equal(ownershipChecks,100,'Every reused page still validates current ownership');
  }finally{f.close();}
 });
