@@ -36,7 +36,7 @@ jobs:
           github-token: ${{ github.token }}
       - run: python scripts/dashboard_read_release.py backend verification/capacity-backend
       - run: python scripts/report_interaction_release.py prepare verification/capacity-site
-      - run: node --test account-backend/tests/dashboard-read-capacity.test.mjs account-backend/tests/inventory-capacity.test.mjs scripts/inventory_capacity_cloud.test.mjs scripts/nvd_capacity.test.mjs
+      - run: node --test account-backend/tests/versioned-read-cache.test.mjs account-backend/tests/dashboard-read-capacity.test.mjs account-backend/tests/inventory-capacity.test.mjs scripts/inventory_capacity_cloud.test.mjs scripts/nvd_capacity.test.mjs
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: capacity-backend

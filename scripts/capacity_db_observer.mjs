@@ -16,7 +16,7 @@ export function classifyDatabaseError(error){
 }
 const operation=sql=>/operations_control/.test(sql)?'recovery_state':/INSERT INTO operations_leases/.test(sql)?'lease_start':/DELETE FROM operations_leases/.test(sql)?'lease_end':/FROM sessions|JOIN users ON users.id=sessions/.test(sql)?'session_auth':/ AS packed/.test(sql)?'page_query':/inventory_capacity_schema/.test(sql)?'capacity_marker':'query';
 export function observeDatabase(db){
- const native=new WeakMap(),state={calls:0,elapsed_ms:0,rows_read:0,rows_written:0,query_ms:0,primary_results:0,replica_results:0,errors:[]};
+ const native=new WeakMap(),state={calls:0,elapsed_ms:0,rows_read:0,rows_written:0,query_ms:0,primary_results:0,replica_results:0,session_constraints:{primary:0,bookmark:0,unconstrained:0},bookmark_present:0,bookmark_missing:0,errors:[]};
  async function call(kind,fn){
   const start=Date.now();state.calls++;
   try{const result=await fn();for(const row of Array.isArray(result)?result:[result])if(row?.meta){state.rows_read+=Number(row.meta.rows_read)||0;state.rows_written+=Number(row.meta.rows_written)||0;state.query_ms+=Number(row.meta.duration)||0;if(row.meta.served_by_primary===true)state.primary_results++;if(row.meta.served_by_primary===false)state.replica_results++;}return result;}
@@ -31,7 +31,8 @@ export function observeDatabase(db){
   }});native.set(proxy,target);return proxy;
  }
  const observed=obj=>new Proxy(obj,{get(obj,key){
-  if(key==='withSession'&&typeof obj.withSession==='function')return constraint=>observed(obj.withSession(constraint));
+  if(key==='withSession'&&typeof obj.withSession==='function')return constraint=>{state.session_constraints[constraint==='first-primary'?'primary':!constraint||constraint==='first-unconstrained'?'unconstrained':'bookmark']++;return observed(obj.withSession(constraint));};
+  if(key==='getBookmark'&&typeof obj.getBookmark==='function')return()=>{const value=obj.getBookmark();state[value?'bookmark_present':'bookmark_missing']++;return value;};
   if(key==='prepare')return sql=>statement(obj.prepare(sql),operation(sql));
   if(key==='batch')return statements=>call('page_batch',()=>obj.batch(statements.map(s=>native.get(s)||s)));
   const value=obj[key];return typeof value==='function'?value.bind(obj):value;

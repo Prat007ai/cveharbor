@@ -43,7 +43,8 @@ test('observer measures replica page results without exposing session bookmarks'
  const session=binding.withSession('fictional-private-bookmark');assert.equal(session.getBookmark(),'fictional-private-bookmark');
  assert.equal(await session.prepare('SELECT 1 AS packed').all(),result);
  assert.equal(state.replica_results,1);assert.equal(state.primary_results,0);assert.equal(state.calls,1);assert.equal(state.rows_read,3);
- assert.doesNotMatch(JSON.stringify(state),/fictional|bookmark/);
+ assert.equal(state.session_constraints.bookmark,1);assert.equal(state.bookmark_present,1);
+ assert.doesNotMatch(JSON.stringify(state),/fictional|private/);
 });
 test('preview diagnostics retain only closed categories and provider codes',()=>{
  const result=previewDiagnostics('secret-value https://private.example/?token=private Authentication error [code: 10000]\nA request to the Cloudflare API failed');

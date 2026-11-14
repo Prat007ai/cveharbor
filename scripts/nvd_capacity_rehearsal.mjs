@@ -7,8 +7,9 @@ export async function outageRehearsal({base,tokens,controlKey,site,seconds=30,on
  let database={};
  const get=async(i,suffix)=>{const start=performance.now(),r=await fetch(base+suffix,{headers:{Cookie:'cvh_session='+tokens[i],Origin:'https://cveharbor.com'},signal:AbortSignal.timeout(15000)});
   const observed=r.headers.get('X-Capacity-Database');
-  if(observed){const data=JSON.parse(observed),key=new URL(suffix,'http://localhost').pathname,totals=database[key]??={requests:0,calls:0,rows_read:0,rows_written:0,primary_results:0,replica_results:0,errors:{}};totals.requests++;
-   for(const name of ['calls','rows_read','rows_written','primary_results','replica_results'])totals[name]+=Number(data[name])||0;
+  if(observed){const data=JSON.parse(observed),key=new URL(suffix,'http://localhost').pathname,totals=database[key]??={requests:0,calls:0,rows_read:0,rows_written:0,primary_results:0,replica_results:0,bookmark_present:0,bookmark_missing:0,session_constraints:{primary:0,bookmark:0,unconstrained:0},errors:{}};totals.requests++;
+   for(const name of ['calls','rows_read','rows_written','primary_results','replica_results','bookmark_present','bookmark_missing'])totals[name]+=Number(data[name])||0;
+   for(const name of ['primary','bookmark','unconstrained'])totals.session_constraints[name]+=Number(data.session_constraints?.[name])||0;
    for(const e of data.errors||[]){const category=e.operation+':'+e.category;totals.errors[category]=(totals.errors[category]||0)+1;}
   }
   assert.equal(r.status,200,suffix+' HTTP '+r.status);return {body:await r.json(),ms:performance.now()-start};};
