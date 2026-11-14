@@ -1,3 +1,5 @@
+import {agentDeviceRoute,agentManagement} from './agents.js';
+import {dispatchAgentMail} from './agent-mail.js';
 import {azureConnectionProbe, probePath} from './azure-connection.js';
 import {aiRoute} from './ai-routes.js';
 import {releaseIdentity} from './release-build.js';
@@ -98,6 +100,7 @@ const application = {async fetch(req,env,ctx){
   if(!env.DB)return response({error:'Account database unavailable'},503);
   try {return await unsubscribe(req,env,unsub[1])}catch(_) {return response({error:'Unable to process unsubscribe request'},503)}
  }
+ if(url.pathname.startsWith('/v1/agent/'))return agentDeviceRoute(req,env);
  if(origin&&origin!==ALLOWED_ORIGIN)return response({error:'Forbidden origin'},403);
  if(req.method!=='GET'&&origin!==ALLOWED_ORIGIN)return response({error:'Invalid request origin'},403);
  // Published CVE lookup is public, read-only, and independent of account login or D1.
@@ -217,6 +220,7 @@ const application = {async fetch(req,env,ctx){
   const user=await me(req,env);
   if(path==='/v1/me'&&req.method==='GET')return response(user?{authenticated:true,email:user.email}:{authenticated:false},user?200:401);
   if(!user)return response({error:'Sign in required'},401);
+  if(path==='/v1/agents'||path.startsWith('/v1/agents/'))return response(await agentManagement(req,env,user));
   if(path.startsWith('/v1/ai/'))return await aiRoute(req,env,user,path,{response,body,limit},ctx);
   if(path.startsWith('/v1/team/'))return await teamRoute(req,env,user,path,{response,body,token,sha,limit});
   const recordPath=/^\/v1\/(remediations|remediation-records)\/(CVE-\d{4}-\d{4,}(?:~[A-F0-9-]{36})?)(.*)$/.exec(path);
@@ -425,6 +429,7 @@ const application = {async fetch(req,env,ctx){
  }catch(error){error=integrityError(error);if(error instanceof ReviewError||error instanceof WorkflowError||error instanceof FyiError||error instanceof AssignmentError||error instanceof MonitorError||error instanceof CvieError||error instanceof RemediationError||error instanceof InventoryError||error instanceof FindingStatusError||error instanceof LifecycleError)return response({error:error.message},error.status);return response({error:'Unable to process request'},500)}
 },
  async scheduled(_event,env,ctx) {
+  if(_event.cron==='* * * * *')ctx.waitUntil(dispatchAgentMail(env));
   if(_event?.cron==='5 * * * *')ctx.waitUntil(captureWorkspaceHistory(env));
   if(_event.cron==='*/5 * * * *')ctx.waitUntil(dispatchFirewallDigest(env));
   if(_event.cron==='* * * * *'&&env.CVIE_TOPIC_HISTORY_ENABLED==='true'){

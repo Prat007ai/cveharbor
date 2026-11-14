@@ -15,7 +15,7 @@ function group({assets=[],environments=[],customers=[],issues=[]}){
  for(const asset of assets){
   const environment=envs.get(asset.environment_id);
   // Missing scope/name must not collapse unrelated entries into one server.
-  const key=JSON.stringify([environment?.customer_id||asset.customer_id||'',asset.environment_id||asset.id,normalize(asset.name)||asset.id]);
+  const key=JSON.stringify([environment?.customer_id||asset.customer_id||'',asset.environment_id||asset.id,asset.agent_device_id||normalize(asset.name)||asset.id]);
   if(!groups.has(key))groups.set(key,{key,name:asset.name||'Unnamed asset',customer:clients.get(environment?.customer_id)?.name||'',environment:environment?.name||asset.environment||'Environment not recorded',assets:[],issues:[],roles:new Set(),roleSets:new Set()});
   const server=groups.get(key);server.assets.push(asset);byAsset.set(asset.id,server);
   const values=recordedRoles(asset);for(const value of values)server.roles.add(value);
@@ -27,6 +27,7 @@ function group({assets=[],environments=[],customers=[],issues=[]}){
 function node(tag,value='',className=''){const n=document.createElement(tag);n.textContent=value;if(className)n.className=className;return n;}
 function render(host,data,{findingLink,loadNetworks,savePrimary}={}){
  const token={};host.networkToken=token;let networks=[],networkError='',networkLoading=!!loadNetworks;
+ const expanded=host.expandedServers||(host.expandedServers=new Set());
  const servers=group(data),priorSearch=host.querySelector('[data-server-search]')?.value||'',priorRole=host.querySelector('[data-server-role]')?.value||'';
  host.replaceChildren();host.classList.add('server-security');
  const heading=node('div','','server-heading');heading.append(node('h2','Security by server'),node('p','See installed software and potential vulnerability matches for each hostname or asset. Matches require verification; no matches does not establish that a server is secure.'));
@@ -48,12 +49,16 @@ function render(host,data,{findingLink,loadNetworks,savePrimary}={}){
    const card=node('article','','server-card'),top=node('div','','server-card-heading'),identity=node('div');
    identity.append(node('span','HOSTNAME / ASSET','server-eyebrow'),node('h3',server.name),node('p',[server.customer,server.environment].filter(Boolean).join(' · '),'server-context'));
    top.append(identity,node('span','Server role: '+server.role,'server-role'));card.append(top);
-   networkPanel(card,server,networkFor(server));
+   if(server.assets[0].agent_device_id){
+    const a=server.assets[0];card.append(node('p','Primary IP: '+(a.agent_primary_ip||'Not selected'),'server-primary'));
+    card.append(node('p','Agent: '+a.agent_state+' · Last accepted sync: '+(a.agent_last_sync?new Date(a.agent_last_sync*1000).toLocaleString():'Awaiting review'),'server-help'));
+   }else networkPanel(card,server,networkFor(server));
    if(server.roleConflict)card.append(node('p','Conflicting role records — review the Notes on this server’s software entries.','server-warning'));
    if(!server.roles.length)card.append(node('p','Role not recorded. Set -ServerRole in the collector, or add “Server role: Web;” at the start of each software entry’s Notes.','server-help'));
    const cves=new Set(server.issues.map(i=>i.id));
    const details=node('details'),summary=node('summary',server.assets.length+' software entries · '+cves.size+' candidate CVEs · '+server.issues.length+' product matches');
-   details.open=matches.length===1;details.append(summary);
+   details.open=expanded.has(server.key)||matches.length===1;details.append(summary);
+   details.addEventListener('toggle',()=>{if(details.open)expanded.add(server.key);else expanded.delete(server.key);});
    const body=node('div','','server-detail-body');details.addEventListener('toggle',()=>{if(details.open&&!body.childNodes.length)populate();});
    function populate(){
     body.append(node('h4','Potential vulnerability matches'));

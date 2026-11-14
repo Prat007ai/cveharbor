@@ -1,0 +1,48 @@
+name: Windows agent security and integration
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - run: node --test account-backend/tests/agents.test.mjs account-backend/tests/inventory-capacity.test.mjs account-backend/tests/inventory-history.test.mjs
+  windows:
+    runs-on: windows-2022
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - name: Build and validate real Windows payloads with fictional data
+        shell: pwsh
+        run: |
+          ./windows-agent/build.ps1
+          ./windows-agent/test.ps1
+      - name: Build isolated test installers
+        shell: pwsh
+        run: |
+          ./windows-agent/package.ps1 -OutputDirectory windows-agent/package/base
+          ./windows-agent/package.ps1 -OutputDirectory windows-agent/package/upgrade -Version 1.0.1
+      - name: Verify service permissions and installer lifecycle on disposable runner
+        shell: pwsh
+        run: ./windows-agent/test-installer.ps1 -Installer windows-agent/package/base/CVEHarbor-Agent.msi -UpgradeInstaller windows-agent/package/upgrade/CVEHarbor-Agent.msi
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: failure()
+        with:
+          name: windows-agent-fictional-installer-test-log
+          path: ${{ runner.temp }}/agent-install.log
+          retention-days: 7

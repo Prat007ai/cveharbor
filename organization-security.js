@@ -5,6 +5,9 @@ if(org){
  const status=document.getElementById('customerDashStatus');
  const host=element('section','','data-panel ops-panel organization-security');status.after(host);
  const base=orgPath(org);let generation=0;
+ const agentHost=element('div');host.after(agentHost);
+ const agentModule=await import('./agent-ui.js');
+ agentModule.mountAgents(agentHost,{setup:false,scope:()=>({org,customer:params.get('customer')||'',environment:params.get('environment')||''}),onChange:()=>void render()});
  async function render(){
   const ticket=++generation;host.replaceChildren();status.textContent='Checking organization access and assessing inventory…';
   try{

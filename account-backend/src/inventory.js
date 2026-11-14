@@ -1,4 +1,5 @@
 import {inventoryPage,capacityReady,INVENTORY_CAPACITY} from './inventory-pages.js';
+import {agentSchemaReady,activeAssets} from './agent-validation.js';
 import {integrityError} from './remediation-integrity.js';
 import {customerRecordsReady} from './customer-remediation-context.js';
 import {networkRows,unpack,saveNetwork} from './server-network.js';
@@ -65,11 +66,12 @@ export async function inventoryRoute(req,env,user,path,data={},write=statement=>
     return json({ready:true,customer_id:customer,environment_id:environment||'',entries,next_before:rows.length>100?entries.at(-1).id:null});
   }
   if(path==='/v1/inventory'&&req.method==='GET'){
+    const agentFilter=await agentSchemaReady(env.DB)?' AND '+activeAssets('inventory_assets'):'';
     // No public customer, host or software inventory is exposed.
     const [customers,environments,assets]=await Promise.all([
       env.DB.prepare('SELECT id,name FROM inventory_customers WHERE user_id=? ORDER BY name LIMIT 100').bind(user.id).all(),
       env.DB.prepare('SELECT id,customer_id,name,kind FROM inventory_environments WHERE user_id=? ORDER BY name LIMIT 500').bind(user.id).all(),
-      env.DB.prepare('SELECT id,environment_id,name,asset_type,technology,version,notes FROM inventory_assets WHERE user_id=? ORDER BY name LIMIT 3001').bind(user.id).all()
+      env.DB.prepare('SELECT id,environment_id,name,asset_type,technology,version,notes FROM inventory_assets WHERE user_id=?'+agentFilter+' ORDER BY name LIMIT 3001').bind(user.id).all()
     ]);
     if((assets.results||[]).length>3000)return json({error:'This inventory requires the updated paginated client. Refresh CVEHarbor.',code:'pagination_required'},409);
     return json({customers:customers.results||[],environments:environments.results||[],assets:assets.results||[]});
@@ -154,6 +156,7 @@ export async function inventoryRoute(req,env,user,path,data={},write=statement=>
     return json({created:true,id:recordId},201);
   }
   const match=/^\/v1\/inventory\/(customers|environments|assets)\/([0-9a-f-]{36})$/.exec(path);
+  if(match?.[1]==='assets'&&['PUT','DELETE'].includes(req.method)&&await agentSchemaReady(env.DB)&&await env.DB.prepare('SELECT 1 FROM inventory_agent_assets WHERE asset_id=?').bind(match[2]).first())throw new InventoryError('This software entry is agent-managed. Use the device settings and synchronization controls.',409);
   if(match&&req.method==='DELETE'){
     const table={customers:'inventory_customers',environments:'inventory_environments',assets:'inventory_assets'}[match[1]];
     await owned(env,table,user.id,match[2]);
