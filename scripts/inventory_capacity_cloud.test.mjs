@@ -88,3 +88,14 @@ test('detailed observer captures first-row metadata in one native query without 
  assert.doesNotMatch(JSON.stringify(state),/private|SELECT|sessions|example/);
  const merged=mergeQueryProfiles({},state.queries);mergeQueryProfiles(merged,state.queries);assert.equal(merged[key].calls,4);assert.equal(merged[key].max_sql_ms,0.25);
 });
+
+
+test('snapshot diagnostics count native binding and bookmark reuse without exporting values',()=>{
+ let bookmark='private-snapshot-a';const db={getBookmark:()=>bookmark};
+ const first=observeDatabase(db,{detailed:true});assert.equal(first.state.binding_seen_before,0);first.binding.getBookmark();assert.equal(first.state.first_bookmark_reused,0);
+ first.binding.getBookmark();assert.equal(first.state.distinct_bookmarks,1);
+ bookmark='private-snapshot-b';first.binding.getBookmark();assert.equal(first.state.distinct_bookmarks,2);
+ const second=observeDatabase(db,{detailed:true});assert.equal(second.state.binding_seen_before,1);bookmark='private-snapshot-a';second.binding.getBookmark();assert.equal(second.state.first_bookmark_reused,1);
+ const other=observeDatabase({getBookmark:()=>bookmark},{detailed:true});other.binding.getBookmark();assert.equal(other.state.binding_seen_before,0);assert.equal(other.state.first_bookmark_reused,0);
+ assert.doesNotMatch(JSON.stringify([first.state,second.state,other.state]),/private|snapshot-a|snapshot-b/);
+});
