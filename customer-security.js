@@ -1505,7 +1505,7 @@ async function init(){
 for(const eventName of ['cveharbor:account-state','cveharbor-auth-change'])window.addEventListener(eventName,event=>{
  if(customerReady&&(!event.detail?.authenticated||event.detail?.email&&event.detail.email!==accountEmail))invalidateSession();
 });
-window.addEventListener('cvie:updated',event=>{if(event.detail?.recordsChanged)records=advisories();if(reportPrinting){reportRedrawPending=true;return}for(const note of document.querySelectorAll('.cvie-report-source-note'))note.textContent=intelligenceSourceSummary();if(event.detail?.recordsChanged&&customerReady)redraw();});
+window.addEventListener('cvie:updated',event=>{if(event.detail?.recordsChanged)records=advisories();if(reportPrinting){reportRedrawPending=true;return}for(const note of document.querySelectorAll('.cvie-report-source-note'))note.textContent=intelligenceSourceSummary();if(event.detail?.recordsChanged&&customerReady)redraw();else $('customerDashboardServers')?.refreshProductAssessments?.();});
 window.addEventListener('cveharbor:remediation-changed',()=>{if(customerReady)void refreshSavedFindings().then(redraw).catch(()=>{});});
 if(typeof BroadcastChannel==='function'){const channel=new BroadcastChannel('cveharbor-remediation-changed');channel.onmessage=()=>{if(customerReady)void refreshSavedFindings().then(redraw).catch(()=>{});};}
 void init();

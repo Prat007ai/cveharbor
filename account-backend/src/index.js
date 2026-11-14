@@ -101,7 +101,7 @@ const application = {async fetch(req,env,ctx){
   if(!env.DB)return response({error:'Account database unavailable'},503);
   try {return await unsubscribe(req,env,unsub[1])}catch(_) {return response({error:'Unable to process unsubscribe request'},503)}
  }
- if(url.pathname.startsWith('/v1/agent/'))return agentDeviceRoute(req,env);
+ if(url.pathname.startsWith('/v1/agent/'))return agentDeviceRoute(req,env,ctx);
  if(origin&&origin!==ALLOWED_ORIGIN)return response({error:'Forbidden origin'},403);
  if(req.method!=='GET'&&origin!==ALLOWED_ORIGIN)return response({error:'Invalid request origin'},403);
  // Published CVE lookup is public, read-only, and independent of account login or D1.

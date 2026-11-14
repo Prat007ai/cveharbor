@@ -1,5 +1,6 @@
 // Explicit identities avoid inventing a vendor/product from descriptive text.
 import brands from './brand-registry.js';
+import {installedProductRules} from './installed-product-identities.js';
 export const normalizeName=value=>String(value||'').normalize('NFKC').trim().toLowerCase().replace(/\s+/g,' ');
 export function vendorKey(value){
  const key=normalizeName(value).replace(/[^a-z0-9]/g,'');
@@ -9,7 +10,7 @@ export function vendorKey(value){
 export function productCpe(value){
  const parts=String(value||'').split(':');
  if(parts.length!==13||parts[0]!=='cpe'||parts[1]!=='2.3'||!['a','o','h'].includes(parts[2])||
-    !parts.slice(3,5).every(x=>/^[a-z0-9_~.-]{1,100}$/i.test(x))||!parts.slice(5).every(x=>x==='*'))return null;
+    !parts.slice(3,5).every(x=>/^(?:[a-z0-9_~.-]|\\\+){1,100}$/i.test(x))||!parts.slice(5).every(x=>x==='*'))return null;
  return parts.join(':').toLowerCase();
 }
 export function cpeFamily(value){
@@ -32,6 +33,7 @@ export function dotnetInventoryIdentity(name,vendor=''){
 }
 const known=[
  ...dotnetInventory,
+ ...installedProductRules,
  [/^(?:microsoft\s+)?(?:\.net|dotnet)\s+core$/,'a','microsoft','.net','dotnet'],
  [/^apache tomcat$|^tomcat$/,'a','apache','tomcat','apachetomcat'],
  [/^apache http server$|^apache httpd$/,'a','apache','http_server','apache'],

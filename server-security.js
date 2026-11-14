@@ -56,11 +56,15 @@ function render(host,data,{findingLink,loadNetworks,savePrimary}={}){
    if(server.roleConflict)card.append(node('p','Conflicting role records — review the Notes on this server’s software entries.','server-warning'));
    if(!server.roles.length)card.append(node('p','Role not recorded. Set -ServerRole in the collector, or add “Server role: Web;” at the start of each software entry’s Notes.','server-help'));
    const cves=new Set(server.issues.map(i=>i.id));
-   const details=node('details'),summary=node('summary',server.assets.length+' software entries · '+cves.size+' candidate CVEs · '+server.issues.length+' product matches');
+   const details=node('details'),summary=node('summary',server.assets.length+' software entries · '+cves.size+' candidate CVEs · '+server.issues.length+' software/CVE matches');
    details.open=expanded.has(server.key)||matches.length===1;details.append(summary);
    details.addEventListener('toggle',()=>{if(details.open)expanded.add(server.key);else expanded.delete(server.key);});
    const body=node('div','','server-detail-body');details.addEventListener('toggle',()=>{if(details.open&&!body.childNodes.length)populate();});
    function populate(){
+    body.append(node('h4','Installed software'),node('p','Every entry has an assessment status. Missing mappings and incomplete source checks require review; no matches does not establish safety.'),grid(['Product','Installed version','Assessment status','Recorded role'],server.assets.map(a=>{
+     const status=node('span');status.dataset.productAssessment=a.technology;status.dataset.assetId=a.id;
+     return [a.technology,a.version||'Unknown',status,role(a)];
+    })));
     body.append(node('h4','Potential vulnerability matches'));
     if(!server.issues.length)body.append(node('p','No matches in the loaded assessment. Check product mapping, versions and source coverage before drawing conclusions.'));
     else{
@@ -71,12 +75,25 @@ function render(host,data,{findingLink,loadNetworks,savePrimary}={}){
      body.append(grid(['CVE','Product','Installed version','Severity','Assessment','Evidence','Source'],rows));
      if(server.issues.length>100)body.append(node('p','Showing the first 100 product matches for this server. Use the full vulnerability list below to continue review.'));
     }
-    body.append(node('h4','Installed software'),grid(['Product','Installed version','Recorded role'],server.assets.map(a=>[a.technology,a.version||'Unknown',role(a)])));
    }
    details.append(body);if(details.open)populate();card.append(details);list.append(card);
   }
   previous.disabled=page===0;next.disabled=(page+1)*12>=matches.length;pager.hidden=matches.length<=12;
+  updateAssessments();
  }
+ function updateAssessments(){
+  const cvie=root.CVEHARBOR_CVIE,products=data.assessmentProducts||cvie?.products||[],byName=new Map(products.map(p=>[normalize(p.name),p]));
+  const assets=new Map((data.assets||[]).map(a=>[String(a.id),a])),counts=new Map();
+  for(const f of data.issues||[]){const id=String(f.asset_id||f.asset?.id);counts.set(id,(counts.get(id)||0)+1);}
+  for(const cell of host.querySelectorAll('[data-product-assessment]')){
+   const a=assets.get(cell.dataset.assetId);if(!a)continue;
+   const state=root.CVEHARBOR_INVENTORY_MATCH.productAssessment(a,byName.get(normalize(a.technology)),{count:counts.get(String(a.id))||0,available:data.assessmentAvailable??!!cvie?.ready,limited:data.limited||cvie?.loading||cvie?.coverageLimited||(cvie?.evidence?.sources||[]).some(s=>s.status!=='current'),months:cvie?.months||3});
+   cell.textContent=state.label;cell.dataset.state=state.code;
+  }
+ }
+ // Status-only polling must not repeat the asset/advisory assessment or reload
+ // network inventory. The current render owns this callback and scope.
+ host.refreshProductAssessments=updateAssessments;
  function networkPanel(card,server,record){
   if(!record){card.append(node('p',networkLoading?'Loading network inventory…':networkError||'IP addresses not recorded. Import a new collector CSV to add them.','server-help'));return;}
   const snapshot=record.snapshot,chosen=record.primary_ip?{adapter_id:record.primary_adapter,ip:record.primary_ip}:snapshot.suggested;

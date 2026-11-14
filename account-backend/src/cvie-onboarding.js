@@ -1,13 +1,14 @@
-import {curatedProductFamily} from './product-identity.js';
+import {curatedProductFamily,directorySearch} from './product-identity.js';
 import {resolveRegistry,registryEnabled,registryIdentity,searchRegistry,storedRegistryIdentity,registerVerifiedCpe} from './product-registry.js';
 import {reconcileRecord} from './cvie-records.js';
-import {coveragePlan} from './product-coverage.js';
+import {coveragePlan,catalogueKind} from './product-coverage.js';
 import {activeSubscription} from './catalogue-selection.js';
 const q=(env,sql,...args)=>env.DB.prepare(sql).bind(...args);
 export const fastEvidenceEnabled=env=>registryEnabled(env)&&env.CVIE_FAST_EVIDENCE_ENABLED==='true';
 export async function bindProductIdentities(env,userId){
  if(!registryEnabled(env))return;
- const rows=(await q(env,`SELECT p.id,p.name,p.vendor,p.cpe FROM cvie_products p
+ const rows=(await q(env,`SELECT p.id,p.name,p.vendor,p.cpe,p.status,p.cursor_json,
+  EXISTS(SELECT 1 FROM cvie_subscriptions s WHERE s.product_id=p.id AND s.user_id=p.user_id AND s.origin='inventory') AS inventory_product FROM cvie_products p
   LEFT JOIN cvie_product_identities b ON b.product_id=p.id AND b.source_name=p.name
    AND b.source_vendor=p.vendor AND b.source_cpe=p.cpe
    AND b.revision=(SELECT revision FROM cvie_identities i WHERE i.identity_id=b.identity_id)
@@ -22,6 +23,15 @@ export async function bindProductIdentities(env,userId){
    WHERE identity_id IS NOT excluded.identity_id OR source_name<>excluded.source_name OR source_vendor<>excluded.source_vendor OR source_cpe<>excluded.source_cpe OR revision<>excluded.revision`,p.id,identity.id,p.name,p.vendor,p.cpe,identity.revision));
   else statements.push(q(env,'DELETE FROM cvie_product_identities WHERE product_id=?',p.id));
   if(!p.cpe){
+   // Inventory discovery is automatic and budgeted by the existing scan worker.
+   // A completed/limited lookup remains an explicit mapping problem; polling
+   // must never restart it or bypass a provider retry delay.
+   if(p.inventory_product&&catalogueKind(p.name)==='product'){
+    const cursor=JSON.parse(p.cursor_json||'{}');
+    if(!cursor.directory_query)statements.push(q(env,`UPDATE cvie_products SET status='queued',cursor_json=?,candidates_json='[]',error=''
+     WHERE id=? AND cpe='' AND cursor_json=? AND status IN ('queued','needs_identity')`,JSON.stringify({...cursor,directory_query:directorySearch(p)}),p.id,p.cursor_json));
+    continue;
+   }
    const choices=searchRegistry({q:p.name,vendor:p.vendor}).candidates.filter(i=>i.cpe).map(i=>({cpe:i.cpe,label:i.name,identity_id:i.id}));
    statements.push(q(env,`UPDATE cvie_products SET status='needs_identity',candidates_json=?,error='Exact product identity required; coverage is unknown.'
     WHERE id=? AND cpe='' AND (status<>'needs_identity' OR candidates_json<>?)`,JSON.stringify(choices),p.id,JSON.stringify(choices)));

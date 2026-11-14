@@ -154,6 +154,10 @@ def readiness():
 
 
 if __name__ == "__main__":
+    if os.environ.get("CVEHARBOR_SITE_RELEASE") == "installed-products":
+        import installed_products_release
+        installed_products_release.run(sys.argv[1],Path(sys.argv[2]).resolve() if len(sys.argv)>2 else None)
+        sys.exit(0)
     if os.environ.get("CVEHARBOR_SITE_RELEASE") == "windows-agent":
         import windows_agent_release
         windows_agent_release.run(sys.argv[1],Path(sys.argv[2]).resolve() if len(sys.argv)>2 else None)

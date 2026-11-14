@@ -28,6 +28,7 @@ jobs:
           python -c "import sys;from pathlib import Path;sys.path.insert(0,'scripts');import team_release as t;t.previous('f00b4c4939ddf3d304fe525738d6fdbfedb57956','windows_agent_release.py','backend',Path(sys.argv[1]))" "$RUNNER_TEMP/agent-backend"
           rsync --archive --delete "$RUNNER_TEMP/agent-backend/account-backend/src/" account-backend/src/
           cp "$RUNNER_TEMP/agent-backend/account-backend/wrangler.toml" account-backend/wrangler.toml
+          git show f00b4c4939ddf3d304fe525738d6fdbfedb57956:account-backend/tests/agents.test.mjs > account-backend/tests/agents.test.mjs
           # Keep the original round-trip expectation with the frozen serving backend.
           # Current capacity behavior is checked above and in the scoped release suite.
           git show f00b4c4939ddf3d304fe525738d6fdbfedb57956:account-backend/tests/inventory-capacity.test.mjs > account-backend/tests/inventory-capacity.test.mjs
@@ -46,7 +47,7 @@ jobs:
           github-token: ${{ github.token }}
       - name: Verify the exact website and installer package
         run: |
-          python scripts/windows_agent_release.py prepare "$RUNNER_TEMP/agent-site"
+          python scripts/installed_products_release.py baseline-site "$RUNNER_TEMP/agent-site"
           npm install --prefix staging --ignore-scripts --no-package-lock
           AGENT_TEST_SITE="$RUNNER_TEMP/agent-site/after" node scripts/agent_browser.mjs
           INVENTORY_TEST_SITE="$RUNNER_TEMP/agent-site/after" node scripts/inventory_experience_browser.mjs
